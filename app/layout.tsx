@@ -3,6 +3,7 @@ import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Image from "next/image";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -108,6 +109,8 @@ export default function RootLayout({
           <WhatsAppIcon />
         </a>
       </body>
+
+      <GoogleAnalytics gaId="G-ZRK4D4XD7B" />
     </html>
   );
 }
