@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  verification: {
+    google: "az6wA9QSXZNyF-uYtEYZl3zQ7Gm9-FMAWzo3_SNHCag",
+  },
 };
 
 function WhatsAppIcon() {
