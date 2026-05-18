@@ -3,7 +3,7 @@ import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Image from "next/image";
-import { GoogleAnalytics, sendGAEvent } from "@next/third-parties/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,9 +23,6 @@ export const metadata: Metadata = {
     "Mobilidade executiva premium para empresas e clientes particulares em Belo Horizonte e região metropolitana.",
   icons: {
     icon: "/favicon.ico",
-  },
-  verification: {
-    google: "az6wA9QSXZNyF-uYtEYZl3zQ7Gm9-FMAWzo3_SNHCag",
   },
 };
 
@@ -47,14 +44,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  function trackWhatsAppClick() {
-    sendGAEvent("event", "whatsapp_click", {
-      location: "floating_button",
-    });
-  }
-
   return (
     <html lang="pt-BR">
+      <head>
+        <meta
+          name="google-site-verification"
+          content="az6wA9QSXZNyF-uYtEYZl3zQ7Gm9-FMAWzo3_SNHCag"
+        />
+      </head>
+
       <body className={`${inter.variable} ${sora.variable}`}>
         <Header />
 
@@ -113,7 +111,6 @@ export default function RootLayout({
         <a
           href={whatsappLink}
           target="_blank"
-          onClick={trackWhatsAppClick}
           className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl transition hover:scale-110"
         >
           <WhatsAppIcon />
