@@ -10,6 +10,7 @@ import {
   Car,
   CheckCircle2,
 } from "lucide-react";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const services = [
   {
@@ -42,6 +43,18 @@ const differentials = [
 ];
 
 export default function HomePage() {
+  function trackSolicitarClick(location: string) {
+    sendGAEvent("event", "solicitar_atendimento_click", {
+      location,
+    });
+  }
+
+  function trackWhatsAppClick(location: string) {
+    sendGAEvent("event", "whatsapp_click", {
+      location,
+    });
+  }
+
   return (
     <main className="bg-slate-50 text-slate-900">
       <section className="relative h-[520px] md:h-[760px] overflow-hidden">
@@ -73,6 +86,7 @@ export default function HomePage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row md:mt-10">
               <Link
                 href="/solicitar-atendimento"
+                onClick={() => trackSolicitarClick("hero")}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-lg"
               >
                 Solicitar Atendimento
@@ -82,6 +96,7 @@ export default function HomePage() {
               <a
                 href="https://wa.me/5531998458084"
                 target="_blank"
+                onClick={() => trackWhatsAppClick("hero")}
                 className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20 md:rounded-2xl md:px-8 md:py-4 md:text-lg"
               >
                 Falar no WhatsApp
@@ -147,6 +162,7 @@ export default function HomePage() {
 
             <Link
               href="/solicitar-atendimento"
+              onClick={() => trackSolicitarClick("quem_somos")}
               className="mt-8 inline-flex rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-base"
             >
               Solicitar Atendimento
@@ -199,6 +215,7 @@ export default function HomePage() {
           <div className="mt-12 text-center">
             <Link
               href="/solicitar-atendimento"
+              onClick={() => trackSolicitarClick("servicos")}
               className="inline-flex rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-base"
             >
               Solicitar Atendimento
