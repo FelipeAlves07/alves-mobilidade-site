@@ -65,18 +65,18 @@ function trackWhatsAppClick(location: string) {
 export default function HomePage() {
   return (
     <main className="overflow-hidden bg-white text-zinc-950">
-      <section className="relative min-h-[760px] bg-[#050505] text-white md:min-h-[820px]">
+      <section className="relative min-h-[690px] bg-[#050505] text-white md:min-h-[740px]">
         <Image
           src="/images/hero-byd.jpg"
           alt="Alves Mobilidade Executiva em Belo Horizonte"
           fill
           priority
-          className="object-cover object-center opacity-80"
+          className="object-cover object-center opacity-80 sepia-[10%] saturate-[.88]"
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(214,168,95,0.18),transparent_34%),linear-gradient(90deg,#050505_0%,rgba(5,5,5,0.88)_38%,rgba(5,5,5,0.28)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050505] to-transparent" />
 
-        <div className="relative z-10 mx-auto flex min-h-[760px] max-w-7xl items-center px-5 pb-16 pt-28 md:min-h-[820px] lg:px-8">
+        <div className="relative z-10 mx-auto flex min-h-[690px] max-w-7xl items-center px-5 pb-16 pt-12 md:min-h-[740px] lg:px-8">
           <div className="max-w-3xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#d6a85f]/35 bg-black/35 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#d6a85f] backdrop-blur">
               <CheckCircle2 size={14} />

@@ -36,21 +36,21 @@ const services = [
 
 export default function ServicosPage() {
   return (
-    <main className="bg-slate-50 text-slate-900">
+    <main className="bg-[#f7f4ef] text-zinc-950">
       <section className="relative h-[520px] md:h-[700px] overflow-hidden">
         <Image
           src="/images/servicos-premium.jpg"
           alt="Serviços Alves"
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover object-center sepia-[10%] saturate-[.85]"
         />
 
-        <div className="absolute inset-0 bg-slate-950/60" />
+        <div className="absolute inset-0 bg-[#050505]/68" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 lg:px-8">
           <div className="max-w-4xl">
-            <div className="mb-5 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur md:text-sm">
+            <div className="mb-5 inline-flex rounded-full border border-[#d6a85f]/35 bg-black/25 px-4 py-2 text-xs font-medium text-white backdrop-blur md:text-sm">
               Serviços Premium
             </div>
 
@@ -58,13 +58,13 @@ export default function ServicosPage() {
               Soluções premium para empresas e clientes particulares.
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-200 md:mt-8 md:text-xl md:leading-9">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-200 md:mt-8 md:text-xl md:leading-9">
               Atendimento executivo completo com conforto, segurança e excelência.
             </p>
 
             <Link
               href="/solicitar-atendimento"
-              className="mt-8 inline-flex rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-lg"
+              className="mt-8 inline-flex rounded-xl bg-gradient-to-r from-[#d6a85f] to-[#b8863b] px-6 py-3 text-sm font-bold text-white transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-lg"
             >
               Solicitar Atendimento
             </Link>
@@ -79,7 +79,7 @@ export default function ServicosPage() {
               Nossos Serviços
             </h2>
 
-            <p className="mt-4 text-base text-slate-600 md:text-lg">
+            <p className="mt-4 text-base text-zinc-600 md:text-lg">
               Soluções executivas para diferentes necessidades.
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function ServicosPage() {
                   key={service.title}
                   className="rounded-3xl bg-white p-7 shadow-lg transition hover:-translate-y-1 hover:shadow-2xl md:p-10"
                 >
-                  <div className="mb-5 inline-flex rounded-2xl bg-slate-950 p-4 text-white">
+                  <div className="mb-5 inline-flex rounded-2xl bg-[#050505] p-4 text-[#d6a85f]">
                     <Icon size={22} />
                   </div>
 
@@ -101,7 +101,7 @@ export default function ServicosPage() {
                     {service.title}
                   </h2>
 
-                  <p className="mt-5 text-sm leading-7 text-slate-600 md:text-lg md:leading-8">
+                  <p className="mt-5 text-sm leading-7 text-zinc-600 md:text-lg md:leading-8">
                     {service.description}
                   </p>
                 </div>
@@ -117,13 +117,13 @@ export default function ServicosPage() {
             Solicite seu atendimento.
           </h2>
 
-          <p className="mt-4 text-base text-slate-200 md:mt-6 md:text-xl">
+          <p className="mt-4 text-base text-zinc-200 md:mt-6 md:text-xl">
             Empresas e clientes particulares.
           </p>
 
           <Link
             href="/solicitar-atendimento"
-            className="mt-8 inline-flex rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-lg"
+            className="mt-8 inline-flex rounded-xl bg-gradient-to-r from-[#d6a85f] to-[#b8863b] px-6 py-3 text-sm font-bold text-white transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-lg"
           >
             Solicitar Atendimento
           </Link>

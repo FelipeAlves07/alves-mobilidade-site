@@ -37,21 +37,21 @@ const fleet = [
 
 export default function FrotaPage() {
   return (
-    <main className="bg-slate-50 text-slate-900">
+    <main className="bg-[#f7f4ef] text-zinc-950">
       <section className="relative h-[520px] md:h-[700px] overflow-hidden">
         <Image
           src="/images/fleet-hero.jpg"
           alt="Frota Alves"
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover object-center sepia-[10%] saturate-[.85]"
         />
 
-        <div className="absolute inset-0 bg-slate-950/60" />
+        <div className="absolute inset-0 bg-[#050505]/68" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 lg:px-8">
           <div className="max-w-4xl">
-            <div className="mb-5 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur md:text-sm">
+            <div className="mb-5 inline-flex rounded-full border border-[#d6a85f]/35 bg-black/25 px-4 py-2 text-xs font-medium text-white backdrop-blur md:text-sm">
               Frota Executiva Premium
             </div>
 
@@ -59,7 +59,7 @@ export default function FrotaPage() {
               Veículos selecionados para conforto, elegância e segurança.
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-200 md:mt-8 md:text-xl md:leading-9">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-200 md:mt-8 md:text-xl md:leading-9">
               Nossa frota foi escolhida para oferecer padrão executivo premium.
             </p>
           </div>
@@ -71,7 +71,7 @@ export default function FrotaPage() {
           <div className="text-center">
             <h2 className="text-4xl font-bold md:text-5xl">Nossa Frota</h2>
 
-            <p className="mt-4 text-base text-slate-600 md:text-lg">
+            <p className="mt-4 text-base text-zinc-600 md:text-lg">
               Modelos cuidadosamente escolhidos para diferentes perfis.
             </p>
           </div>
@@ -92,13 +92,13 @@ export default function FrotaPage() {
                 </div>
 
                 <div className="p-6">
-                  <div className="mb-4 inline-flex rounded-2xl bg-slate-950 p-3 text-white">
+                  <div className="mb-4 inline-flex rounded-2xl bg-[#050505] p-3 text-[#d6a85f]">
                     <Car size={20} />
                   </div>
 
                   <h3 className="text-2xl font-bold">{car.name}</h3>
 
-                  <p className="mt-3 text-sm text-slate-600 md:text-base">
+                  <p className="mt-3 text-sm text-zinc-600 md:text-base">
                     {car.category}
                   </p>
                 </div>
@@ -109,7 +109,7 @@ export default function FrotaPage() {
           <div className="mt-12 text-center">
             <Link
               href="/solicitar-atendimento"
-              className="inline-flex rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-base"
+              className="inline-flex rounded-xl bg-[#050505] px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-base"
             >
               Solicitar Atendimento
             </Link>

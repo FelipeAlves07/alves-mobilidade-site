@@ -18,16 +18,16 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#050505]/78 text-white backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-8">
+      <header className="sticky inset-x-0 top-0 z-50 border-b border-[#d6a85f]/20 bg-[#050505] text-white shadow-[0_10px_35px_rgba(0,0,0,0.28)]">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 lg:px-8">
           <Link href="/" aria-label="Alves Mobilidade Executiva">
             <Image
-              src="/branding/logo-dark.png"
+              src="/branding/logo-oficial-alves.jpg"
               alt="Alves Mobilidade Executiva"
-              width={320}
-              height={110}
+              width={760}
+              height={260}
               priority
-              className="h-auto w-[155px] object-contain md:w-[190px]"
+              className="h-[52px] w-auto object-contain md:h-[58px]"
             />
           </Link>
 
@@ -45,7 +45,7 @@ export default function Header() {
 
           <Link
             href="/solicitar-atendimento"
-            className="hidden rounded-xl border border-[#d6a85f]/70 bg-[#d6a85f]/10 px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#d6a85f] lg:inline-flex"
+            className="hidden rounded-xl border border-[#d6a85f]/70 bg-[#d6a85f]/10 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#d6a85f] lg:inline-flex"
           >
             Solicitar orçamento
           </Link>
@@ -65,11 +65,11 @@ export default function Header() {
           <div className="absolute right-0 top-0 h-full w-[78%] max-w-[320px] border-l border-[#d6a85f]/25 bg-[#050505] p-5 text-white shadow-2xl">
             <div className="mb-8 flex items-center justify-between">
               <Image
-                src="/branding/logo-dark.png"
+                src="/branding/logo-oficial-alves.jpg"
                 alt="Alves Mobilidade Executiva"
-                width={220}
-                height={80}
-                className="h-auto w-[140px]"
+                width={760}
+                height={260}
+                className="h-[48px] w-auto object-contain"
               />
 
               <button

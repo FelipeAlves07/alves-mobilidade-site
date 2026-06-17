@@ -53,21 +53,21 @@ Observações: ${form.observacoes}
   }
 
   return (
-    <main className="bg-slate-50">
+    <main className="bg-[#f7f4ef]">
       <section className="relative h-[520px] md:h-[700px] overflow-hidden">
         <Image
           src="/images/cliente-vip.jpg"
           alt="Solicitar Atendimento"
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover object-center sepia-[10%] saturate-[.85]"
         />
 
-        <div className="absolute inset-0 bg-slate-950/60" />
+        <div className="absolute inset-0 bg-[#050505]/68" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 lg:px-8">
           <div className="max-w-4xl">
-            <div className="mb-5 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur md:text-sm">
+            <div className="mb-5 inline-flex rounded-full border border-[#d6a85f]/35 bg-black/25 px-4 py-2 text-xs font-medium text-white backdrop-blur md:text-sm">
               Solicitação de Atendimento
             </div>
 
@@ -75,7 +75,7 @@ Observações: ${form.observacoes}
               Solicite seu atendimento
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-200 md:mt-8 md:text-xl md:leading-9">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-200 md:mt-8 md:text-xl md:leading-9">
               Empresas e clientes particulares.
             </p>
           </div>
@@ -175,7 +175,7 @@ Observações: ${form.observacoes}
 
             <button
               onClick={enviarWhatsApp}
-              className="mt-6 w-full rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 md:w-auto md:text-base"
+              className="mt-6 w-full rounded-xl bg-[#050505] px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 md:w-auto md:text-base"
             >
               Solicitar Atendimento
             </button>

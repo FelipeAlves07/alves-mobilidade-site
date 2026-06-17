@@ -120,10 +120,10 @@ export default function RootLayout({
             <div className="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
               <div>
                 <Image
-                  src="/branding/logo-dark.png"
+                  src="/branding/logo-oficial-alves.jpg"
                   alt="Alves Mobilidade Executiva"
                   width={240}
-                  height={90}
+                  height={260}
                   className="h-auto w-[200px]"
                 />
 
