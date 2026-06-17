@@ -112,7 +112,7 @@ export default function ServicosPage() {
       </section>
 
       <section className="bg-white py-16 md:py-24">
-        <div className="mx-auto max-w-5xl rounded-3xl bg-gradient-to-r from-slate-950 to-blue-950 px-6 py-10 text-center text-white shadow-2xl md:px-10 md:py-16">
+        <div className="mx-auto max-w-5xl rounded-3xl bg-gradient-to-r from-[#050505] to-[#2a1b08] px-6 py-10 text-center text-white shadow-2xl md:px-10 md:py-16">
           <h2 className="text-3xl font-bold md:text-5xl">
             Solicite seu atendimento.
           </h2>

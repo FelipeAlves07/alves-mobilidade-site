@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #ffffff;
+  --foreground: #050505;
+  --gold: #d6a85f;
+  --gold-dark: #b8863b;
 }
 
 html {
@@ -15,6 +17,7 @@ body {
   font-family: var(--font-inter);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
 }
 
 h1,
@@ -26,9 +29,14 @@ h6 {
   font-family: var(--font-sora);
 }
 
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
 ::selection {
-  background: #0d3b66;
-  color: white;
+  background: var(--gold);
+  color: #050505;
 }
 
 ::-webkit-scrollbar {
@@ -36,10 +44,10 @@ h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #e2e8f0;
+  background: #f3f0ea;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #061b33, #0d3b66);
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark));
   border-radius: 999px;
-} 
+}

@@ -16,7 +16,7 @@ const sora = Sora({
 });
 
 const whatsappLink = "https://wa.me/5531998458084";
-const siteUrl = "https://alves-mobilidade-site.vercel.app";
+const siteUrl = "https://www.alvesmobilidade.com.br";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     title: "Alves Mobilidade Executiva",
     description:
       "Mobilidade executiva premium para empresas e clientes particulares em Belo Horizonte.",
-    url: siteUrl,
+    url: "https://www.alvesmobilidade.com.br",
     siteName: "Alves Mobilidade Executiva",
     locale: "pt_BR",
     type: "website",
@@ -115,53 +115,52 @@ export default function RootLayout({
 
         {children}
 
-        <footer className="bg-slate-950 text-white">
+        <footer className="bg-[#050505] text-white">
           <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
-            <div className="flex flex-col items-center text-center">
-              <Image
-                src="/branding/logo-dark.png"
-                alt="Alves Mobilidade Executiva"
-                width={220}
-                height={80}
-                className="h-auto w-[190px] md:w-[220px]"
-              />
+            <div className="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+              <div>
+                <Image
+                  src="/branding/logo-dark.png"
+                  alt="Alves Mobilidade Executiva"
+                  width={240}
+                  height={90}
+                  className="h-auto w-[200px]"
+                />
 
-              <p className="mt-6 max-w-md text-sm leading-7 text-slate-300 md:text-base">
-                Mobilidade executiva premium para empresas e clientes particulares
-                em Belo Horizonte e região metropolitana.
-              </p>
+                <p className="mt-6 max-w-md text-sm leading-7 text-zinc-400 md:text-base">
+                  Mobilidade executiva premium para empresas e clientes particulares
+                  em Belo Horizonte e região metropolitana.
+                </p>
+              </div>
 
-              <div className="mt-10 grid w-full max-w-3xl gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                  <h4 className="mb-4 text-sm font-bold uppercase tracking-[0.18em]">
-                    Serviços
-                  </h4>
-
-                  <div className="space-y-2 text-sm text-slate-300">
-                    <p>Mobilidade Corporativa</p>
-                    <p>Transfer Aeroportuário</p>
-                    <p>Eventos</p>
-                    <p>Atendimento Particular</p>
-                  </div>
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-[0.22em] text-[#d6a85f]">
+                  Serviços
+                </h4>
+                <div className="mt-5 space-y-3 text-sm text-zinc-300">
+                  <p>Aeroportos</p>
+                  <p>Empresas</p>
+                  <p>Casamentos e eventos</p>
+                  <p>Viagens e corridas agendadas</p>
                 </div>
+              </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                  <h4 className="mb-4 text-sm font-bold uppercase tracking-[0.18em]">
-                    Contato
-                  </h4>
-
-                  <div className="space-y-2 text-sm text-slate-300">
-                    <p>(31) 99845-8084</p>
-                    <p>contato@alvesmobilidade.com.br</p>
-                    <p>Belo Horizonte • Região Metropolitana</p>
-                  </div>
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-[0.22em] text-[#d6a85f]">
+                  Contato
+                </h4>
+                <div className="mt-5 space-y-3 text-sm text-zinc-300">
+                  <p>(31) 99845-8084</p>
+                  <p>contato@alvesmobilidade.com.br</p>
+                  <p>Belo Horizonte • MG</p>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="border-t border-white/10 py-4 text-center text-xs text-slate-500">
-            © 2022 - {new Date().getFullYear()} Alves Mobilidade Executiva
+            <div className="flex flex-col gap-3 py-5 text-xs text-zinc-500 md:flex-row md:items-center md:justify-between">
+              <p>© 2022 - {new Date().getFullYear()} Alves Mobilidade Executiva. Todos os direitos reservados.</p>
+              <p>Desenvolvido com excelência para você ir mais longe.</p>
+            </div>
           </div>
         </footer>
 

@@ -109,7 +109,7 @@ export default function CorporativoPage() {
                 key={item}
                 className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-5"
               >
-                <CheckCircle2 className="text-blue-300" size={20} />
+                <CheckCircle2 className="text-[#d6a85f]" size={20} />
                 <span>{item}</span>
               </div>
             ))}
