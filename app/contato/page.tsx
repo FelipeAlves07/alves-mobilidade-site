@@ -1,76 +1,30 @@
 import Image from "next/image";
+import Link from "next/link";
+import { Mail, MapPin, Phone, Clock } from "lucide-react";
 
-const whatsappLink = "https://wa.me/5531998458084";
+const cards = [
+  [Phone, "WhatsApp", "(31) 99845-8084"],
+  [Mail, "E-mail", "contato@alvesmobilidade.com.br"],
+  [MapPin, "Região", "Belo Horizonte e RMBH"],
+  [Clock, "Atendimento", "Empresas e particulares"],
+];
 
 export default function ContatoPage() {
   return (
-    <main className="bg-[#f7f4ef] text-zinc-950">
-      <section className="relative h-[520px] md:h-[700px] overflow-hidden">
-        <Image
-          src="/images/contato-bh.jpg"
-          alt="Contato Alves"
-          fill
-          priority
-          className="object-cover object-center sepia-[10%] saturate-[.85]"
-        />
-
-        <div className="absolute inset-0 bg-[#050505]/68" />
-
+    <main className="bg-[#050505] text-white">
+      <section className="relative h-[560px] overflow-hidden pt-28 md:h-[720px]">
+        <Image src="/images/contato-bh.jpg" alt="Contato Alves" fill priority className="object-cover object-center opacity-65" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/82 to-black/25" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_35%,rgba(214,168,95,.28),transparent_35%)]" />
         <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 lg:px-8">
-          <div className="max-w-4xl">
-            <div className="mb-5 inline-flex rounded-full border border-[#d6a85f]/35 bg-black/25 px-4 py-2 text-xs font-medium text-white backdrop-blur md:text-sm">
-              Contato
-            </div>
-
-            <h1 className="text-4xl font-bold leading-tight text-white md:text-7xl">
-              Fale com a Alves Mobilidade Executiva.
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-200 md:mt-8 md:text-xl md:leading-9">
-              Atendimento para empresas e clientes particulares.
-            </p>
-          </div>
+          <div className="max-w-4xl"><span className="text-xs font-black uppercase tracking-[0.28em] text-[#d6a85f]">Contato</span><h1 className="mt-6 text-5xl font-black leading-tight md:text-7xl">Fale com a Alves Mobilidade Executiva.</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300 md:text-xl">Atendimento rápido, profissional e personalizado.</p></div>
         </div>
       </section>
-
-      <section className="py-16 md:py-24">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-3xl bg-white p-7 shadow-xl">
-              <h3 className="text-2xl font-bold">WhatsApp</h3>
-              <p className="mt-4 text-zinc-600">(31) 99845-8084</p>
-            </div>
-
-            <div className="rounded-3xl bg-white p-7 shadow-xl">
-              <h3 className="text-2xl font-bold">E-mail</h3>
-              <p className="mt-4 text-zinc-600">
-                contato@alvesmobilidade.com.br
-              </p>
-            </div>
-
-            <div className="rounded-3xl bg-white p-7 shadow-xl">
-              <h3 className="text-2xl font-bold">Região</h3>
-              <p className="mt-4 text-zinc-600">
-                Belo Horizonte e Região Metropolitana
-              </p>
-            </div>
-
-            <div className="rounded-3xl bg-white p-7 shadow-xl">
-              <h3 className="text-2xl font-bold">Atendimento</h3>
-              <p className="mt-4 text-zinc-600">Empresas e particulares</p>
-            </div>
-          </div>
-
-          <div className="mt-12 text-center">
-            <a
-              href={whatsappLink}
-              target="_blank"
-              className="inline-flex rounded-xl bg-[#050505] px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 md:rounded-2xl md:px-8 md:py-4 md:text-base"
-            >
-              Falar no WhatsApp
-            </a>
-          </div>
+      <section className="px-5 py-20 md:py-28 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {cards.map(([Icon, title, text]) => { const I = Icon as typeof Phone; return <div key={String(title)} className="premium-card rounded-[2rem] p-8"><div className="mb-6 inline-flex rounded-2xl bg-[#d6a85f]/10 p-4 text-[#f1d28b]"><I size={26}/></div><h2 className="text-2xl font-black">{title}</h2><p className="mt-4 text-zinc-400">{text}</p></div>})}
         </div>
+        <div className="mx-auto mt-14 max-w-7xl text-center"><Link href="https://wa.me/5531998458084" target="_blank" className="inline-flex rounded-full bg-gradient-to-r from-[#f1d28b] to-[#b8863b] px-8 py-4 text-sm font-black uppercase tracking-wide text-black">Chamar no WhatsApp</Link></div>
       </section>
     </main>
   );
