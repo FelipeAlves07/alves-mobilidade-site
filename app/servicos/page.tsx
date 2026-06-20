@@ -51,7 +51,7 @@ const services = [
 
 export default function ServicosPage() {
   return (
-    <main className="bg-[#050505] text-[#f5e6c8]">
+    <main className="bg-[#111111] text-[#f5e6c8]">
       <section className="relative h-[560px] overflow-hidden pt-28 md:h-[720px]">
         <Image
           src="/images/servicos-premium.jpg"
@@ -61,7 +61,7 @@ export default function ServicosPage() {
           className="object-cover object-center opacity-65"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/65 via-[#111111]/30 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_35%,rgba(214,168,95,.28),transparent_35%)]" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 lg:px-8">
@@ -90,7 +90,7 @@ export default function ServicosPage() {
             return (
               <div
                 key={service.title}
-                className="overflow-hidden rounded-[2rem] border border-[#d6a85f]/15 bg-[#0a0a0a] transition duration-300 hover:-translate-y-2 hover:border-[#d6a85f]/60 hover:shadow-[0_0_45px_rgba(214,168,95,0.12)]"
+                className="overflow-hidden rounded-[2rem] border border-[#d6a85f]/15 bg-[#1a1a1a] transition duration-300 hover:-translate-y-2 hover:border-[#d6a85f]/60 hover:shadow-[0_0_45px_rgba(214,168,95,0.12)]"
               >
                 <div className="relative h-56 overflow-hidden">
                   <Image

@@ -39,7 +39,7 @@ export default function ContatoPage() {
           className="object-cover object-center opacity-65"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/65 via-[#111111]/30 to-transparent" />
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_35%,rgba(214,168,95,.25),transparent_35%)]" />
 
@@ -75,7 +75,7 @@ export default function ContatoPage() {
                 rounded-[2rem]
                 border
                 border-[#d6a85f]/10
-                bg-[#0a0a0a]
+                bg-[#1e1e1e]
                 p-8
                 transition
                 duration-300

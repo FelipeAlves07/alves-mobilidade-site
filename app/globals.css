@@ -6,9 +6,9 @@
 
   --background: #0f0f0f;
 
-  --background-soft: #171717;
+  --background-soft: #131313;
 
-  --background-card: #1e1e1e;
+  --background-card: #141414;
 
 
   /* TEXTOS */
@@ -96,7 +96,7 @@ a,button{
 
 ::-webkit-scrollbar-track{
 
-  background:#111;
+  background:#111111;
 
 }
 
@@ -152,7 +152,7 @@ a,button{
 
   background:
 
-  rgba(25,25,25,.88);
+  rgba(24, 24, 24, 0.88);
 
   border:
 
@@ -176,7 +176,7 @@ a,button{
 
   background:
 
-  rgba(32,32,32,.96);
+  rgba(24, 24, 24, 0.96);
 
   border:
 
@@ -201,9 +201,9 @@ a,button{
 
     135deg,
 
-    #141414,
+    #0c0c0c,
 
-    #1b1b1b
+    #111111
 
   );
 

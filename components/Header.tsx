@@ -34,7 +34,7 @@ export default function Header() {
             border
             border-[#d6a85f]/25
 
-            bg-[#2a221a]/88
+            bg-[#111111]/85
 
             px-5
 
@@ -220,7 +220,7 @@ export default function Header() {
 
             border-[#d6a85f]/20
 
-            bg-[#2a221a]
+            bg-[#151515]
 
             p-6
 
@@ -286,7 +286,7 @@ export default function Header() {
 
                   transition
 
-                  hover:bg-[#3a3026]
+                  hover:bg-[#202020]
 
                   hover:text-[#f1d28b]
                   "

@@ -45,7 +45,7 @@ const solutions = [
 
 export default function CorporativoPage() {
   return (
-    <main className="bg-[#050505] text-white">
+    <main className="bg-[#111111] text-white">
 
       <section className="relative h-[560px] overflow-hidden pt-28 md:h-[720px]">
 
@@ -57,7 +57,7 @@ export default function CorporativoPage() {
           className="object-cover object-center opacity-65"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/82 to-black/25" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/65 via-[#111111]/30 to-transparent" />
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_35%,rgba(214,168,95,.28),transparent_35%)]" />
 
@@ -127,7 +127,7 @@ export default function CorporativoPage() {
                 rounded-[2rem]
                 border
                 border-[#d6a85f]/15
-                bg-[#0a0a0a]
+                bg-[#1e1e1e]
                 transition
                 duration-300
                 hover:-translate-y-2
