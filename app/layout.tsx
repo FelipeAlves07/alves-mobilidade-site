@@ -49,12 +49,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} ${sora.variable}`}>
         <Header />
         {children}
-        <footer className="border-t border-[#d6a85f]/15 bg-[#050505] text-white">
+        <footer className="
+        border-t
+        border-[#d6a85f]/10
+
+        bg-gradient-to-b
+        from-[#1d1d1d]
+        via-[#181818]
+        to-[#121212]
+
+        text-[#f5f0e8]
+
+        shadow-[0_-20px_80px_rgba(214,168,95,0.03)]
+        ">
           <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
             <div className="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.25fr_0.8fr_0.8fr]">
               <div>
                 <Image src="/branding/logo-oficial-alves.jpg" alt="Alves Mobilidade Executiva" width={760} height={260} className="h-auto w-[220px]" />
-                <p className="mt-6 max-w-md text-sm leading-7 text-zinc-400 md:text-base">Mobilidade executiva premium em Belo Horizonte e Região Metropolitana, com conforto, segurança e sofisticação.</p>
+                <p className="mt-6 max-w-md text-sm leading-7 text-zinc-300 md:text-base">Mobilidade executiva premium em Belo Horizonte e Região Metropolitana, com conforto, segurança e sofisticação.</p>
               </div>
               <div>
                 <h4 className="text-xs font-black uppercase tracking-[0.25em] text-[#d6a85f]">Serviços</h4>
@@ -65,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="mt-5 space-y-3 text-sm text-zinc-300"><p>(31) 99845-8084</p><p>contato@alvesmobilidade.com.br</p><p>Belo Horizonte • MG</p></div>
               </div>
             </div>
-            <div className="flex flex-col gap-3 py-5 text-xs text-zinc-500 md:flex-row md:items-center md:justify-between"><p>© 2022 - {new Date().getFullYear()} Alves Mobilidade Executiva.</p><p>Experiência premium em cada trajeto.</p></div>
+            <div className="flex flex-col gap-3 py-5 text-xs text-zinc-400 md:flex-row md:items-center md:justify-between"><p>© 2022 - {new Date().getFullYear()} Alves Mobilidade Executiva.</p><p>Experiência premium em cada trajeto.</p></div>
           </div>
         </footer>
         <Link href={whatsappLink} target="_blank" className="fixed bottom-5 right-5 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_0_45px_rgba(37,211,102,.45)] transition hover:scale-110" aria-label="Falar no WhatsApp"><WhatsAppIcon /></Link>
