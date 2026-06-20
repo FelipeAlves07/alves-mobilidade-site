@@ -51,12 +51,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <footer className="
         border-t
-        border-[#d6a85f]/10
+        border-[#d6a85f]/80
 
-        bg-gradient-to-b
-        from-[#1d1d1d]
-        via-[#181818]
-        to-[#121212]
+        bg-[#151515]
 
         text-[#f5f0e8]
 
