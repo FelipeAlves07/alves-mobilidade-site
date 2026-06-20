@@ -32,18 +32,27 @@ export default function HomePage() {
     <main className="overflow-hidden bg-[#121212] text-[#f8ead2]">
       <section className="relative min-h-screen overflow-hidden pt-32 md:pt-36">
         <Image src="/images/hero-byd.jpg" alt="Alves Mobilidade Executiva" fill priority className="object-cover object-center opacity-70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0f0f0f]/50 via-[#d6a85f]/12 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#121212]/50 via-transparent to-[#d6a85f]/08" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(214,168,95,0.18),transparent_45%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_35%,rgba(214,168,95,0.10),transparent_50%)]" />
 
         <div className="relative z-10 mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl items-center px-5 lg:px-8">
           <div className="max-w-3xl">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#d6a85f]/35 bg-black/35 px-4 py-2 text-xs font-black uppercase tracking-[0.26em] text-[#f1d28b] backdrop-blur">
               <CheckCircle2 size={14} /> Mobilidade Executiva Premium
             </div>
-            <h1 className="text-5xl font-black uppercase leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
-              Alves
-              <span className="block gold-text">Mobilidade Executiva</span>
+           <h1 className="text-5xl font-black uppercase leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
+              <span className="text-white">
+                ALVES
+              </span>
+
+              <span className="block text-[#d6a85f]">
+                MOBILIDADE
+              </span>
+
+              <span className="block text-white">
+                EXECUTIVA
+              </span>
             </h1>
             <div className="mt-7 h-px w-28 bg-gradient-to-r from-[#f1d28b] to-transparent" />
             <p className="mt-8 max-w-2xl text-lg leading-8 text-zinc-200 md:text-xl md:leading-10">Transporte executivo com conforto, segurança e sofisticação para aeroportos, empresas, eventos, viagens e deslocamentos agendados em Belo Horizonte.</p>
