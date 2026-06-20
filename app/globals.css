@@ -2,15 +2,23 @@
 
 :root {
 
-  --background: #211b15;
+  /* FUNDOS */
 
-  --background-soft: #2b241c;
+  --background: #0f0f0f;
 
-  --background-card: #352d24;
+  --background-soft: #171717;
 
-  --foreground: #f9edd8;
+  --background-card: #1e1e1e;
 
-  --text-muted: #d1c1ab;
+
+  /* TEXTOS */
+
+  --foreground: #f5f0e8;
+
+  --text-muted: #cfcfcf;
+
+
+  /* DOURADOS */
 
   --gold: #d6a85f;
 
@@ -20,41 +28,100 @@
 
 }
 
-* {
-  box-sizing: border-box;
+*{
+  box-sizing:border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+html{
+  scroll-behavior:smooth;
 }
 
-body {
+body{
 
-  margin: 0;
+  margin:0;
 
-  background: var(--background);
+  background:
+  radial-gradient(
+    circle at top right,
+    rgba(214,168,95,.05),
+    transparent 30%
+  ),
 
-  color: var(--foreground);
+  linear-gradient(
+    180deg,
+    #0f0f0f,
+    #151515
+  );
 
-  font-family: var(--font-inter), Arial, sans-serif;
+  color:var(--foreground);
 
-  overflow-x: hidden;
+  font-family:var(--font-inter),Arial,sans-serif;
 
-  -webkit-font-smoothing: antialiased;
+  overflow-x:hidden;
+
+  -webkit-font-smoothing:antialiased;
+
+  text-rendering:geometricPrecision;
 
 }
 
-/* TITULOS */
+h1,h2,h3,h4,h5,h6{
 
-h1,h2,h3,h4,h5,h6 {
-
-  font-family: var(--font-sora), Arial, sans-serif;
+  font-family:var(--font-sora),Arial,sans-serif;
 
 }
+
+a,button{
+
+  -webkit-tap-highlight-color:transparent;
+
+}
+
+::selection{
+
+  background:var(--gold);
+
+  color:#111;
+
+}
+
+
+/* SCROLL */
+
+::-webkit-scrollbar{
+
+  width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+  background:#111;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+  background:
+
+  linear-gradient(
+
+    180deg,
+
+    var(--gold-light),
+
+    var(--gold-dark)
+
+  );
+
+  border-radius:999px;
+
+}
+
 
 /* TEXTO DOURADO */
 
-.gold-text {
+.gold-text{
 
   background:
 
@@ -62,61 +129,71 @@ h1,h2,h3,h4,h5,h6 {
 
     90deg,
 
-    #fff5d6,
+    #fff8e7,
 
-    #f3d894,
+    #f1d28b,
 
-    #d6a85f,
-
-    #b8863b
+    #d6a85f
 
   );
 
-  -webkit-background-clip: text;
+  -webkit-background-clip:text;
 
-  background-clip: text;
+  background-clip:text;
 
-  color: transparent;
+  color:transparent;
 
 }
+
 
 /* CARDS */
 
-.premium-card {
+.premium-card{
 
-  background: #352d24;
+  background:
 
-  border: 1px solid rgba(214,168,95,.22);
+  rgba(25,25,25,.88);
 
-  box-shadow:
+  border:
 
-    0 20px 60px rgba(0,0,0,.18),
-
-    0 0 40px rgba(214,168,95,.05);
-
-  backdrop-filter: blur(18px);
-
-  transition: all .35s ease;
-
-}
-
-.premium-card:hover {
-
-  transform: translateY(-8px);
-
-  border-color: rgba(214,168,95,.45);
+  1px solid rgba(214,168,95,.14);
 
   box-shadow:
 
-    0 25px 70px rgba(0,0,0,.22),
+  0 20px 60px rgba(0,0,0,.25),
 
-    0 0 55px rgba(214,168,95,.15);
+  0 0 40px rgba(214,168,95,.04);
+
+  backdrop-filter:blur(18px);
+
+  transition:all .35s ease;
 
 }
+
+.premium-card:hover{
+
+  transform:translateY(-8px);
+
+  background:
+
+  rgba(32,32,32,.96);
+
+  border:
+
+  1px solid rgba(214,168,95,.32);
+
+  box-shadow:
+
+  0 30px 80px rgba(0,0,0,.32),
+
+  0 0 50px rgba(214,168,95,.08);
+
+}
+
 
 /* SEÇÕES */
 
-.section-soft {
+.section-soft{
 
   background:
 
@@ -124,15 +201,15 @@ h1,h2,h3,h4,h5,h6 {
 
     135deg,
 
-    #241d16,
+    #141414,
 
-    #32291f
+    #1b1b1b
 
   );
 
 }
 
-.section-gold {
+.section-gold{
 
   background:
 
@@ -140,7 +217,7 @@ h1,h2,h3,h4,h5,h6 {
 
     circle at top right,
 
-    rgba(214,168,95,.12),
+    rgba(214,168,95,.10),
 
     transparent 35%
 
@@ -150,16 +227,19 @@ h1,h2,h3,h4,h5,h6 {
 
     180deg,
 
-    #211b15,
+    #111111,
 
-    #352d24
+    #191919
 
   );
 
 }
 
-.text-muted-premium {
 
-  color: var(--text-muted);
+/* TEXTOS SECUNDÁRIOS */
+
+.text-muted-premium{
+
+  color:var(--text-muted);
 
 }
