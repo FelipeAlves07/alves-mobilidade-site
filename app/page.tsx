@@ -29,12 +29,12 @@ function track(location: string) {
 
 export default function HomePage() {
   return (
-    <main className="overflow-hidden bg-[#050505] text-white">
+    <main className="overflow-hidden bg-[#121212] text-[#f8ead2]">
       <section className="relative min-h-screen overflow-hidden pt-32 md:pt-36">
         <Image src="/images/hero-byd.jpg" alt="Alves Mobilidade Executiva" fill priority className="object-cover object-center opacity-70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/86 to-black/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-black/60" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(214,168,95,0.32),transparent_35%)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0f0f0f]/50 via-[#d6a85f]/12 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#121212]/50 via-transparent to-[#d6a85f]/08" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(214,168,95,0.18),transparent_45%)]" />
 
         <div className="relative z-10 mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl items-center px-5 lg:px-8">
           <div className="max-w-3xl">
@@ -55,7 +55,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#050505] px-5 py-20 lg:px-8">
+      <section className="bg-[#181818] px-5 py-20 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4">
           {features.map((item) => { const Icon = item.icon; return (
             <div key={item.title} className="premium-card rounded-[2rem] p-7 transition hover:-translate-y-2 hover:border-[#d6a85f]/50">
@@ -67,7 +67,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="servicos" className="bg-[#0a0a0a] px-5 py-20 md:py-28 lg:px-8">
+      <section id="servicos" className="bg-[#1f1f1f] px-5 py-20 md:py-28 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[.9fr_1.2fr] lg:items-end">
             <div><span className="text-xs font-black uppercase tracking-[0.28em] text-[#d6a85f]">Nossos serviços</span><h2 className="mt-5 text-4xl font-black tracking-tight md:text-6xl">Soluções premium para cada necessidade.</h2><p className="mt-6 max-w-xl text-base leading-8 text-zinc-400 md:text-lg">Atendimento executivo planejado para entregar pontualidade, conforto e percepção de valor.</p></div>
@@ -83,7 +83,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-black px-5 py-20 md:py-28 lg:px-8">
+      <section className="relative overflow-hidden bg-[#181818] px-5 py-20 md:py-28 lg:px-8">
         <div className="absolute right-[-18rem] top-10 h-[35rem] w-[35rem] rounded-full bg-[#d6a85f]/10 blur-[150px]" />
         <div className="relative z-10 mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
           <div><span className="text-xs font-black uppercase tracking-[0.28em] text-[#d6a85f]">Nossa frota</span><h2 className="mt-5 text-4xl font-black md:text-6xl">Veículos selecionados para um padrão superior.</h2><p className="mt-6 max-w-xl text-lg leading-9 text-zinc-400">Frota executiva para diferentes perfis de atendimento, do transfer aeroportuário à mobilidade corporativa.</p><div className="mt-8 flex flex-wrap gap-3">{fleet.map((car) => <span key={car} className="rounded-full border border-[#d6a85f]/20 bg-[#d6a85f]/10 px-4 py-2 text-sm text-[#f1d28b]">{car}</span>)}</div><Link href="/frota" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[#d6a85f]/40 px-7 py-4 text-sm font-black uppercase tracking-wide text-[#f1d28b] transition hover:bg-[#d6a85f] hover:text-black">Conhecer frota <ArrowRight size={17} /></Link></div>
@@ -91,7 +91,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#0a0a0a] px-5 py-20 text-center md:py-28 lg:px-8">
+      <section className="bg-[#1a1a1a] px-5 py-20 text-center md:py-28 lg:px-8">
         <div className="mx-auto max-w-4xl"><span className="text-xs font-black uppercase tracking-[0.28em] text-[#d6a85f]">Pronto para começar?</span><h2 className="mt-5 text-4xl font-black md:text-6xl">Solicite seu atendimento executivo.</h2><p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-400">Fale conosco pelo WhatsApp e receba uma experiência de atendimento compatível com o padrão premium da Alves.</p><Link href="/solicitar-atendimento" className="mt-10 inline-flex rounded-full bg-gradient-to-r from-[#f1d28b] to-[#b8863b] px-8 py-4 text-sm font-black uppercase tracking-wide text-black">Solicitar orçamento</Link></div>
       </section>
     </main>
