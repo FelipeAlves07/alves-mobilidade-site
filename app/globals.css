@@ -4,11 +4,11 @@
 
   /* FUNDOS */
 
-  --background: #0f0f0f;
+  --background: #151515;
 
-  --background-soft: #131313;
+  --background-soft: #1b1b1b;
 
-  --background-card: #141414;
+  --background-card: #202020;
 
 
   /* TEXTOS */
@@ -48,9 +48,13 @@ body{
   ),
 
   linear-gradient(
-    180deg,
-    #0f0f0f,
-    #151515
+
+  180deg,
+
+  #151515,
+
+  #1d1d1d
+
   );
 
   color:var(--foreground);
@@ -150,9 +154,7 @@ a,button{
 
 .premium-card{
 
-  background:
-
-  rgba(24, 24, 24, 0.88);
+background:#202020;
 
   border:
 
@@ -176,7 +178,7 @@ a,button{
 
   background:
 
-  rgba(24, 24, 24, 0.96);
+  #252525;
 
   border:
 

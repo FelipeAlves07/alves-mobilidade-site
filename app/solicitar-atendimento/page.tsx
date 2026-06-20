@@ -14,7 +14,7 @@ export default function SolicitarAtendimentoPage() {
   }
   const input = "rounded-2xl border border-[#d6a85f]/20 bg-black/45 px-5 py-4 text-sm text-white outline-none placeholder:text-zinc-500 focus:border-[#d6a85f]";
   return (
-    <main className="bg-[#050505] text-white">
+    <main className="bg-[#151515] text-white">
       <section className="relative h-[560px] overflow-hidden pt-28 md:h-[720px]">
         <Image src="/images/cliente-vip.jpg" alt="Solicitar Atendimento" fill priority className="object-cover object-center opacity-65" />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/82 to-black/25" />

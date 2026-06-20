@@ -27,7 +27,7 @@ const cards = [
 
 export default function ContatoPage() {
   return (
-    <main className="bg-[#050505] text-[#f5e6c8]">
+    <main className="bg-[#151515] text-[#f5e6c8]">
       {/* HERO */}
 
       <section className="relative h-[560px] overflow-hidden pt-28 md:h-[720px]">
