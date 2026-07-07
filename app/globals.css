@@ -245,3 +245,54 @@ background:#202020;
   color:var(--text-muted);
 
 }
+.input-admin {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(214,168,95,.14);
+  background: #111111;
+  padding: 0.95rem 1rem;
+  color: #f5f0e8;
+  outline: none;
+}
+
+.input-admin:focus {
+  border-color: rgba(214,168,95,.55);
+}
+
+/* AME CONTROL - MELHORIAS DE USABILIDADE */
+button,
+a,
+[role="button"],
+.cursor-click {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* AME CONTROL - cursor de clique forçado */
+button,
+a,
+select,
+summary,
+[role="button"],
+.cursor-click,
+.clickable,
+button *,
+a * {
+  cursor: pointer !important;
+}
+
+input,
+textarea {
+  cursor: text;
+}
+
+button:disabled,
+button:disabled *,
+[aria-disabled="true"],
+[aria-disabled="true"] * {
+  cursor: not-allowed !important;
+}
