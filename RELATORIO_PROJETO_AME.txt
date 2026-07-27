@@ -1,0 +1,484 @@
+================================================================================
+RELATÓRIO COMPLETO DO PROJETO AME — ALVES MOBILIDADE EXECUTIVA
+================================================================================
+Data: 27/07/2026
+Framework: Next.js 16.2.6 (Turbopack) + React 19.2.4
+Estilo: Tailwind CSS v4
+Backend: Supabase (PostgreSQL)
+Hospedagem: Vercel + GitHub (FelipeAlves07/alves-mobilidade-site)
+
+================================================================================
+1. VISÃO GERAL DO PROJETO
+================================================================================
+
+O projeto AME (Alves Mobilidade Executiva) é composto por TRÊS sistemas
+integrados em um único repositório:
+
+  A) SITE INSTITUCIONAL (Público)
+     - Páginas: Home, Serviços, Frota, Corporativo, Contato, Quem Somos,
+       Solicitar Atendimento (Orçamento)
+     - Função: Apresentação da empresa, captação de leads, SEO
+     - Design: Dark theme premium com acento azul (#2d6da8)
+
+  B) AME CONTROL (Painel Administrativo)
+     - Single Page Application (SPA) em /admin
+     - 13 módulos de gestão empresarial
+     - Controle remoto do AME Vision (tablet)
+
+  C) AME VISION (Sistema de Bordo para Tablets)
+     - Aplicação HTML/CSS/JS standalone (executada em iframe)
+     - Exibida em tablets nos veículos durante as viagens
+     - Reprodução automática de conteúdo (informação + entretenimento + AME)
+     - Mapa ao vivo com GPS, notícias, clima, frota, avaliações
+
+================================================================================
+2. ARQUITETURA DO SISTEMA
+================================================================================
+
+2.1 Estrutura de Diretórios
+───────────────────────────
+
+  alves-mobilidade/
+  ├── app/                    # Next.js App Router (páginas + API)
+  │   ├── admin/              # AME Control (SPA)
+  │   ├── api/                # Endpoints (ame-vision, auth)
+  │   ├── contato/            # Página de contato
+  │   ├── corporativo/        # Página corporativa
+  │   ├── frota/              # Página de frota
+  │   ├── quem-somos/         # Página quem somos
+  │   ├── servicos/           # Página de serviços
+  │   ├── solicitar-atendimento/  # Página de orçamento
+  │   ├── globals.css         # CSS global + variáveis
+  │   ├── layout.tsx          # Layout root + SiteChrome
+  │   ├── page.tsx            # Home page
+  │   ├── robots.ts           # SEO
+  │   └── sitemap.ts          # SEO
+  │
+  ├── components/             # Componentes compartilhados
+  │   ├── Header.tsx          # Navbar responsiva
+  │   ├── SiteChrome.tsx      # Layout wrapper (header + footer + WhatsApp)
+  │   └── admin/              # Componentes do admin
+  │       ├── Sidebar.tsx         # Sidebar desktop
+  │       ├── MobileNav.tsx       # Navegação mobile
+  │       ├── AMEVisionPanel.tsx  # Painel de controle do AME Vision
+  │       └── ... (30+ componentes de UI)
+  │
+  ├── contexts/               # Contextos React
+  │   └── ThemeContext.tsx     # Tema dinâmico via Supabase (company_settings)
+  │
+  ├── domain/                 # Camada de domínio (DDD)
+  │   ├── auth/types.ts
+  │   ├── company/            # types.ts, repository.ts
+  │   ├── finance/            # types.ts, mapper.ts
+  │   ├── lead/               # types.ts, mapper.ts
+  │   ├── marketing/types.ts
+  │   ├── proposal/           # types.ts, mapper.ts
+  │   ├── referral/           # types.ts, mapper.ts
+  │   ├── shared/types.ts
+  │   └── trip/               # types.ts, mapper.ts, validators.ts
+  │
+  ├── hooks/                  # Hooks de dados
+  │   ├── useData.ts          # Hook central (orquestrador)
+  │   ├── useLeads.ts
+  │   ├── useTrips.ts
+  │   ├── useFinance.ts
+  │   ├── useReferrals.ts
+  │   └── useProposals.ts
+  │
+  ├── lib/                    # Bibliotecas e serviços
+  │   ├── supabase.ts             # Cliente Supabase
+  │   ├── ameVisionSync.ts        # Sincronia do AME Vision
+  │   ├── repository.ts           # Interface Repository<T>
+  │   ├── supabase-repository.ts  # Implementação Supabase
+  │   ├── local-storage-repository.ts  # Implementação localStorage
+  │   ├── repository-factory.ts   # Fábrica (Supabase ou localStorage)
+  │   ├── repository-mappers.ts   # Mapeamento camelCase <-> snake_case
+  │   ├── storage.ts              # Helpers localStorage
+  │   ├── quotes.ts               # Motor de precificação
+  │   ├── voice.ts                # Reconhecimento de voz
+  │   ├── whatsapp.ts             # Integração WhatsApp
+  │   ├── maps.ts                 # Google Maps / Waze
+  │   └── format.ts               # Formatação de datas/moedas
+  │
+  ├── modules/                # Módulos de funcionalidade (admin)
+  │   ├── dashboard/          # Visão geral, métricas, tarefas
+  │   ├── clientes/           # CRM (leads, prospecção)
+  │   ├── whatsapp/           # Templates de mensagem
+  │   ├── propostas/          # Propostas premium (SVG, PDF, QR Code)
+  │   ├── viagens/            # Agenda de viagens, orçamentos
+  │   ├── indicacoes/         # Programa de indicação
+  │   ├── marketing/          # Checklist de marketing
+  │   ├── financeiro/         # Financeiro (receitas/despesas)
+  │   ├── ai/                 # Sugestões de IA
+  │   └── voz/                # Assistente de voz AME
+  │
+  ├── public/                 # Arquivos estáticos
+  │   ├── ame-vision/         # SISTEMA AME VISION COMPLETO
+  │   │   └── assets/
+  │   │       ├── css/ame-vision.css
+  │   │       ├── js/
+  │   │       │   ├── main.js
+  │   │       │   ├── config.js
+  │   │       │   ├── core/
+  │   │       │   │   ├── player.js    (ORQUESTRADOR PRINCIPAL)
+  │   │       │   │   ├── schedule.js  (programação de telas)
+  │   │       │   │   ├── api.js       (fetch de dados)
+  │   │       │   │   ├── dom.js       (helpers DOM)
+  │   │       │   │   └── gps.js       (mapa ao vivo Leaflet)
+  │   │       │   ├── data/
+  │   │       │   │   └── content.js   (conteúdo estático)
+  │   │       │   └── screens/
+  │   │       │       └── screens.js   (14 TELAS)
+  │   │       └── images/
+  │   ├── branding/           # Logos oficiais
+  │   ├── cards/              # Imagens dos cards de serviço
+  │   └── images/             # Imagens do site
+  │
+  ├── services/               # Serviços CRUD diretos (legado)
+  │   ├── auth.ts
+  │   ├── leads.ts, trips.ts, finance.ts
+  │   ├── proposals.ts, referrals.ts
+  │   └── migration.ts
+  │
+  ├── supabase/               # Migrations SQL
+  │   ├── migrations/
+  │   │   ├── 00001_ame_control_schema.sql  (21 tabelas)
+  │   │   ├── 00002_ame_vision_state.sql
+  │   │   ├── 00003_fix_rls_recursion.sql
+  │   │   └── 00004_fix_rls_anon.sql
+  │   ├── migration.sql       (schema legado)
+  │   └── fix_rls_final.sql
+  │
+  ├── types/index.ts          # Barrel de tipos
+  └── utils/                  # Utilitários
+      ├── helpers.ts          # uid(), tomorrow()
+      └── constants.ts        # ADMIN_PASSWORD, WHATSAPP, BRAND, COLORS
+
+
+2.2 Fluxo de Dados (Padrão Repository)
+───────────────────────────────────────
+
+  AdminPage (SPA)
+    └─ useData() ── hook orquestrador
+         ├─ useLeads() → createRepository() → SupabaseRepository | LocalStorageRepository
+         ├─ useTrips() → createRepository() → SupabaseRepository | LocalStorageRepository
+         ├─ useFinance() → createRepository()
+         ├─ useReferrals() → createRepository()
+         └─ useProposals() → createRepository()
+              │
+              └─ Repositório decide:
+                   Se NEXT_PUBLIC_SUPABASE_URL existe → usa Supabase
+                   Senão → usa localStorage (fallback)
+
+  Os módulos (DashboardView, ClientesView, etc.) recebem dados + callbacks
+  como props e chamam as funções do AdminPage (addLead, finishTrip, etc.)
+
+2.3 Fluxo do AME Vision
+────────────────────────
+
+  AMEVisionPanel (admin)
+    │
+    ├─ Polling a cada 3s: readAMEVisionState() ← Supabase (ame_vision_state)
+    │
+    ├─ writeAMEVisionState() → Supabase (status, trip, started_at)
+    │
+    └─ postMessage() → iframe (AME Vision)
+         │
+         └─ VisionPlayer (player.js)
+              ├─ applySession() → define estado (idle/prepared/running/completed)
+              ├─ applySettings() → durações, modo (longa/curta), GPS, rota
+              └─ startSchedule() → roda as 14 telas em sequência
+                   │
+                   ├─ Tela "live-map": GPS via Leaflet.js + /api/ame-vision/route
+                   ├─ Tela "news":     RSS feeds via /api/ame-vision/news
+                   └─ Demais telas: conteúdo estático (content.js)
+
+
+================================================================================
+3. SITE INSTITUCIONAL (Páginas Públicas)
+================================================================================
+
+3.1 Home (/)                    → app/page.tsx
+  - Hero com radial glows + badge "Conforto e Segurança"
+  - Stats banner (4 indicadores)
+  - Features grid (2 colunas)
+  - Serviços grid (3 colunas, 6 cards)
+  - Frota preview (3 colunas)
+  - Depoimentos com estrelas
+  - CTA final com glow central
+
+3.2 Serviços (/servicos)        → app/servicos/page.tsx
+  - Hero com imagem servicos-premium.jpg
+  - 6 cards: Transfer, Corporativo, Casamentos, Eventos, Viagens, Corridas Agendadas
+
+3.3 Frota (/frota)              → app/frota/page.tsx
+  - Hero com imagem
+  - 6 cards: Corolla, BYD King, Nivus, T-Cross, Tracker, Onix Plus
+
+3.4 Corporativo (/corporativo)  → app/corporativo/page.tsx
+  - Hero com imagem
+  - 3 seções: Executivos & Diretoria, Demandas Empresariais, Confiança
+
+3.5 Contato (/contato)          → app/contato/page.tsx
+  - Informações: WhatsApp, Email, Região, Horário
+
+3.6 Quem Somos (/quem-somos)    → app/quem-somos/page.tsx
+  - Sobre a empresa + imagem cliente-vip.jpg
+
+3.7 Solicitar Atendimento (/solicitar-atendimento)
+  - Formulário de lead: nome, empresa, WhatsApp, email, tipo de serviço,
+    data, rota, observações
+  - Step indicator (1→2→3)
+  - Envia via WhatsApp
+
+
+================================================================================
+4. AME CONTROL (Painel Administrativo)
+================================================================================
+
+4.1 Acesso
+  - URL: /admin
+  - Login: email + senha (admin@alvesmobilidade.com.br)
+  - Senha definida em utils/constants.ts
+  - Autenticação: Supabase Auth + localStorage token
+
+4.2 Módulos
+
+  Módulo          | Grupo      | Função
+  ────────────────|────────────|─────────────────────────────────────────
+  Dashboard       | Operação   | Visão geral com métricas, tarefas pendentes,
+                  |            | faturamento, conversão, viagens do dia
+  Financeiro      | Operação   | Receitas e despesas
+  Comercial       | Operação   | Propostas premium com download PDF/imagem
+  Trabalhar Agora | Operação   | Atalho para ação rápida
+  Clientes        | Operação   | CRM completo com status, ações, histórico
+  Prospecção      | Operação   | Fila de prospecção (leads ativos)
+  WhatsApp        | Operação   | Envio de mensagens em massa por template
+  Viagens/Agenda  | Operação   | Agenda de viagens + calculadora de orçamento
+  Indicações      | Comercial  | Programa de indicação (créditos)
+  Empresas        | Comercial  | Clientes tipo Empresa
+  Marketing       | Gestão     | Checklist de tarefas de marketing
+  IA da Alves     | Gestão     | Sugestões inteligentes + backup
+  AME Vision      | Gestão     | Controle remoto do sistema de bordo
+
+4.3 Funcionalidades Especiais
+  - Assistente de Voz AME: passo a passo guiado para criar orçamentos
+  - Comando de Voz Global: abrir módulos, criar orçamentos por fala
+  - Propostas Premium: gera imagem SVG + PDF com QR Code
+  - Calculadora de Orçamento: R$3/km, arredondamento para 10
+  - Backup completo: exporta JSON com leads, viagens, financeiro, indicações
+  - Integração WhatsApp: abertura direta com mensagem preenchida
+  - Integração Google Maps / Waze: navegação para rotas
+  - Suporte a tema dinâmico via Supabase (company_settings)
+  - Dupla estratégia de armazenamento: Supabase (online) ou localStorage (offline)
+
+
+================================================================================
+5. AME VISION (Sistema de Bordo)
+================================================================================
+
+5.1 O que é
+  Sistema de entretenimento e informação veicular executado em tablet
+  posicionado no veículo. Reprodução automática de conteúdo em ciclo,
+  com menu interativo para o passageiro.
+
+5.2 Programação
+  Aproximadamente 70% informação + entretenimento, 30% conteúdo AME.
+  Ciclo estimado: ~30 minutos (curta) ou ~60 minutos (longa com descanso).
+
+5.3 As 14 Telas
+
+  ID            | Duração | Grupo          | Descrição
+  ──────────────|─────────|────────────────|──────────────────────────────
+  welcome       | 18s     | AME            | Boas-vindas com nome do cliente
+  trip          | 26s     | Informação     | Rota, motorista, veículo, ETA
+  live-map      | 10min   | Descanso/info  | Mapa ao vivo com GPS
+  weather       | 24s     | Informação     | Clima da cidade
+  news          | ~100s   | Entretenimento | 10 notícias em carrossel
+  comfort       | 24s     | Informação     | Dicas de conforto a bordo
+  fleet         | 45s     | AME            | Carrossel da frota
+  destinations  | 60s     | Entretenimento | Destinos turísticos (MG)
+  referral      | 32s     | AME            | Programa de indicação
+  reviews       | 28s     | AME            | Avaliações de clientes
+  contact       | 32s     | AME            | QR Code WhatsApp + site
+  rest          | 10min   | Descanso       | Tela com relógio (modo longa)
+  pause-one     | 20s     | Entretenimento | Intervalo visual 1
+  pause-two     | 22s     | Entretenimento | Intervalo visual 2
+
+5.4 Estados da Sessão
+  - idle:      "Aguardando a próxima viagem"
+  - prepared:  "Bem-vindo a bordo" (mostra rota + motorista)
+  - running:   Ciclo principal rodando (após 2min da preparação)
+  - completed: "Obrigado" → volta a idle após 45s
+
+5.5 Comunicação (postMessage)
+  Parent → Iframe:
+    - AME_VISION_SETTINGS: durações, modo, GPS, rota
+    - AME_VISION_SESSION: estado da sessão
+    - AME_VISION_OPEN_SCREEN: abrir tela específica
+  Iframe → Parent:
+    - AME_VISION_READY: iframe carregado
+
+5.6 API Exclusiva
+  - GET /api/ame-vision/route      → Roteirização OSRM
+  - GET /api/ame-vision/news       → RSS feeds + proxy de imagens
+  - GET /api/ame-vision/news/image → Proxy de imagem
+
+
+================================================================================
+6. BANCO DE DADOS (Supabase PostgreSQL)
+================================================================================
+
+6.1 Tabelas (21 no total)
+
+  Tabela                | Finalidade
+  ──────────────────────|─────────────────────────────────────────────
+  profiles              | Usuários do sistema
+  companies             | Empresas (multitenancy)
+  company_settings      | Configurações de tema/branding
+  contacts              | Leads/Clientes (CRM)
+  drivers               | Motoristas
+  vehicles              | Veículos
+  pricing_rules         | Regras de precificação
+  proposals             | Propostas premium
+  trips                 | Viagens agendadas
+  trip_reviews          | Avaliações de viagens
+  trip_contents         | Conteúdo exibido no AME Vision
+  finance_categories    | Categorias financeiras
+  finance_entries       | Lançamentos financeiros
+  referrals             | Programa de indicação
+  marketing_tasks       | Tarefas de marketing
+  conversations         | Conversas (WhatsApp)
+  messages              | Mensagens
+  follow_ups            | Follow-ups de leads
+  lead_status_log       | Histórico de status de leads
+  trip_status_log       | Histórico de status de viagens
+  audit_log             | Log de auditoria
+  ame_vision_state      | Estado do AME Vision (1 linha)
+
+6.2 Segurança (RLS)
+  - Inicialmente com autenticação Supabase (RLS por role)
+  - Migrado para RLS aberto (all_anon) porque a autenticação real
+    é feita via localStorage + senha fixa, não Supabase Auth sessions
+  - Função is_admin() SECURITY DEFINER para verificações
+
+
+================================================================================
+7. MOTOR DE PREÇOS
+================================================================================
+
+  - Regra base: R$3,00 por km rodado
+  - Arredondamento: para cima, múltiplo de 10
+  - Tipos de cálculo:
+    * Transfer Confins: km × 3 (arredondado)
+    * Corrida agendada: km × 3 (arredondado)
+    * Viagem rodoviária: km × 3 (arredondado)
+    * Manual: valor livre
+  - Regras especiais: definidas em app/admin/constants.ts (pricingRules)
+
+
+================================================================================
+8. SUGESTÕES DE MELHORIAS
+================================================================================
+
+8.1 CRÍTICAS / PRIORIDADE ALTA
+───────────────────────────────
+
+  [P1] Login do Admin é frágil
+       Senha fixa em utils/constants.ts. Qualquer pessoa com acesso ao
+       código sabe a senha. Sugestão: usar apenas Supabase Auth com
+       magic link ou provedor OAuth. Remover a senha hardcoded.
+
+  [P2] Sem testes automatizados
+       Existe vitest configurado mas sem testes. Sugestão: criar testes
+       para o motor de precificação (calculateQuoteValue), parser de
+       voz (parseVoiceNumbers), e lógica de propostas.
+
+  [P3] Sem tratamento de erro offline
+       Se o Supabase cair, o admin perde dados. O LocalStorageRepository
+       existe como fallback mas não é usado ativamente. Sugestão:
+       implementar sync bidirecional (offline-first) com queue de
+       operações pendentes.
+
+8.2 IMPORTANTES
+───────────────
+
+  [P4] Imagens não otimizadas
+       84 arquivos não utilizados em public/. Imagens grandes sem
+       compressão. Sugestão: usar next/image com width/height, remover
+       imagens não usadas, converter PNG para WebP/AVIF.
+
+  [P5] AME Vision sem fallback de rede
+       O iframe depende de CDNs (Leaflet, Google Fonts). Se o tablet
+       estiver sem internet, o mapa não carrega. Sugestão: bundle
+       Leaflet localmente, usar Service Worker para cache.
+
+  [P6] Código legado duplicado
+       services/*.ts (CRUD direto) coexiste com hooks/*.ts (Repository
+       pattern). Sugestão: remover services/*.ts e migrar tudo para o
+       padrão Repository.
+
+8.3 MELHORIAS DE UX
+───────────────────
+
+  [P7] Feedback visual no Admin
+       Operações CRUD não têm toast/notificação. O usuário não sabe
+       se salvou. Sugestão: implementar sistema de toasts.
+
+  [P8] Loading states
+       Nenhum dos módulos tem skeleton/spinner enquanto carrega dados.
+       Sugestão: adicionar Suspense + skeletons.
+
+  [P9] Mobile do Admin
+       Sidebar desktop não tem versão mobile adequada (MobileNav existe
+       mas é limitado). Sugestão: transformar sidebar em drawer
+       deslizante no mobile.
+
+8.4 AME VISION
+──────────────
+
+  [P10] Conteúdo do AME Vision
+        Clima e notícias dependem de APIs externas. Sugestão: adicionar
+        cache mais longo, fallback visual quando offline.
+
+  [P11] Personalização por viagem
+        Mensagem de boas-vindas é aleatória (array de 10 frases).
+        Sugestão: campo personalizado no formulário de viagem.
+
+  [P12] Analytics do Vision
+        Não há logging de quais telas foram exibidas, por quanto tempo,
+        etc. Sugestão: enviar telemetria para Supabase (trip_contents).
+
+8.5 NEGÓCIO
+───────────
+
+  [P13] Gateway de pagamento
+        Sistema não processa pagamentos. Sugestão: integrar Stripe/Pix
+        para cobrança automática de viagens.
+
+  [P14] Notificações push
+        Clientes não recebem lembretes de viagem. Sugestão: WhatsApp
+        API ou email automático 1h antes.
+
+  [P15] Multi-tenant
+        Estrutura de companies existe mas não é usada ativamente.
+        Sugestão: implementar separação por empresa para franchise.
+
+
+================================================================================
+9. COMANDOS ÚTEIS
+================================================================================
+
+  npm run dev          # Desenvolvimento (http://localhost:3000)
+  npm run dev -- -H 0.0.0.0  # Testar no celular (mesma rede WiFi)
+  npm run build        # Build de produção
+  npm run lint         # Verificar erros de código
+  npm test             # Rodar testes (vitest)
+  git add .            # Preparar tudo para commit
+  git commit -m "msg"  # Commitar
+  git push             # Enviar para GitHub (Vercel faz deploy automático)
+
+
+================================================================================
+FIM DO RELATÓRIO
+================================================================================

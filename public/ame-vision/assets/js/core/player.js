@@ -26,6 +26,7 @@ export class VisionPlayer {
     this.sessionTimer = null;
     this.renderNavigation();
     this.listenForSettings();
+    this.startScaleToFit();
   }
 
   async start() {
@@ -190,6 +191,33 @@ export class VisionPlayer {
       button.classList.toggle("active", button.dataset.screen === id);
     });
     this.navigation.querySelector("button.active")?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+
+  startScaleToFit() {
+    const shell = document.querySelector(".vision-shell");
+    if (!shell) return;
+    const REF_W = 1920;
+    const REF_H = 1080;
+    const fit = () => {
+      const vw = document.documentElement.clientWidth;
+      const vh = document.documentElement.clientHeight;
+      const sx = vw / REF_W;
+      const sy = vh / REF_H;
+      const scale = Math.min(sx, sy);
+      Object.assign(shell.style, {
+        position: "fixed",
+        top: "0",
+        left: "0",
+        width: REF_W + "px",
+        height: REF_H + "px",
+        transformOrigin: "0 0",
+        transform: "scale(" + scale + ")",
+        marginLeft: ((vw - REF_W * scale) / 2) + "px",
+        marginTop: ((vh - REF_H * scale) / 2) + "px"
+      });
+    };
+    fit();
+    window.addEventListener("resize", fit);
   }
 
   listenForSettings() {

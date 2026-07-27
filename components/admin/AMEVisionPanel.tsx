@@ -84,6 +84,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   const [remoteState, setRemoteState] = useState<AMEVisionState>(DEFAULT_VISION_STATE);
   const [syncMessage, setSyncMessage] = useState("");
   const [selectedTripId, setSelectedTripId] = useState("");
+  const [universalMode, setUniversalMode] = useState(false);
   const [driverName, setDriverName] = useState("");
   const [vehicleModel, setVehicleModel] = useState("");
   const [tripMessage, setTripMessage] = useState("");
@@ -169,8 +170,21 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
     return () => window.removeEventListener("message", listener);
   });
 
+  useEffect(() => {
+    const handler = () => {
+      if (!document.fullscreenElement) {
+        try { screen.orientation?.unlock?.(); } catch {}
+      }
+    };
+    document.addEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
+  }, []);
+
   function openFullscreen() {
-    frameRef.current?.requestFullscreen?.();
+    const el = frameRef.current;
+    if (!el) return;
+    el.requestFullscreen?.();
+    try { (screen.orientation as any)?.lock?.("landscape")?.catch?.(); } catch {}
   }
 
   function saveSettings() {
@@ -203,15 +217,19 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   async function setJourneyStatus(status: "prepared" | "running" | "completed" | "idle") {
     try {
       const selected = upcomingTrips.find(trip => trip.id === selectedTripId);
-      const currentTrip = status === "idle" ? null : (selected || (remoteState.trip ? {
+      let currentTrip = status === "idle" ? null : (selected || (remoteState.trip ? {
         id: remoteState.trip.id, client: remoteState.trip.client, phone: remoteState.trip.phone || "", date: remoteState.trip.date, time: remoteState.trip.time,
         route: `${remoteState.trip.origin} → ${remoteState.trip.destination}`, status: "Agendada"
       } : undefined));
-      if (!currentTrip && status !== "idle") { setSyncMessage("Selecione uma viagem agendada."); return; }
+      if (universalMode && !currentTrip && status !== "idle") {
+        currentTrip = { id: "universal", client: "Passageiro(a)", phone: "", date: "", time: "", route: "Origem → Destino", status: "Agendada" };
+      }
+      if (!currentTrip && status !== "idle") { setSyncMessage("Selecione uma viagem ou ative o Modo Universal."); return; }
+      const clientName = universalMode ? "Passageiro(a)" : (currentTrip?.client || "Passageiro");
       const route = currentTrip ? parseRoute(currentTrip.route) : { origin: "", destination: "" };
       const next = await writeAMEVisionState({
         status,
-        trip: currentTrip ? { id: currentTrip.id, client: currentTrip.client, phone: currentTrip.phone, date: currentTrip.date, time: currentTrip.time, ...route, driver: driverName || undefined, vehicle: vehicleModel || undefined, message: tripMessage || undefined } : null,
+        trip: currentTrip ? { id: currentTrip.id, client: clientName, phone: currentTrip.phone || "", date: currentTrip.date || "", time: currentTrip.time || "", ...route, driver: driverName || undefined, vehicle: vehicleModel || undefined, message: (universalMode ? "Tenha uma ótima viagem!" : tripMessage) || undefined } : null,
         started_at: status === "running" ? new Date().toISOString() : (status === "prepared" ? null : remoteState.started_at)
       });
       setRemoteState(next);
@@ -248,13 +266,24 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
 
       <div className="rounded-2xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-6 md:p-8">
         <div className="grid gap-6 xl:grid-cols-[1fr_auto] xl:items-end">
-          <label className="block">
-            <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Próxima viagem da agenda</span>
-            <select value={selectedTripId} onChange={event => setSelectedTripId(event.target.value)} className="input-admin w-full">
-              {!upcomingTrips.length && <option value="">Nenhuma viagem agendada</option>}
-              {upcomingTrips.map(trip => <option key={trip.id} value={trip.id}>{trip.date} · {trip.time} · {trip.client} · {trip.route}</option>)}
-            </select>
-          </label>
+          <div className="flex flex-wrap items-end gap-4">
+            <label className="block flex-1 min-w-[200px]">
+              <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Próxima viagem da agenda</span>
+              <select value={selectedTripId} onChange={event => setSelectedTripId(event.target.value)} className="input-admin w-full">
+                {!upcomingTrips.length && <option value="">Nenhuma viagem agendada</option>}
+                {upcomingTrips.map(trip => <option key={trip.id} value={trip.id}>{trip.date} · {trip.time} · {trip.client} · {trip.route}</option>)}
+              </select>
+            </label>
+            <label className="flex items-center gap-3 rounded-xl border border-[var(--accent-15)] bg-[var(--accent-10)] px-4 py-3 cursor-pointer transition hover:border-[var(--accent-30)]">
+              <div className="flex flex-col">
+                <span className="text-xs font-bold text-white leading-tight">Modo Universal</span>
+                <span className="text-[10px] text-zinc-500">Sem passageiro específico</span>
+              </div>
+              <button type="button" role="switch" aria-checked={universalMode} onClick={() => setUniversalMode(v => !v)} className={`relative h-7 w-12 shrink-0 rounded-full transition ${universalMode ? "bg-[var(--accent)]" : "bg-zinc-700"}`}>
+                <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition ${universalMode ? "left-5.5" : "left-0.5"}`} />
+              </button>
+            </label>
+          </div>
           <div className="flex flex-wrap gap-2">
             <button type="button" onClick={() => setJourneyStatus("prepared")} disabled={!selectedTripId} className="inline-flex items-center gap-2 rounded-xl border border-[var(--accent-25)] px-4 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)] disabled:opacity-40"><CheckCircle2 size={16}/> Preparar</button>
             <button type="button" onClick={() => setJourneyStatus("running")} disabled={!selectedTripId} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-4 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 disabled:opacity-40"><Play size={16}/> Iniciar</button>
@@ -278,7 +307,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
           </div>
         )}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
-          <span>Status do tablet: <strong className="text-[var(--accent)]">{remoteState.status}</strong>{remoteState.trip ? ` · ${remoteState.trip.client}` : ""}</span>
+          <span>Status do tablet: <strong className="text-[var(--accent)]">{remoteState.status}</strong>{remoteState.trip ? ` · ${remoteState.trip.client}` : ""}{universalMode ? <span className="ml-2 text-[var(--accent)] font-bold">[Modo Universal]</span> : ""}</span>
           {syncMessage && <span>{syncMessage}</span>}
         </div>
       </div>
