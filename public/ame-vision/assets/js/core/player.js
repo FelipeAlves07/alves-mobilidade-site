@@ -108,13 +108,14 @@ export class VisionPlayer {
     this.clearTimers();
     const trip = this.session.trip || {};
     const name = String(trip.client || "").trim().split(/\s+/)[0] || "passageiro";
+    const universal = name === "Passageiro(a)";
     const origin = String(trip.origin || "");
     const destination = String(trip.destination || "");
     const content = kind === "completed"
-      ? `<section class="screen session-screen"><div><span class="eyebrow">Viagem concluída</span><h1>Obrigado, <em>${name}.</em></h1><p>Foi um prazer acompanhar sua viagem. Esperamos receber você novamente.</p></div></section>`
+      ? `<section class="screen session-screen"><div><span class="eyebrow">Viagem concluída</span><h1>${universal ? "Até a <em>próxima!</em>" : `Obrigado, <em>${name}.</em>`}</h1><p>${universal ? "Foi um prazer. Esperamos receber você novamente." : "Foi um prazer acompanhar sua viagem. Esperamos receber você novamente."}</p></div></section>`
       : kind === "idle"
       ? `<section class="screen session-screen"><div><span class="eyebrow">AME Vision</span><h1>Aguardando a <em>próxima viagem.</em></h1><p>O sistema será preparado automaticamente pela agenda do AME Control.</p></div></section>`
-      : `<section class="screen session-screen"><div><span class="eyebrow">Bem-vindo a bordo</span><h1>Olá, <em>${name}.</em></h1><p>Sua viagem está preparada.</p><div class="session-route"><span>${origin || "Origem cadastrada"}</span><b>→</b><span>${destination || "Destino cadastrado"}</span></div>${trip.driver || trip.vehicle ? `<div class="session-info">${trip.driver ? `<span><small>Motorista</small>${escapeHtml(trip.driver)}</span>` : ""}${trip.vehicle ? `<span><small>Veículo</small>${escapeHtml(trip.vehicle)}</span>` : ""}</div>` : ""}<small>${kind === "running" ? "A programação começará em instantes." : "Aguardando o início da viagem."}</small></div></section>`;
+      : `<section class="screen session-screen"><div><span class="eyebrow">Bem-vindo a bordo</span><h1>${universal ? "Olá, <em>seja bem-vindo a bordo!</em>" : `Olá, <em>${name}.</em>`}</h1><p>Sua viagem está preparada.</p><div class="session-route"><span>${origin || "Origem cadastrada"}</span><b>→</b><span>${destination || "Destino cadastrado"}</span></div>${trip.driver || trip.vehicle ? `<div class="session-info">${trip.driver ? `<span><small>Motorista</small>${escapeHtml(trip.driver)}</span>` : ""}${trip.vehicle ? `<span><small>Veículo</small>${escapeHtml(trip.vehicle)}</span>` : ""}</div>` : ""}<small>${kind === "running" ? "A programação começará em instantes." : "Aguardando o início da viagem."}</small></div></section>`;
     this.viewport.classList.remove("is-visible");
     this.viewport.innerHTML = content;
     this.status.textContent = kind === "completed" ? "Obrigado" : kind === "idle" ? "Aguardando" : "Boas-vindas";
@@ -210,6 +211,8 @@ export class VisionPlayer {
         left: "0",
         width: REF_W + "px",
         height: REF_H + "px",
+        maxWidth: "none",
+        maxHeight: "none",
         transformOrigin: "0 0",
         transform: "scale(" + scale + ")",
         marginLeft: ((vw - REF_W * scale) / 2) + "px",

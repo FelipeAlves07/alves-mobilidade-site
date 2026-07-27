@@ -1,0 +1,16 @@
+{
+  "name": "whatsapp-scanner-ame",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Escaneia contatos e conversas do WhatsApp e importa para o AME Control",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "scan": "node index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.10",
+    "axios": "^1.7.9",
+    "qrcode-terminal": "^0.12.0"
+  }
+}

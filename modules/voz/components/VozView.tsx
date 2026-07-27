@@ -1,6 +1,6 @@
 "use client";
 
-import { Mic } from "lucide-react";
+import { Mic, Volume2 } from "lucide-react";
 
 interface VozViewProps {
   ameOpen: boolean;
@@ -16,11 +16,14 @@ interface VozViewProps {
   onOpenGoogleMapsRoute: (origin: string, destination: string) => void;
 }
 
+const listeningSteps = new Set(["inicio", "origem", "destino", "passageiros", "malas", "km"]);
+
 export default function VozView({
   ameOpen, ameStep, ameText, voiceStatus, quoteOrigin, quoteDestination,
   onSetAmeText, onCloseAmeAssistant, onProcessAmeAnswer, onAmeSpeak, onOpenGoogleMapsRoute,
 }: VozViewProps) {
   if (!ameOpen) return null;
+  const isListening = listeningSteps.has(ameStep) && voiceStatus.length > 0;
 
   return (
     <div className="fixed inset-x-3 bottom-4 z-[90] max-h-[82vh] overflow-y-auto rounded-xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-5 shadow-2xl sm:inset-x-auto sm:right-5 sm:w-[92vw] sm:max-w-md">
@@ -37,11 +40,14 @@ export default function VozView({
             {ameStep === "resultado" && "Orçamento calculado"}
           </h3>
         </div>
-        <button type="button" onClick={onCloseAmeAssistant} className="cursor-pointer rounded-xl border border-[var(--accent-15)] px-3 py-2 text-xs text-[var(--accent)] transition hover:border-[var(--accent-30)]">Fechar</button>
+        <div className="flex items-center gap-2">
+          {isListening && <span className="flex items-center gap-1.5 rounded-xl bg-green-500/15 px-3 py-2 text-[11px] font-bold text-green-400"><span className="relative flex h-2.5 w-2.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" /><span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" /></span> Ouvindo</span>}
+          <button type="button" onClick={onCloseAmeAssistant} className="cursor-pointer rounded-xl border border-[var(--accent-15)] px-3 py-2 text-xs text-[var(--accent)] transition hover:border-[var(--accent-30)]">Fechar</button>
+        </div>
       </div>
 
       <p className="mt-4 text-sm leading-6 text-zinc-400">
-        {ameStep === "inicio" && "Digite ou fale: novo orçamento."}
+        {ameStep === "inicio" && "Fale ou digite: novo orçamento, cliente, financeiro ou WhatsApp."}
         {ameStep === "origem" && "Exemplo: Rua Tamoios, Centro, Belo Horizonte."}
         {ameStep === "destino" && "Exemplo: Aeroporto Internacional de Confins."}
         {ameStep === "passageiros" && "Exemplo: 2 passageiros."}
@@ -51,8 +57,8 @@ export default function VozView({
       </p>
 
       <div className="mt-5 flex gap-2">
-        <input value={ameText} onChange={(e) => onSetAmeText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") onProcessAmeAnswer(ameText); }} placeholder="Digite aqui..." className="input-admin" />
-        <button type="button" onClick={onAmeSpeak} className="flex cursor-pointer items-center justify-center rounded-xl bg-[var(--secondary)] px-4 text-white transition hover:bg-[var(--accent)]" title="Falar resposta"><Mic size={18} /></button>
+        <input value={ameText} onChange={(e) => onSetAmeText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") onProcessAmeAnswer(ameText); }} placeholder="Fale ou digite aqui..." className="input-admin" />
+        <button type="button" onClick={onAmeSpeak} className={`flex cursor-pointer items-center justify-center rounded-xl px-4 text-white transition hover:bg-[var(--accent)] ${isListening ? "bg-green-600 animate-pulse" : "bg-[var(--secondary)]"}`} title="Falar resposta"><Mic size={18} /></button>
       </div>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -60,7 +66,7 @@ export default function VozView({
         <button type="button" onClick={() => onOpenGoogleMapsRoute(quoteOrigin, quoteDestination)} className="w-full cursor-pointer rounded-xl border border-[var(--accent-20)] px-5 py-3 text-sm font-bold text-[var(--accent)] transition hover:border-[var(--accent-35)]">Abrir Maps</button>
       </div>
 
-      {voiceStatus && <p className="mt-4 rounded-xl border border-[var(--accent-10)] bg-[var(--bg-surface)] px-4 py-3 text-sm text-[var(--accent)]">{voiceStatus}</p>}
+      {voiceStatus && !isListening && <p className="mt-4 rounded-xl border border-[var(--accent-10)] bg-[var(--bg-surface)] px-4 py-3 text-sm text-[var(--accent)]">{voiceStatus}</p>}
     </div>
   );
 }

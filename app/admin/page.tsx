@@ -120,12 +120,27 @@ export default function AdminPage() {
     }
   }
 
+  function ameTalkAndListen(message: string, delay = 400) {
+    setVoiceStatus(message);
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.lang = "pt-BR";
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.onend = () => window.setTimeout(() => ameSpeak(), delay);
+      window.speechSynthesis.speak(utterance);
+    } else {
+      setTimeout(() => ameSpeak(), delay);
+    }
+  }
+
   function startAmeAssistant() {
     setAmeOpen(true);
     setAmeStep("inicio");
     setAmeText("");
     setActive("viagens");
-    ameTalk("Olá Felipe. O que vamos fazer agora? Você pode dizer ou digitar novo orçamento.");
+    ameTalkAndListen("Olá. O que vamos fazer? Você pode dizer novo orçamento, cliente, financeiro ou WhatsApp.");
   }
 
   function closeAmeAssistant() {
@@ -136,44 +151,44 @@ export default function AdminPage() {
 
   function processAmeAnswer(rawText: string) {
     const value = rawText.trim();
-    if (!value) { ameTalk("Digite ou fale uma resposta para continuar."); return; }
+    if (!value) { ameTalkAndListen("Digite ou fale uma resposta para continuar."); return; }
     const lower = value.toLowerCase();
     if (ameStep === "inicio") {
       if (lower.includes("orçamento") || lower.includes("orcamento") || lower.includes("transfer") || lower.includes("viagem")) {
-        setActive("viagens"); setAmeStep("origem"); setAmeText(""); ameTalk("Certo. Qual é o local de embarque?"); return;
+        setActive("viagens"); setAmeStep("origem"); setAmeText(""); ameTalkAndListen("Certo. Qual é o local de embarque?"); return;
       }
-      if (lower.includes("financeiro")) { setActive("financeiro"); setAmeText(""); ameTalk("Abrindo financeiro."); return; }
-      if (lower.includes("cliente")) { setActive("clientes"); setAmeText(""); ameTalk("Abrindo clientes."); return; }
-      if (lower.includes("whatsapp")) { setActive("whatsapp"); setAmeText(""); ameTalk("Abrindo WhatsApp."); return; }
-      ameTalk("Por enquanto eu entendo melhor o comando novo orçamento. Digite ou fale novo orçamento."); return;
+      if (lower.includes("financeiro")) { setActive("financeiro"); setAmeText(""); ameTalk("Abrindo financeiro."); closeAmeAssistant(); return; }
+      if (lower.includes("cliente")) { setActive("clientes"); setAmeText(""); ameTalk("Abrindo clientes."); closeAmeAssistant(); return; }
+      if (lower.includes("whatsapp")) { setActive("whatsapp"); setAmeText(""); ameTalk("Abrindo WhatsApp."); closeAmeAssistant(); return; }
+      ameTalkAndListen("Por enquanto eu entendo melhor o comando novo orçamento. Digite ou fale novo orçamento."); return;
     }
-    if (ameStep === "origem") { setQuoteOrigin(value); setQuoteResult(null); setAmeStep("destino"); setAmeText(""); ameTalk("Perfeito. Agora informe o destino."); return; }
+    if (ameStep === "origem") { setQuoteOrigin(value); setQuoteResult(null); setAmeStep("destino"); setAmeText(""); ameTalkAndListen("Perfeito. Agora informe o destino."); return; }
     if (ameStep === "destino") {
       const normalizedDestination = normalizeSpokenAddress(value);
-      setQuoteDestination(normalizedDestination); setQuoteResult(null); setAmeStep("passageiros"); setAmeText(""); ameTalk("Quantos passageiros?"); return;
+      setQuoteDestination(normalizedDestination); setQuoteResult(null); setAmeStep("passageiros"); setAmeText(""); ameTalkAndListen("Quantos passageiros?"); return;
     }
     if (ameStep === "passageiros") {
       const parsed = parseVoiceNumbers(`${value} passageiros`);
       const number = Number(value.replace(/\D/g, "")) || parsed.passengers || 1;
-      setQuotePassengers(number); setQuoteResult(null); setAmeStep("malas"); setAmeText(""); ameTalk("Quantas malas ou bagagens?"); return;
+      setQuotePassengers(number); setQuoteResult(null); setAmeStep("malas"); setAmeText(""); ameTalkAndListen("Quantas malas ou bagagens?"); return;
     }
     if (ameStep === "malas") {
       const parsed = parseVoiceNumbers(`${value} malas`);
       const number = Number(value.replace(/\D/g, "")) || parsed.bags || 0;
-      setQuoteBags(number); setQuoteResult(null); setAmeStep("km"); setAmeText(""); ameTalk("Agora informe a quilometragem da rota. Se precisar, toque em abrir rota no Maps para conferir."); return;
+      setQuoteBags(number); setQuoteResult(null); setAmeStep("km"); setAmeText(""); ameTalkAndListen("Agora informe a quilometragem da rota. Se precisar, toque em abrir rota no Maps para conferir."); return;
     }
     if (ameStep === "km") {
       const km = Number(value.replace(",", ".").replace(/[^\d.]/g, ""));
-      if (!km || km <= 0) { ameTalk("Não entendi a quilometragem. Digite apenas o número, por exemplo, trinta e oito ou 38."); return; }
+      if (!km || km <= 0) { ameTalkAndListen("Não entendi a quilometragem. Digite apenas o número, por exemplo, trinta e oito ou 38."); return; }
       setQuoteKm(km);
       const result = calculateQuote(quoteOrigin, quoteDestination, km);
       setAmeStep("resultado"); setAmeText("");
-      ameTalk(`Orçamento calculado em ${result.value ? money(result.value) : "valor manual"}. Você pode copiar o orçamento digital ou enviar pelo WhatsApp.`); return;
+      ameTalkAndListen(`Orçamento calculado em ${result.value ? money(result.value) : "valor manual"}. Você pode copiar o orçamento, enviar pelo WhatsApp, ou iniciar um novo.`); return;
     }
     if (ameStep === "resultado") {
       if (lower.includes("copiar")) { const msg = quoteResult ? buildQuoteMessage(quoteOrigin, quoteDestination, quoteResult, quotePassengers, quoteBags) : ""; if (msg) navigator.clipboard.writeText(msg); ameTalk("Orçamento copiado."); return; }
-      if (lower.includes("novo")) { setAmeStep("origem"); setAmeText(""); setQuoteResult(null); ameTalk("Vamos fazer um novo orçamento. Qual é o local de embarque?"); return; }
-      ameTalk("Orçamento já calculado. Você pode copiar, enviar pelo WhatsApp, usar na viagem ou iniciar um novo orçamento.");
+      if (lower.includes("novo")) { setAmeStep("origem"); setAmeText(""); setQuoteResult(null); ameTalkAndListen("Vamos fazer um novo orçamento. Qual é o local de embarque?"); return; }
+      ameTalkAndListen("Orçamento já calculado. Você pode copiar, enviar pelo WhatsApp, usar na viagem ou iniciar um novo orçamento.");
     }
   }
 
@@ -420,7 +435,7 @@ export default function AdminPage() {
           buildQuoteMessage={buildQuoteMessage} calculateQuote={calculateQuote}
           onCaptureRouteByVoice={captureRouteByVoice}
           onAddTrip={addTrip} onFinishTrip={finishTrip}
-          onDeleteTrip={(id) => setTrips((c) => c.filter((t) => t.id !== id))}
+          onDeleteTrip={(id) => deleteTripFn(id)}
           onSetTripForm={setTripForm}
           onSetQuoteOrigin={setQuoteOrigin} onSetQuoteDestination={setQuoteDestination}
           onSetQuoteKm={setQuoteKm} onSetQuotePassengers={setQuotePassengers}
