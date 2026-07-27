@@ -1,4 +1,4 @@
-import type { QuoteResult } from "@/types/admin";
+import type { QuoteResult } from "@/domain/trip/types";
 
 export const quoteRules = {
   pricePerKm: 3,

@@ -1,0 +1,588 @@
+================================================================================
+AUDITORIA TÉCNICA - AME CONTROL
+Alves Mobilidade Executiva
+Data: Julho 2026
+================================================================================
+
+AVISO: Este relatório documenta o estado ORIGINAL do projeto, conforme lido
+antes de qualquer modificação. Algumas alterações foram feitas durante a
+sessão de análise e precisam ser revertidas.
+
+================================================================================
+1. VISÃO GERAL
+================================================================================
+
+AME Control Admin v6 é o painel administrativo da Alves Mobilidade Executiva,
+uma empresa de transporte executivo premium em Belo Horizonte. O projeto é uma
+aplicação Next.js 16 (App Router) que combina:
+
+- Site institucional (7 páginas públicas): Home, Serviços, Frota, Corporativo,
+  Quem Somos, Contato, Solicitar Atendimento
+- Painel admin SPA (/admin): Sistema de gestão CRM completo em uma única
+  página de 1927 linhas
+
+O projeto está em produção (deploy em alvesmobilidade.com.br), mas em estágio
+alfa/early-stage como sistema de gestão. Muitos módulos são placeholders, o
+banco de dados é inexistente (todo localStorage), e a arquitetura é monolítica.
+
+
+================================================================================
+2. ÁRVORE DO PROJETO
+================================================================================
+
+alves-mobilidade/
++-- .env.local                          # Credenciais Supabase
++-- .gitignore
++-- AGENTS.md                           # Instrucoes Next.js 16
++-- CLAUDE.md
++-- README.md
++-- eslint.config.mjs                   # ESLint 9 flat config
++-- next-env.d.ts
++-- next.config.ts                      # Config Next.js 16
++-- package.json
++-- package-lock.json
++-- postcss.config.mjs                  # Tailwind v4 postcss
++-- tsconfig.json
+|
++-- app/                                # Next.js App Router
+|   +-- globals.css                     # Estilos globais + Tailwind
+|   +-- layout.tsx                      # Root layout (SEO, GA, SiteChrome)
+|   +-- page.tsx                        # Home page
+|   +-- robots.ts                       # SEO
+|   +-- sitemap.ts                      # Sitemap
+|   +-- favicon.ico
+|   +-- admin/
+|   |   +-- page.tsx                    # ADMIN SPA (1927 linhas) ****
+|   +-- contato/page.tsx
+|   +-- corporativo/page.tsx
+|   +-- frota/page.tsx
+|   +-- quem-somos/page.tsx
+|   +-- servicos/page.tsx
+|   +-- solicitar-atendimento/page.tsx
+|
++-- components/
+|   +-- Header.tsx                      # Navbar publica
+|   +-- SiteChrome.tsx                  # Layout wrapper publico
+|   +-- admin/
+|       +-- ActionCard.tsx
+|       +-- AdminHeader.tsx
+|       +-- AdminLayout.tsx
+|       +-- AISuggestions.tsx
+|       +-- BackupButton.tsx
+|       +-- Badge.tsx
+|       +-- ButtonDark.tsx
+|       +-- ButtonGold.tsx
+|       +-- Card.tsx
+|       +-- Clientes.tsx
+|       +-- CopyButton.tsx
+|       +-- Dashboard.tsx
+|       +-- EmptyState.tsx
+|       +-- Financeiro.tsx
+|       +-- Empresas.tsx (vazio)
+|       +-- FloatingMic.tsx (vazio)
+|       +-- Header.tsx (vazio)
+|       +-- IA.tsx (vazio)
+|       +-- IAAlves.tsx (vazio)
+|       +-- Indicacoes.tsx (vazio)
+|       +-- InfoCard.tsx
+|       +-- Input.tsx
+|       +-- LeadCard.tsx
+|       +-- LoginScreen.tsx
+|       +-- Marketing.tsx (vazio)
+|       +-- Metric.tsx
+|       +-- MobileNav.tsx
+|       +-- Orcamentos.tsx (vazio)
+|       +-- PageContainer.tsx
+|       +-- PageTitle.tsx
+|       +-- Panel.tsx
+|       +-- Prospeccao.tsx (vazio)
+|       +-- SectionTitle.tsx
+|       +-- Sidebar.tsx
+|       +-- StatCard.tsx
+|       +-- StatusBadge.tsx
+|       +-- Textarea.tsx
+|       +-- Topbar.tsx
+|       +-- Viagens.tsx (vazio)
+|       +-- VoiceAssistant.tsx
+|       +-- VoiceInput.tsx
+|       +-- VoiceTextarea.tsx
+|       +-- WhatsApp.tsx (vazio)
+|       +-- WhatsAppIcon.tsx
+|
++-- hooks/
+|   +-- useClientes.ts                  # Hook Supabase (nao usado)
+|   +-- useLocalStorage.ts              # Hook generico (nao usado)
+|   +-- useSpeechRecognition.ts         # Hook voz (nao usado)
+|
++-- lib/
+|   +-- format.ts                       # Formatacao data/moeda
+|   +-- maps.ts                         # URLs Google Maps/Waze
+|   +-- quotes.ts                       # Engine de precificacao
+|   +-- storage.ts                      # localStorage wrappers
+|   +-- supabase.ts                     # Cliente Supabase
+|   +-- voice.ts                        # Speech recognition
+|   +-- whatsapp.ts                     # Geracao links WhatsApp
+|
++-- services/
+|   +-- googleMaps.ts                   # Abrir Maps (nao usado)
+|   +-- waze.ts                         # Abrir Waze (nao usado)
+|   +-- clientes/
+|       +-- index.ts                    # CRUD Supabase (nao usado)
+|
++-- types/
+|   +-- admin.ts                        # Re-exports + Referral, MenuItem, MsgKey
+|   +-- client.ts                       # Status, LeadType, Lead
+|   +-- cliente.ts                      # Interface Cliente (portugues, Supabase)
+|   +-- finance.ts                      # FinanceEntry
+|   +-- quote.ts                        # QuoteResult, QuoteForm
+|   +-- trip.ts                         # Trip
+|
++-- utils/
+|   +-- constants.ts                    # ADMIN_PASSWORD, WHATSAPP_ALVES, BRAND, COLORS
+|   +-- helpers.ts                      # uid, tomorrow, normalizeText
+|
++-- public/
+    +-- branding/ (19 imagens)          # Logos, QR code
+    +-- cards/ (11 imagens)             # Cards de servico
+    +-- fleet/ (6 imagens)              # Fotos veiculos
+    +-- images/ (10 imagens)            # Hero, backgrounds
+
+
+
+================================================================================
+3. TECNOLOGIAS UTILIZADAS
+================================================================================
+
+Framework:       Next.js 16.2.6
+Linguagem:       TypeScript 5.x
+UI:              React 19.2.4
+Estilos:         Tailwind CSS 4.x
+Icones:          Lucide React 1.16
+Animacoes:       Framer Motion 12.38
+Banco:           Supabase (apenas configurado, SDK 2.109)
+Analytics:       Google Analytics (@next/third-parties)
+Lint:            ESLint 9 + next/core-web-vitals
+PostCSS:         @tailwindcss/postcss 4.x
+
+
+================================================================================
+4. MODULOS EXISTENTES
+================================================================================
+
+4.1 Site Institucional
+    Status: (X) Implementado
+    Descricao: Site publico responsivo com 7 paginas, SEO, Google Analytics.
+    Arquivos: app/page.tsx, /servicos/page.tsx, /frota/page.tsx,
+              /corporativo/page.tsx, /quem-somos/page.tsx,
+              /contato/page.tsx, /solicitar-atendimento/page.tsx
+
+4.2 Admin/Login
+    Status: (X) Implementado
+    Descricao: Tela de login com senha 'alves2026' (hardcoded).
+    Arquivos: app/admin/page.tsx
+
+4.3 Dashboard
+    Status: (X) Implementado
+    Descricao: Saudacao, barra de progresso, cards de follow-up, metricas,
+               viagens do dia, sugestoes IA.
+    Arquivos: app/admin/page.tsx
+
+4.4 Clientes/CRM
+    Status: (X) Implementado
+    Descricao: CRUD completo de leads com formulario, busca, filtro,
+               pipeline de 8 estagios, importacao em massa.
+    Arquivos: app/admin/page.tsx
+
+4.5 Prospeccao
+    Status: ( ) Parcialmente implementado
+    Descricao: Mesmo template de Clientes, filtrado. Importacao habilitada.
+    Arquivos: app/admin/page.tsx
+
+4.6 WhatsApp
+    Status: (X) Implementado
+    Descricao: 6 templates de mensagens pre-definidas, envio com 1 clique.
+    Arquivos: app/admin/page.tsx
+
+4.7 Comercial/Propostas
+    Status: (X) Implementado
+    Descricao: Sistema avancado: geracao SVG/PNG/PDF, QR Code, historico,
+               conversao em viagem, compartilhamento WhatsApp.
+    Arquivos: app/admin/page.tsx
+
+4.8 Viagens/Agenda
+    Status: (X) Implementado
+    Descricao: Calculadora de orcamento (R$3/km), cadastro, Maps/Waze.
+    Arquivos: app/admin/page.tsx
+
+4.9 Indicacoes
+    Status: (X) Implementado
+    Descricao: Programa de indicacao com creditos e status.
+    Arquivos: app/admin/page.tsx
+
+4.10 Marketing
+     Status: (X) Implementado
+     Descricao: 6 sugestoes que rotacionam por dia, links, conclusao.
+     Arquivos: app/admin/page.tsx
+
+4.11 Financeiro
+     Status: (X) Implementado
+     Descricao: Lancamentos manuais, metricas, historico.
+     Arquivos: app/admin/page.tsx
+
+4.12 IA da Alves
+     Status: ( ) Parcialmente implementado
+     Descricao: Apenas sugestoes pre-definidas + backup. Sem IA real.
+     Arquivos: app/admin/page.tsx
+
+4.13 Assistente AME (Voz)
+     Status: (X) Implementado
+     Descricao: Assistente conversacional origem->destino->passageiros->km->resultado.
+     Arquivos: app/admin/page.tsx
+
+4.14 Comando de Voz Global
+     Status: (X) Implementado
+     Descricao: Botao flutuante com 7 comandos de navegacao por voz.
+     Arquivos: app/admin/page.tsx
+
+4.15 Empresas
+     Status: ( ) Nao encontrado
+     Descricao: Apenas filtro no template de Clientes. Modulo inexistente.
+
+
+================================================================================
+5. FUNCIONALIDADES EXISTENTES (Detalhamento)
+================================================================================
+
+CLIENTES/LEADS:
+  - Cadastro: Sim, formulario com nome, WhatsApp, tipo, origem, status,
+    proxima acao, data, observacoes
+  - Edicao: Sim, inline via selects/inputs no card
+  - Exclusao: Sim, com confirmacao
+  - Busca: Sim, filtro por texto em todos os campos
+  - Pipeline: 8 estagios (Novo contato ate Arquivado)
+  - Proxima acao: Automatica conforme status
+  - Importacao em massa: Sim, CSV linha a linha
+  - Armazenamento: localStorage ("ame-leads-v2")
+
+PROPOSTAS:
+  - Geracao PDF: Sim (construido manualmente byte a byte, sem biblioteca)
+  - Geracao PNG: Sim (via Canvas)
+  - Geracao SVG: Sim
+  - QR Code: Sim (data URL base64 inline)
+  - Compartilhamento WhatsApp: Sim
+  - Historico: Sim, com status tracking
+  - Conversao em viagem: Sim
+  - Copia: Sim
+  - Armazenamento: localStorage ("ame-proposals-v1")
+
+VIAGENS:
+  - Cadastro: Sim
+  - Data/Hora: Sim
+  - Rota: Sim (texto "origem -> destino")
+  - Valor: Sim (automatico do orcamento ou manual)
+  - Status: Agendada, Concluida, Cancelada
+  - Integracao Maps: Sim
+  - Integracao Waze: Sim
+  - Confirmacao WhatsApp: Sim
+  - Conclusao automatica: Sim (cria entrada financeira)
+  - Armazenamento: localStorage ("ame-trips-v2")
+  - Motorista: NAO existe campo
+
+ORCAMENTOS:
+  - Calculo por KM: Sim (R$3/km, arredondar para cima 10 em 10)
+  - Tabela Confins: NAO (definida no codigo mas nunca usada - codigo morto)
+  - Limite passageiros: 4+
+  - Bagagem especial: Sim, alerta
+  - Validade: 10 dias
+  - Mensagem formatada: Sim
+
+FINANCEIRO:
+  - Lancamento: Sim (descricao, valor, tipo, data)
+  - Entrada/Saida: Sim
+  - Vinculo com viagem: Sim (automatico ao concluir)
+  - Saldo: Sim (calculo em memoria)
+  - Armazenamento: localStorage ("ame-finance-v2")
+
+INDICACOES:
+  - Cadastro: Sim (indicador, indicado, status, creditos)
+  - Creditamento: Sim
+  - Status: 3 estagios
+  - Armazenamento: localStorage ("ame-referrals-v2")
+
+MARKETING:
+  - Sugestoes diarias: 6 tarefas que rotacionam por dia da semana
+  - Conclusao: Sim, tracking individual
+  - Links: Sim (Instagram, WhatsApp, Google Maps)
+  - Armazenamento: localStorage ("ame-marketing-done-v3")
+
+VOZ:
+  - Speech-to-text: Sim (Web Speech API, Chrome)
+  - Text-to-speech: Sim (SpeechSynthesis)
+  - Assistente AME: Sim, fluxo conversacional para orcamentos
+  - Comando global: Sim, 7 comandos de navegacao
+  - Microfone em inputs: Sim (VoiceInput, VoiceTextarea)
+
+
+================================================================================
+6. MODELO ATUAL DE DADOS
+================================================================================
+
+6.1 Lead (CRM):
+    Campos: id, name, phone, type (7 valores), origin, status (8 valores),
+            notes, nextAction, nextDate, createdAt, lastContact (opcional)
+    Onde esta definido: types/client.ts + inline em admin/page.tsx
+
+6.2 Trip (Viagem):
+    Campos: id, client, phone, date, time, route, value, status (3 valores)
+    Onde esta definido: types/trip.ts + inline em admin/page.tsx
+
+6.3 Referral (Indicacao):
+    Campos: id, referrer, referred, status (3 valores), credits
+    Onde esta definido: types/admin.ts + inline em admin/page.tsx
+
+6.4 FinanceEntry (Financeiro):
+    Campos: id, description, value, type (2 valores), date
+    Onde esta definido: types/finance.ts + inline em admin/page.tsx
+
+6.5 Proposal (Proposta):
+    Campos: id, client, phone, origin, destination, date, time, km,
+            passengers, bags, value, status (5 valores), createdAt,
+            validUntil, message
+    Onde esta definido: inline em admin/page.tsx
+
+6.6 QuoteResult (Orcamento):
+    Campos: value, rule, km, type (4 valores), region (opcional),
+            manual (opcional), notes (opcional)
+    Onde esta definido: types/quote.ts + inline em admin/page.tsx
+
+6.7 Cliente (Portugues - Supabase, nunca usado):
+    Campos: id (opcional), nome, telefone, tipo, origem, status,
+            observacoes (opcional), proxima_acao (opcional),
+            proxima_data (opcional)
+    Onde esta definido: types/cliente.ts
+
+
+================================================================================
+7. INVENTARIO COMPLETO DE LOCALSTORAGE
+================================================================================
+
+Chave:               ame-admin-auth
+Tipo armazenado:     string ("true")
+Onde e criado:       admin/page.tsx (login)
+Onde e usado:        admin/page.tsx (verificacao de sessao)
+Funcao:              Persistir sessao do admin
+
+Chave:               ame-leads-v2
+Tipo armazenado:     Lead[] (JSON)
+Onde e criado:       admin/page.tsx (useEffect salvar)
+Onde e usado:        admin/page.tsx (load no mount + CRUD)
+Funcao:              Armazenar leads/clientes
+
+Chave:               ame-trips-v2
+Tipo armazenado:     Trip[] (JSON)
+Onde e criado:       admin/page.tsx (useEffect salvar)
+Onde e usado:        admin/page.tsx (load no mount + CRUD)
+Funcao:              Armazenar viagens
+
+Chave:               ame-referrals-v2
+Tipo armazenado:     Referral[] (JSON)
+Onde e criado:       admin/page.tsx (useEffect salvar)
+Onde e usado:        admin/page.tsx (load no mount + CRUD)
+Funcao:              Armazenar indicacoes
+
+Chave:               ame-finance-v2
+Tipo armazenado:     FinanceEntry[] (JSON)
+Onde e criado:       admin/page.tsx (useEffect salvar)
+Onde e usado:        admin/page.tsx (load no mount + CRUD)
+Funcao:              Armazenar lancamentos financeiros
+
+Chave:               ame-proposals-v1
+Tipo armazenado:     Proposal[] (JSON)
+Onde e criado:       admin/page.tsx (useEffect salvar)
+Onde e usado:        admin/page.tsx (load no mount + CRUD)
+Funcao:              Armazenar propostas
+
+Chave:               ame-marketing-done-v3
+Tipo armazenado:     string[] (JSON)
+Onde e criado:       admin/page.tsx (useEffect salvar)
+Onde e usado:        admin/page.tsx (load no mount + CRUD)
+Funcao:              Armazenar IDs de tarefas de marketing concluidas
+
+PADRAO DE USO:
+  useEffect no mount -> carrega dados do localStorage
+  useEffect em cada array -> salva ao alterar
+
+
+================================================================================
+8. BANCO DE DADOS ATUAL
+================================================================================
+
+Nao existe banco de dados operacional.
+
+- lib/supabase.ts: Cliente Supabase configurado com URL e anon key do .env.local
+- services/clientes/index.ts: CRUD Supabase para tabela "clientes" (NUNCA chamado)
+- Admin inteiro usa exclusivamente localStorage
+- Nenhuma migration SQL existe no projeto
+- Nenhuma tabela foi criada no Supabase (ou se foi, nao e usada)
+
+
+================================================================================
+9. ARQUITETURA ATUAL
+================================================================================
+
+Pagina (admin/page.tsx) <-- TUDO EM UM ARQUIVO DE 1927 LINHAS
+  +-- Types inline (duplicados de types/)
+  +-- Constantes (messages, menu, statuses)
+  +-- Funcoes auxiliares inline (duplicadas de lib/)
+  +-- Componentes inline (VoiceInput, VoiceTextarea, Panel, Metric, etc.)
+  +-- Estado inline (useState para cada entidade)
+  +-- Persistencia inline (loadLocal/saveLocal via useEffect)
+  +-- Logica de negocio inline (CRUD, calculo, etc.)
+  +-- Renderizacao inline (12 secoes condicionais)
+  +-- Voz inline (assistente AME)
+
+FLUXO REAL:
+  admin/page.tsx
+      |
+      v
+  useState (estado local)
+      |
+      v
+  useEffect --> localStorage (persistencia)
+
+NAO existe separacao entre camadas. Tudo esta no mesmo arquivo.
+
+
+================================================================================
+10. PROBLEMAS ENCONTRADOS
+================================================================================
+
+ARQUITETURA (CRITICO):
+  1. 1927 linhas no mesmo arquivo - SPA monolita em admin/page.tsx
+  2. Logica de negocio misturada com renderizacao
+  3. Componentes inline (VoiceInput, VoiceTextarea, Panel, Metric, etc.)
+  4. Sem separacao de responsabilidades
+  5. Hooks nao utilizados (3 hooks criados, nenhum importado)
+  6. Componentes nao utilizados (15 com codigo, nunca importados)
+
+DUPLICACOES (ALTO):
+  7. 6 tipos duplicados (types/ inline em admin/page.tsx)
+  8. 15+ funcoes duplicadas (lib/ inline em admin/page.tsx)
+
+SEGURANCA (ALTO):
+  9. Senha hardcoded 'alves2026' no codigo-fonte
+  10. Autenticacao inexistente (so verificacao de string em localStorage)
+
+CODIGO MORTO (MEDIO):
+  11. Tabela Confins (28 regioes com precos - nunca usada)
+  12. findConfinsRegion() (definida, nunca chamada)
+  13. services/clientes/ (CRUD Supabase completo, nunca usado)
+  14. services/googleMaps.ts e services/waze.ts (duplicados inline)
+
+BANCO DE DADOS (ALTO):
+  15. Dependencia exclusiva de localStorage
+  16. Supabase configurado mas nao utilizado
+  17. types/cliente.ts nunca usada
+
+PERFORMANCE (MEDIO):
+  18. Re-renderizacao completa a cada mudanca de estado
+  19. PDF construido byte a byte no cliente (pesado)
+  20. SVG de proposta reconstruido do zero
+  21. Filtro de leads sem memoization
+
+UX (BAIXO):
+  22. Sidebar invisivel em mobile
+  23. MobileNav limitado a 8 itens
+  24. Botao AME fixo pode sobrepor conteudo
+  25. Touch targets pequenos em mobile
+
+ORGANIZACAO (MEDIO):
+  26. Pastas vazias (services/financeiro/, ia/, propostas/, viagens/, whatsapp/)
+  27. 11 componentes vazios (0 linhas)
+
+
+================================================================================
+11. CODIGO MORTO (NUNCA USADO)
+================================================================================
+
+Arquivo                              Linhas  Prova
+--------------------------------------------------------------------
+types/cliente.ts                     21      Nunca importado
+hooks/useClientes.ts                 38      Nunca importado
+hooks/useLocalStorage.ts             26      Nunca importado
+hooks/useSpeechRecognition.ts        34      Nunca importado
+services/clientes/index.ts           46      Nunca importado
+services/googleMaps.ts               19      Nunca importado
+services/waze.ts                     8       Nunca importado
+components/admin/Dashboard.tsx       41      Nunca importado
+components/admin/Financeiro.tsx      41      Nunca importado
+components/admin/Clientes.tsx        25      Nunca importado
+components/admin/LoginScreen.tsx     57      Nunca importado
+components/admin/AdminLayout.tsx     54      Nunca importado
+components/admin/AISuggestions.tsx   36      Nunca importado
+components/admin/BackupButton.tsx    20      Nunca importado
+components/admin/AdminHeader.tsx     25      Nunca importado
+components/admin/Sidebar.tsx         85      Nunca importado
+components/admin/Topbar.tsx          36      Nunca importado
+components/admin/MobileNav.tsx       33      Nunca importado
+components/admin/VoiceAssistant.tsx  55      Nunca importado
+confinsPricingTable (inline)         28 regioes  findConfinsRegion nunca chamada
+findConfinsRegion() (inline)         4       Nunca chamada
+
+
+================================================================================
+12. DIVIDAS TECNICAS
+================================================================================
+
+1.  Eliminar dependencia de localStorage -> migrar para Supabase
+2.  Separar admin/page.tsx -> 12 secoes em componentes independentes
+3.  Unificar tipos -> eliminar duplicacoes entre types/ e inline
+4.  Remover codigo morto -> 11 componentes vazios, 3 hooks, 3 services
+5.  Implementar autenticacao real -> Supabase Auth
+6.  Criar tabelas Supabase -> SQL migration
+7.  Criar servicos e hooks padronizados
+8.  Adicionar tratamento de erros (try/catch, loading, feedback)
+9.  Responsividade (sidebar, mobile nav, touch targets)
+10. SEO dinamico para paginas do admin
+11. Zero testes no projeto
+12. Sem CI/CD
+13. Sem versionamento (git nao inicializado)
+
+
+================================================================================
+13. RECOMENDACAO DE ROADMAP
+================================================================================
+
+FASE 1: Fundacao (Reversao + Organizacao)
+  1. Reverter alteracoes feitas na sessao
+  2. Inicializar git (commit inicial do estado atual)
+  3. Remover arquivos vazios e codigo morto
+  4. Unificar tipos TypeScript
+  5. Separar funcoes duplicadas (usar lib/ e utils/)
+
+FASE 2: Banco de Dados
+  6. Criar script SQL Supabase (tabelas, RLS, indices)
+  7. Executar migration no Supabase
+  8. Criar servicos de acesso a dados
+  9. Criar hooks com loading/error
+
+FASE 3: Migracao
+  10. Implementar autenticacao Supabase
+  11. Importar dados do localStorage para Supabase
+  12. Trocar admin para usar hooks (com fallback localStorage)
+  13. Validar dados migrados
+
+FASE 4: Evolucao
+  14. Extrair secoes do admin em componentes
+  15. Implementar IA (conectar LLM ao banco)
+  16. Modulo Empresas
+  17. Modulo Motoristas
+  18. Modulo Veiculos
+  19. Relatorios e estatisticas
+  20. Integracao WhatsApp Business API
+  21. Preparar APIs para AME Vision
+
+
+================================================================================
+FIM DO RELATORIO DE AUDITORIA
+================================================================================

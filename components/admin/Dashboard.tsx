@@ -8,28 +8,28 @@ export default function Dashboard() {
 
         <div className="premium-card rounded-3xl p-6">
           <p className="text-zinc-400">Viagens Hoje</p>
-          <h2 className="mt-3 text-4xl font-black text-[#f1d28b]">
+          <h2 className="mt-3 text-4xl font-black text-[var(--accent)]">
             0
           </h2>
         </div>
 
         <div className="premium-card rounded-3xl p-6">
           <p className="text-zinc-400">Orçamentos</p>
-          <h2 className="mt-3 text-4xl font-black text-[#f1d28b]">
+          <h2 className="mt-3 text-4xl font-black text-[var(--accent)]">
             0
           </h2>
         </div>
 
         <div className="premium-card rounded-3xl p-6">
           <p className="text-zinc-400">Clientes</p>
-          <h2 className="mt-3 text-4xl font-black text-[#f1d28b]">
+          <h2 className="mt-3 text-4xl font-black text-[var(--accent)]">
             0
           </h2>
         </div>
 
         <div className="premium-card rounded-3xl p-6">
           <p className="text-zinc-400">Faturamento</p>
-          <h2 className="mt-3 text-4xl font-black text-[#f1d28b]">
+          <h2 className="mt-3 text-4xl font-black text-[var(--accent)]">
             R$ 0
           </h2>
         </div>

@@ -8,17 +8,17 @@ export default function ButtonDark(props: Props) {
       {...props}
       className={`
       cursor-pointer
-      rounded-full
+      rounded-xl
       border
-      border-[#d6a85f]/20
-      bg-[#202020]
+      border-[var(--accent-20)]
+      bg-[var(--bg-surface)]
       px-6
       py-3
       font-bold
-      text-[#f1d28b]
+      text-[var(--accent)]
       transition
-      hover:bg-[#d6a85f]
-      hover:text-black
+      hover:bg-[var(--accent)]
+      hover:text-white
       ${props.className ?? ""}
       `}
     />

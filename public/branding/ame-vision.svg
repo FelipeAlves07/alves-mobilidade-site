@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 140" fill="none">
+  <defs>
+    <linearGradient id="a1" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#1a3a6b"/>
+      <stop offset="100%" stop-color="#2d6da8"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(30, 20)">
+    <path d="M30 110 L50 20 L70 110" stroke="url(#a1)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="34" y1="62" x2="66" y2="62" stroke="url(#a1)" stroke-width="8" stroke-linecap="round"/>
+    <text x="90" y="72" font-family="'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="48" font-weight="700" letter-spacing="8" fill="#2d6da8">AME</text>
+    <text x="248" y="92" font-family="'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="500" letter-spacing="10" fill="#1a3a6b">VISION</text>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 120" fill="none">
+  <defs>
+    <linearGradient id="a1" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#1a3a6b"/>
+      <stop offset="100%" stop-color="#2d6da8"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(24, 18)">
+    <path d="M24 84 L42 12 L60 84" stroke="url(#a1)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="28" y1="48" x2="56" y2="48" stroke="url(#a1)" stroke-width="7" stroke-linecap="round"/>
+    <text x="76" y="68" font-family="'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="46" font-weight="700" letter-spacing="6" fill="#2d6da8">AME</text>
+  </g>
+</svg>

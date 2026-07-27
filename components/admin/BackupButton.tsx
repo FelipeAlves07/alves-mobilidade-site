@@ -11,7 +11,7 @@ export default function BackupButton({ onBackup }: Props) {
     <button
       type="button"
       onClick={onBackup}
-      className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#d6a85f]/20 px-5 py-3 text-sm font-black text-[#f1d28b]"
+      className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--accent-20)] px-5 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)] hover:-translate-y-0.5 active:translate-y-0"
     >
       <Download size={16} />
       Backup

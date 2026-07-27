@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 108" fill="none">
+  <g transform="translate(18, 16)">
+    <path d="M16 80 L32 10 L48 80" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="20" y1="44" x2="44" y2="44" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+    <text x="66" y="58" font-family="'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="42" font-weight="700" letter-spacing="6" fill="#ffffff">AME</text>
+  </g>
+</svg>

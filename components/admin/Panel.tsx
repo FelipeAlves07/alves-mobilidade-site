@@ -1,17 +1,17 @@
 import type { ReactNode } from "react";
 
-type PanelProps = {
+type Props = {
   title: string;
   children: ReactNode;
+  className?: string;
 };
 
-export default function Panel({ title, children }: PanelProps) {
+export default function Panel({ title, children, className = "" }: Props) {
   return (
-    <div className="rounded-[2rem] border border-[#d6a85f]/15 bg-[#171717] p-6">
-      <h3 className="mb-5 text-xl font-black text-[#f5f0e8]">
-        {title}
-      </h3>
-
+    <div className={`rounded-2xl border border-[var(--accent-8)] bg-[var(--bg-elevated)] p-5 ${className}`}
+      style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.15)" }}
+    >
+      <h2 className="mb-4 text-lg font-black tracking-tight">{title}</h2>
       {children}
     </div>
   );

@@ -8,15 +8,15 @@ export default function PageTitle({
   title,
 }: Props) {
   return (
-    <div className="mb-8">
+    <div className="mb-6">
 
       {eyebrow && (
-        <p className="mb-2 text-xs font-black uppercase tracking-[0.35em] text-[#d6a85f]">
+        <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--accent)]">
           {eyebrow}
         </p>
       )}
 
-      <h1 className="text-5xl font-black text-white">
+      <h1 className="text-3xl font-black tracking-tight md:text-4xl">
         {title}
       </h1>
 

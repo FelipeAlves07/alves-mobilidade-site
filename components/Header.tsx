@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/", label: "Home" },
@@ -15,335 +16,92 @@ const links = [
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <>
-      <header className="fixed left-0 top-0 z-50 w-full">
-
-        <div className="mx-auto max-w-7xl px-4 pt-4 lg:px-8">
-
-          <div
-            className="
-            flex
-            min-h-20
-            items-center
-            justify-between
-
-            rounded-[2rem]
-
-            border
-            border-[#d6a85f]/25
-
-            bg-[#111111]/85
-
-            px-5
-
-            shadow-[0_0_60px_rgba(0,0,0,0.25)]
-
-            backdrop-blur-3xl
-
-            md:px-8
-          "
-          >
-
-            {/* LOGO */}
-
-            <Link
-              href="/"
-              aria-label="Alves Mobilidade Executiva"
-              className="flex items-center"
-            >
-              <Image
-                src="/branding/logo-oficial-alves.jpg"
-                alt="Alves Mobilidade Executiva"
-                width={760}
-                height={260}
-                priority
-                className="h-14 w-auto object-contain md:h-16"
-              />
+      <header className="fixed left-0 top-0 z-50 w-full transition-all duration-500">
+        <div className="mx-auto max-w-7xl px-4 pt-3 lg:px-8 lg:pt-4">
+          <div className={`flex min-h-16 items-center justify-between rounded-2xl border px-5 md:px-8 transition-all duration-500 ${
+            scrolled
+              ? "border-[var(--accent-15)] bg-[var(--bg-elevated)]/90 shadow-lg backdrop-blur-2xl"
+              : "border-[var(--border-subtle)] bg-[var(--bg-elevated)]/70 backdrop-blur-xl"
+          }`}>
+            <Link href="/" aria-label="Alves Mobilidade Executiva" className="flex items-center shrink-0">
+              <Image src="/branding/logo_mestra_sem_fundo.png" alt="Alves Mobilidade Executiva" width={760} height={260} priority className="-my-10 h-40 w-auto object-contain md:-my-14 md:h-56" />
             </Link>
 
-            {/* MENU DESKTOP */}
-
-            <nav className="hidden items-center gap-8 lg:flex">
-
-              {links.map((link) => (
-
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="
-                  group
-
-                  text-xs
-
-                  font-bold
-
-                  uppercase
-
-                  tracking-[0.22em]
-
-                  text-[#f8ead2]
-
-                  transition
-
-                  hover:text-[#f1d28b]
-                  "
-                >
-
-                  {link.label}
-
-                  <span
-                    className="
-                    mt-1
-
-                    block
-
-                    h-px
-
-                    w-0
-
-                    bg-[#d6a85f]
-
-                    transition-all
-
-                    duration-300
-
-                    group-hover:w-full
-                    "
-                  />
-
-                </Link>
-
-              ))}
-
+            <nav className="hidden items-center gap-1 lg:flex">
+              {links.map((link) => {
+                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                return (
+                  <Link key={link.href} href={link.href}
+                    className={`relative px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] transition-colors duration-300 ${
+                      isActive ? "text-[var(--accent)]" : "text-zinc-300 hover:text-white"
+                    }`}>
+                    {link.label}
+                    {isActive && <span className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-gradient-to-r from-[var(--accent)] to-transparent" />}
+                  </Link>
+                );
+              })}
             </nav>
 
-            {/* BOTÃO */}
-
-            <Link
-              href="/solicitar-atendimento"
-              className="
-              hidden
-
-              rounded-full
-
-              bg-gradient-to-r
-
-              from-[#f1d28b]
-
-              to-[#b8863b]
-
-              px-6
-
-              py-3
-
-              text-xs
-
-              font-black
-
-              uppercase
-
-              tracking-[0.18em]
-
-              text-black
-
-              shadow-[0_0_40px_rgba(214,168,95,0.22)]
-
-              transition
-
-              hover:-translate-y-0.5
-
-              hover:shadow-[0_0_60px_rgba(214,168,95,0.35)]
-
-              lg:inline-flex
-              "
-            >
-
-              Orçamento
-
+            <Link href="/solicitar-atendimento"
+              className="hidden lg:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 shrink-0">
+              Orçamento <ArrowRight size={14} />
             </Link>
 
-            {/* MENU MOBILE */}
-
-            <button
-              onClick={() => setOpen(true)}
-              className="
-              rounded-2xl
-
-              border
-
-              border-[#d6a85f]/20
-
-              bg-[#3a3026]
-
-              p-3
-
-              text-[#f8ead2]
-
-              lg:hidden
-              "
-              aria-label="Abrir menu"
-            >
-
-              <Menu size={22} />
-
+            <button onClick={() => setOpen(true)}
+              className="flex items-center gap-2 rounded-xl border border-[var(--border-medium)] bg-white/[0.04] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-zinc-300 transition hover:bg-white/[0.08] lg:hidden">
+              <Menu size={18} /> Menu
             </button>
-
           </div>
-
         </div>
-
       </header>
 
-      {/* MENU MOBILE ABERTO */}
-
       {open && (
-
-        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md lg:hidden">
-
-          <div
-            className="
-            absolute
-
-            right-0
-
-            top-0
-
-            h-full
-
-            w-[82%]
-
-            max-w-sm
-
-            border-l
-
-            border-[#d6a85f]/20
-
-            bg-[#151515]
-
-            p-6
-
-            text-[#f8ead2]
-
-            shadow-2xl
-            "
-          >
-
-            <div className="mb-10 flex items-center justify-between">
-
-              <Image
-                src="/branding/logo-oficial-alves.jpg"
-                alt="Alves Mobilidade Executiva"
-                width={760}
-                height={260}
-                className="h-14 w-auto object-contain"
-              />
-
-              <button
-                onClick={() => setOpen(false)}
-                className="
-                rounded-2xl
-
-                border
-
-                border-[#d6a85f]/20
-
-                p-3
-                "
-              >
-
-                <X size={20} />
-
-              </button>
-
-            </div>
-
-            <nav className="flex flex-col gap-3">
-
-              {links.map((link) => (
-
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="
-                  rounded-2xl
-
-                  px-4
-
-                  py-4
-
-                  text-sm
-
-                  font-bold
-
-                  uppercase
-
-                  tracking-[0.18em]
-
-                  text-[#f8ead2]
-
-                  transition
-
-                  hover:bg-[#202020]
-
-                  hover:text-[#f1d28b]
-                  "
-                >
-
-                  {link.label}
-
-                </Link>
-
-              ))}
-
-            </nav>
-
-            <Link
-              href="/solicitar-atendimento"
-              onClick={() => setOpen(false)}
-              className="
-              mt-8
-
-              flex
-
-              justify-center
-
-              rounded-full
-
-              bg-gradient-to-r
-
-              from-[#f1d28b]
-
-              to-[#b8863b]
-
-              px-6
-
-              py-4
-
-              text-sm
-
-              font-black
-
-              uppercase
-
-              tracking-[0.18em]
-
-              text-black
-              "
-            >
-
-              Solicitar orçamento
-
-            </Link>
-
+        <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--bg-primary)] lg:hidden animate-fadeIn">
+          <div className="flex items-center justify-between border-b border-[var(--border-medium)] px-6 py-4">
+            <Image src="/branding/logo_mestra_sem_fundo.png" alt="Alves Mobilidade Executiva" width={760} height={260} className="h-24 w-auto object-contain" />
+            <button onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-xl border border-[var(--border-medium)] bg-white/[0.04] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-zinc-300">
+              <X size={16} /> Fechar
+            </button>
           </div>
-
+          <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-6 py-8">
+            {links.map((link, i) => {
+              const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              return (
+                <Link key={link.href} href={link.href}
+                  className={`animate-enter-up rounded-xl px-5 py-4 text-base font-bold tracking-[0.12em] transition-all duration-300 ${
+                    isActive
+                      ? "bg-[var(--accent-10)] text-[var(--accent)]"
+                      : "text-zinc-300 hover:bg-white/[0.04] hover:text-white"
+                  }`}
+                  style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}>
+                  {link.label}
+                </Link>
+              );
+            })}
+            <Link href="/solicitar-atendimento"
+              className="animate-enter-up mt-6 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-6 py-4 text-sm font-bold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+              style={{ animationDelay: `${links.length * 60 + 60}ms`, animationFillMode: "both" }}>
+              Solicitar orçamento <ArrowRight size={16} />
+            </Link>
+          </nav>
         </div>
-
       )}
-
     </>
   );
 }

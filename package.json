@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.6",
+    "@supabase/supabase-js": "^2.109.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
@@ -21,9 +24,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/ws": "^8.18.1",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10",
+    "ws": "^8.21.1"
   }
 }

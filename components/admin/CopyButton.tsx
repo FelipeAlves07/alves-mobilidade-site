@@ -20,7 +20,7 @@ export default function CopyButton({ text, label = "Copiar" }: Props) {
     <button
       type="button"
       onClick={copy}
-      className="cursor-pointer rounded-full border border-[#d6a85f]/25 px-5 py-3 text-xs font-black text-[#f1d28b] transition hover:bg-[#d6a85f] hover:text-black"
+      className="cursor-pointer rounded-xl border border-[var(--accent-25)] px-5 py-3 text-xs font-bold text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-white"
     >
       {copied ? "Copiado ✓" : label}
     </button>
