@@ -28,23 +28,23 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       <main key={pathname} className="animate-enter">{children}</main>
       <footer className="relative overflow-hidden border-t border-[var(--border-light)] bg-[var(--bg-elevated)]">
         <div className="absolute -left-40 top-20 h-80 w-80 rounded-full bg-[var(--accent-6)] blur-[120px]" />
-        <div className="relative z-10 mx-auto max-w-7xl px-5 py-16 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[1.4fr_0.7fr_0.7fr_0.7fr]">
+        <div className="relative z-10 mx-auto max-w-7xl px-5 py-14 lg:px-8 lg:py-20">
+          <div className="grid gap-10 lg:grid-cols-[1.4fr_0.7fr_0.7fr_0.7fr]">
             <div>
-              <Image src="/branding/logo_mestra_sem_fundo.png" alt="Alves Mobilidade Executiva" width={760} height={260} className="h-auto w-[200px]" />
-              <p className="mt-5 max-w-sm text-sm leading-7 text-zinc-400">Mobilidade executiva premium em Belo Horizonte e Região Metropolitana, com conforto, segurança e sofisticação.</p>
+              <Image src="/branding/logo_mestra_sem_fundo.png" alt="Alves Mobilidade Executiva" width={760} height={260} className="h-auto w-[180px]" />
+              <p className="mt-4 max-w-xs text-sm leading-7 text-zinc-500">Mobilidade executiva premium em Belo Horizonte e Região Metropolitana.</p>
             </div>
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Serviços</h4>
-              <div className="mt-5 space-y-3">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--accent)]">Serviços</h4>
+              <div className="mt-5 space-y-2.5">
                 {["Aeroportos", "Empresas", "Eventos", "Viagens"].map((s) => (
-                  <p key={s} className="text-sm text-zinc-400 transition hover:text-white cursor-default">{s}</p>
+                  <p key={s} className="text-sm text-zinc-500 transition hover:text-white cursor-default">{s}</p>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Páginas</h4>
-              <div className="mt-5 space-y-3">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--accent)]">Páginas</h4>
+              <div className="mt-5 space-y-2.5">
                 {[
                   { href: "/", label: "Home" },
                   { href: "/servicos", label: "Serviços" },
@@ -52,23 +52,23 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
                   { href: "/corporativo", label: "Corporativo" },
                   { href: "/contato", label: "Contato" },
                 ].map((p) => (
-                  <Link key={p.href} href={p.href} className="block text-sm text-zinc-400 transition hover:text-white">{p.label}</Link>
+                  <Link key={p.href} href={p.href} className="block text-sm text-zinc-500 transition hover:text-white">{p.label}</Link>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Contato</h4>
-              <div className="mt-5 space-y-3 text-sm text-zinc-400">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--accent)]">Contato</h4>
+              <div className="mt-5 space-y-2.5 text-sm text-zinc-500">
                 <p className="transition hover:text-white cursor-default">(31) 99845-8084</p>
                 <p className="transition hover:text-white cursor-default">contato@alvesmobilidade.com.br</p>
                 <p className="transition hover:text-white cursor-default">Belo Horizonte • MG</p>
               </div>
-              <Link href="/solicitar-atendimento" className="group mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95">
-                Solicitar <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
+              <Link href="/solicitar-atendimento" className="group mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95">
+                Solicitar <ArrowRight size={12} className="transition group-hover:translate-x-0.5" />
               </Link>
             </div>
           </div>
-          <div className="mt-12 flex flex-col gap-4 border-t border-[var(--border-subtle)] pt-8 text-xs text-zinc-500 md:flex-row md:items-center md:justify-between">
+          <div className="mt-12 flex flex-col gap-4 border-t border-[var(--border-subtle)] pt-8 text-xs text-zinc-600 md:flex-row md:items-center md:justify-between">
             <p>© 2022 - {new Date().getFullYear()} Alves Mobilidade Executiva. Todos os direitos reservados.</p>
             <p>Experiência premium em cada trajeto.</p>
           </div>
