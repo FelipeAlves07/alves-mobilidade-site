@@ -138,7 +138,7 @@ export class VisionPlayer {
     }
     if (status === "running") {
       const started = this.session.started_at ? new Date(this.session.started_at).getTime() : Date.now();
-      const remaining = Math.max(0, 120000 - (Date.now() - started));
+      const remaining = Math.max(0, 3000 - (Date.now() - started));
       if (remaining > 0) {
         this.renderSessionScreen("running");
         this.sessionTimer = window.setTimeout(() => { this.position = 0; this.show(0); }, remaining);
