@@ -247,106 +247,99 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-6 rounded-2xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-6 md:p-8 xl:flex-row xl:items-center xl:justify-between">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[var(--accent)]">Sistema de bordo</p>
-          <h3 className="mt-2 text-2xl font-black md:text-3xl">AME Vision</h3>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-400">
-            Reprodução automática com menu interativo para o passageiro. Programação equilibrada em aproximadamente 70% informação e entretenimento e 30% conteúdo AME.
-          </p>
-          <p className="mt-3 text-xs font-bold text-zinc-500">Ciclo estimado atual: cerca de {totalMinutes} minutos.</p>
+    <>
+      <div className={fullViewport ? "hidden" : "space-y-8"}>
+        <div className="flex flex-col gap-6 rounded-2xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-6 md:p-8 xl:flex-row xl:items-center xl:justify-between">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[var(--accent)]">Sistema de bordo</p>
+            <h3 className="mt-2 text-2xl font-black md:text-3xl">AME Vision</h3>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-400">
+              Reprodução automática com menu interativo para o passageiro. Programação equilibrada em aproximadamente 70% informação e entretenimento e 30% conteúdo AME.
+            </p>
+            <p className="mt-3 text-xs font-bold text-zinc-500">Ciclo estimado atual: cerca de {totalMinutes} minutos.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => setSettingsOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-25)] px-5 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)]">
+              <Settings2 size={17} /> Configurar tempos
+            </button>
+            <button type="button" onClick={openFullViewport} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5">
+              <Maximize2 size={17} /> Abrir em tela cheia
+            </button>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={() => setSettingsOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-25)] px-5 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)]">
-            <Settings2 size={17} /> Configurar tempos
-          </button>
-          <button type="button" onClick={openFullViewport} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5">
-            <Maximize2 size={17} /> Abrir em tela cheia
-          </button>
+
+        <div className="rounded-2xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-6 md:p-8">
+          <div className="grid gap-6 xl:grid-cols-[1fr_auto] xl:items-end">
+            <div className="flex flex-wrap items-end gap-4">
+              <label className="block flex-1 min-w-[200px]">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Próxima viagem da agenda</span>
+                <select value={selectedTripId} onChange={event => setSelectedTripId(event.target.value)} className="input-admin w-full">
+                  {!upcomingTrips.length && <option value="">Nenhuma viagem agendada</option>}
+                  {upcomingTrips.map(trip => <option key={trip.id} value={trip.id}>{trip.date} · {trip.time} · {trip.client} · {trip.route}</option>)}
+                </select>
+              </label>
+              <label className="flex items-center gap-3 rounded-xl border border-[var(--accent-15)] bg-[var(--accent-10)] px-4 py-3 cursor-pointer transition hover:border-[var(--accent-30)]">
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-white leading-tight">Modo Universal</span>
+                  <span className="text-[10px] text-zinc-500">Sem passageiro específico</span>
+                </div>
+                <button type="button" role="switch" aria-checked={universalMode} onClick={() => setUniversalMode(v => !v)} className={`relative h-7 w-12 shrink-0 rounded-full transition ${universalMode ? "bg-[var(--accent)]" : "bg-zinc-700"}`}>
+                  <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition ${universalMode ? "left-5.5" : "left-0.5"}`} />
+                </button>
+              </label>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={() => setJourneyStatus("prepared")} disabled={!selectedTripId} className="inline-flex items-center gap-2 rounded-xl border border-[var(--accent-25)] px-4 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)] disabled:opacity-40"><CheckCircle2 size={16}/> Preparar</button>
+              <button type="button" onClick={() => setJourneyStatus("running")} disabled={!selectedTripId} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-4 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 disabled:opacity-40"><Play size={16}/> Iniciar</button>
+              <button type="button" onClick={() => setJourneyStatus("completed")} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/5"><Square size={16}/> Finalizar</button>
+            </div>
+          </div>
+          {selectedTripId && (
+            <div className="mt-6 grid gap-4 rounded-xl border border-[var(--accent-15)] bg-[var(--accent-10)] p-5 md:grid-cols-3">
+              <label className="block">
+                <span className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">Motorista</span>
+                <input value={driverName} onChange={e => setDriverName(e.target.value)} placeholder="Nome do motorista" className="input-admin w-full" />
+              </label>
+              <label className="block">
+                <span className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">Veículo</span>
+                <input value={vehicleModel} onChange={e => setVehicleModel(e.target.value)} placeholder="Modelo do veículo" className="input-admin w-full" />
+              </label>
+              <label className="block">
+                <span className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">Mensagem <span className="text-[9px] text-zinc-600 font-normal normal-case">(gerada automaticamente)</span></span>
+                <div className="w-full rounded-xl border border-[var(--accent-15)] bg-[var(--accent-10)] px-4 py-3 text-sm leading-6 text-zinc-200">{tripMessage || "Mensagem será gerada ao selecionar uma viagem."}</div>
+              </label>
+            </div>
+          )}
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
+            <span>Status do tablet: <strong className="text-[var(--accent)]">{remoteState.status}</strong>{remoteState.trip ? ` · ${remoteState.trip.client}` : ""}{universalMode ? <span className="ml-2 text-[var(--accent)] font-bold">[Modo Universal]</span> : ""}</span>
+            {syncMessage && <span>{syncMessage}</span>}
+          </div>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-6 md:p-8">
-        <div className="grid gap-6 xl:grid-cols-[1fr_auto] xl:items-end">
-          <div className="flex flex-wrap items-end gap-4">
-            <label className="block flex-1 min-w-[200px]">
-              <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Próxima viagem da agenda</span>
-              <select value={selectedTripId} onChange={event => setSelectedTripId(event.target.value)} className="input-admin w-full">
-                {!upcomingTrips.length && <option value="">Nenhuma viagem agendada</option>}
-                {upcomingTrips.map(trip => <option key={trip.id} value={trip.id}>{trip.date} · {trip.time} · {trip.client} · {trip.route}</option>)}
-              </select>
-            </label>
-            <label className="flex items-center gap-3 rounded-xl border border-[var(--accent-15)] bg-[var(--accent-10)] px-4 py-3 cursor-pointer transition hover:border-[var(--accent-30)]">
-              <div className="flex flex-col">
-                <span className="text-xs font-bold text-white leading-tight">Modo Universal</span>
-                <span className="text-[10px] text-zinc-500">Sem passageiro específico</span>
-              </div>
-              <button type="button" role="switch" aria-checked={universalMode} onClick={() => setUniversalMode(v => !v)} className={`relative h-7 w-12 shrink-0 rounded-full transition ${universalMode ? "bg-[var(--accent)]" : "bg-zinc-700"}`}>
-                <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition ${universalMode ? "left-5.5" : "left-0.5"}`} />
-              </button>
-            </label>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={() => setJourneyStatus("prepared")} disabled={!selectedTripId} className="inline-flex items-center gap-2 rounded-xl border border-[var(--accent-25)] px-4 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)] disabled:opacity-40"><CheckCircle2 size={16}/> Preparar</button>
-            <button type="button" onClick={() => setJourneyStatus("running")} disabled={!selectedTripId} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-4 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 disabled:opacity-40"><Play size={16}/> Iniciar</button>
-            <button type="button" onClick={() => setJourneyStatus("completed")} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/5"><Square size={16}/> Finalizar</button>
-          </div>
-        </div>
-        {selectedTripId && (
-          <div className="mt-6 grid gap-4 rounded-xl border border-[var(--accent-15)] bg-[var(--accent-10)] p-5 md:grid-cols-3">
-            <label className="block">
-              <span className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">Motorista</span>
-              <input value={driverName} onChange={e => setDriverName(e.target.value)} placeholder="Nome do motorista" className="input-admin w-full" />
-            </label>
-            <label className="block">
-              <span className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">Veículo</span>
-              <input value={vehicleModel} onChange={e => setVehicleModel(e.target.value)} placeholder="Modelo do veículo" className="input-admin w-full" />
-            </label>
-            <label className="block">
-              <span className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">Mensagem <span className="text-[9px] text-zinc-600 font-normal normal-case">(gerada automaticamente)</span></span>
-              <div className="w-full rounded-xl border border-[var(--accent-15)] bg-[var(--accent-10)] px-4 py-3 text-sm leading-6 text-zinc-200">{tripMessage || "Mensagem será gerada ao selecionar uma viagem."}</div>
-            </label>
-          </div>
-        )}
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
-          <span>Status do tablet: <strong className="text-[var(--accent)]">{remoteState.status}</strong>{remoteState.trip ? ` · ${remoteState.trip.client}` : ""}{universalMode ? <span className="ml-2 text-[var(--accent)] font-bold">[Modo Universal]</span> : ""}</span>
-          {syncMessage && <span>{syncMessage}</span>}
-        </div>
-      </div>
-
-      {fullViewport ? (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-black">
+      <div className={fullViewport ? "fixed inset-0 z-[60] flex flex-col bg-black" : ""}>
+        {fullViewport && (
           <div className="absolute right-4 top-4 z-10 flex gap-2">
             <button
               type="button"
-              onClick={() => { setFullViewport(false); if (document.fullscreenElement) document.exitFullscreen(); try { screen.orientation?.unlock?.(); } catch {} }}
+              onClick={() => { if (document.fullscreenElement) document.exitFullscreen(); try { screen.orientation?.unlock?.(); } catch {} setFullViewport(false); }}
               className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/20 bg-black/50 px-4 py-2 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/10"
             >
               <X size={14} /> Sair
             </button>
           </div>
+        )}
+        <div className={fullViewport ? "flex flex-1" : "overflow-hidden rounded-2xl border border-[var(--accent-15)] bg-black shadow-2xl"}>
           <iframe
             ref={frameRef}
             onLoad={() => window.setTimeout(() => { sendSettings(); frameRef.current?.contentWindow?.postMessage({ type: "AME_VISION_SESSION", session: remoteState }, "*"); }, 350)}
             title="AME Vision"
             srcDoc={visionDocument}
             allow="fullscreen; geolocation"
-            className="h-full w-full border-0 bg-black"
+            className={fullViewport ? "h-full w-full border-0 bg-black" : "block aspect-video min-h-[300px] w-full border-0 bg-black sm:min-h-[450px] lg:min-h-[700px]"}
           />
         </div>
-      ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--accent-15)] bg-black shadow-2xl">
-          <iframe
-            ref={frameRef}
-            onLoad={() => window.setTimeout(() => { sendSettings(); frameRef.current?.contentWindow?.postMessage({ type: "AME_VISION_SESSION", session: remoteState }, "*"); }, 350)}
-            title="AME Vision"
-            srcDoc={visionDocument}
-            allow="fullscreen; geolocation"
-            className="block aspect-video min-h-[300px] w-full border-0 bg-black sm:min-h-[450px] lg:min-h-[700px]"
-          />
-        </div>
-      )}
+      </div>
 
       {settingsOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
@@ -417,6 +410,6 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
