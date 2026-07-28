@@ -174,6 +174,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   useEffect(() => {
     const handler = () => {
       if (!document.fullscreenElement) {
+        setFullViewport(false);
         try { screen.orientation?.unlock?.(); } catch {}
       }
     };
@@ -181,10 +182,11 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
     return () => document.removeEventListener("fullscreenchange", handler);
   }, []);
 
-  function openFullscreen() {
-    const el = frameRef.current;
-    if (!el) return;
-    el.requestFullscreen?.();
+  function openFullViewport() {
+    setFullViewport(true);
+    try {
+      frameRef.current?.requestFullscreen?.({ navigationUI: "hide" })?.catch?.();
+    } catch {}
     try { (screen.orientation as any)?.lock?.("landscape")?.catch?.(); } catch {}
   }
 
@@ -259,11 +261,8 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
           <button type="button" onClick={() => setSettingsOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-25)] px-5 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)]">
             <Settings2 size={17} /> Configurar tempos
           </button>
-          <button type="button" onClick={() => setFullViewport(v => !v)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5">
-            <Maximize2 size={17} /> Tela cheia real
-          </button>
-          <button type="button" onClick={openFullscreen} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-25)] px-5 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)]">
-            <Maximize2 size={17} /> Fullscreen navegador
+          <button type="button" onClick={openFullViewport} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5">
+            <Maximize2 size={17} /> Abrir em tela cheia
           </button>
         </div>
       </div>
@@ -321,14 +320,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
           <div className="absolute right-4 top-4 z-10 flex gap-2">
             <button
               type="button"
-              onClick={() => frameRef.current?.requestFullscreen?.()}
-              className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/20 px-4 py-2 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/10"
-            >
-              <Maximize2 size={14} /> Fullscreen
-            </button>
-            <button
-              type="button"
-              onClick={() => setFullViewport(false)}
+              onClick={() => { setFullViewport(false); if (document.fullscreenElement) document.exitFullscreen(); try { screen.orientation?.unlock?.(); } catch {} }}
               className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/20 bg-black/50 px-4 py-2 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/10"
             >
               <X size={14} /> Sair
