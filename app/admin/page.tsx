@@ -475,22 +475,22 @@ export default function AdminPage() {
       <div className="flex min-h-screen">
         <Sidebar active={active} menu={menu} setActive={setActive} onLogout={logout} />
         <section className="flex min-w-0 flex-1 flex-col">
-          <div className="sticky top-0 z-40 border-b border-[var(--accent-8)] bg-[var(--bg-primary)]/80 backdrop-blur-xl">
-              <div className="flex items-center justify-between gap-2 px-4 py-3 md:px-6 md:py-3">
+          <div className="sticky top-0 z-40 border-b border-[var(--accent-8)] bg-[var(--bg-primary)]/85 backdrop-blur-2xl">
+            <div className="flex items-center justify-between gap-2 px-3 py-2 md:px-6 md:py-3">
               <div className="flex items-center gap-2 min-w-0 md:gap-3">
                 <MobileNav active={active} menu={menu} setActive={setActive} />
                 <div className="min-w-0">
                   <p className="truncate text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--accent)] md:text-[10px] md:tracking-[0.28em]">Sistema Operacional da Alves</p>
-                  <h2 className="truncate text-base font-black tracking-tight md:text-xl">{activeLabel}</h2>
+                  <h2 className="truncate text-sm font-black tracking-tight md:text-xl">{activeLabel}</h2>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 shrink-0 md:gap-2">
-                <button onClick={exportBackup} className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-white/8 px-2.5 py-2 text-xs font-bold text-zinc-400 transition hover:border-white/15 hover:text-zinc-200 md:px-3.5 md:py-2"><Download size={14} className="md:mr-1.5" /><span className="hidden md:inline">Backup</span></button>
-                <Link href="/" className="inline-flex items-center justify-center rounded-xl border border-white/8 px-2.5 py-2 text-xs font-bold text-zinc-400 transition hover:border-white/15 hover:text-zinc-200 md:px-3.5 md:py-2"><span className="hidden md:inline">Ver site </span><ChevronRight size={14} /></Link>
+                <button onClick={exportBackup} className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-white/8 px-2 py-1.5 text-[11px] font-bold text-zinc-400 transition hover:border-white/15 hover:text-zinc-200 md:px-3.5 md:py-2"><Download size={13} className="md:mr-1.5" /><span className="hidden md:inline">Backup</span></button>
+                <Link href="/" className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-white/8 px-2 py-1.5 text-[11px] font-bold text-zinc-400 transition hover:border-white/15 hover:text-zinc-200 md:px-3.5 md:py-2"><span className="hidden md:inline">Ver site </span><ChevronRight size={13} /></Link>
               </div>
             </div>
           </div>
-          <div className="flex-1 px-4 pb-24 pt-6 md:px-6 md:pb-8 md:pt-6">
+          <div className="flex-1 px-3 pb-28 pt-4 md:px-6 md:pb-8 md:pt-6">
             <div key={active} className="animate-enter-up">{renderContent()}</div>
           </div>
         </section>

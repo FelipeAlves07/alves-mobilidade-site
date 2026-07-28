@@ -10,8 +10,8 @@ export default function Card({
   className = "",
 }: Props) {
   return (
-    <div className={`rounded-xl border border-[var(--accent-10)] bg-[var(--bg-card)] p-5 transition hover:border-[var(--accent-18)] ${className}`}
-      style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.20)" }}
+    <div className={`rounded-xl border border-[var(--accent-10)] bg-[var(--bg-surface)] p-5 transition-all duration-300 hover:border-[var(--accent-25)] hover:bg-[var(--bg-card)] ${className}`}
+      style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.18)" }}
     >
       {children}
     </div>

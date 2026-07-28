@@ -29,6 +29,13 @@ export default function Header() {
     setOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
   return (
     <>
       <header className="fixed left-0 top-0 z-50 w-full transition-all duration-500">
@@ -57,36 +64,38 @@ export default function Header() {
               })}
             </nav>
 
-            <Link href="/solicitar-atendimento"
-              className="hidden lg:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 shrink-0">
-              Orçamento <ArrowRight size={14} />
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/solicitar-atendimento"
+                className="hidden lg:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 shrink-0">
+                Orçamento <ArrowRight size={14} />
+              </Link>
 
-            <button onClick={() => setOpen(true)}
-              className="flex items-center gap-2 rounded-xl border border-[var(--border-medium)] bg-white/[0.04] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-zinc-300 transition hover:bg-white/[0.08] lg:hidden">
-              <Menu size={18} /> Menu
-            </button>
+              <button onClick={() => setOpen(true)}
+                className="flex items-center gap-2 rounded-xl border border-[var(--border-medium)] bg-white/[0.04] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-zinc-300 transition hover:bg-white/[0.08] lg:hidden">
+                <Menu size={18} /> Menu
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       {open && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--bg-primary)] lg:hidden animate-fadeIn">
-          <div className="flex items-center justify-between border-b border-[var(--border-medium)] px-6 py-4">
-            <Image src="/branding/logo_mestra_sem_fundo.png" alt="Alves Mobilidade Executiva" width={760} height={260} className="h-24 w-auto object-contain" />
+        <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--bg-primary)] animate-fadeIn">
+          <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-5 py-4">
+            <Image src="/branding/logo_mestra_sem_fundo.png" alt="Alves Mobilidade Executiva" width={760} height={260} className="h-20 w-auto object-contain" />
             <button onClick={() => setOpen(false)}
-              className="flex items-center gap-2 rounded-xl border border-[var(--border-medium)] bg-white/[0.04] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-zinc-300">
+              className="flex items-center gap-2 rounded-xl border border-[var(--border-light)] bg-white/[0.04] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-zinc-300 transition hover:bg-white/[0.08]">
               <X size={16} /> Fechar
             </button>
           </div>
-          <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-6 py-8">
+          <nav className="flex flex-1 flex-col gap-2 overflow-y-auto px-5 py-8">
             {links.map((link, i) => {
               const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
               return (
                 <Link key={link.href} href={link.href}
-                  className={`animate-enter-up rounded-xl px-5 py-4 text-base font-bold tracking-[0.12em] transition-all duration-300 ${
+                  className={`animate-enter-up rounded-xl px-5 py-4 text-base font-bold tracking-[0.08em] transition-all duration-300 ${
                     isActive
-                      ? "bg-[var(--accent-10)] text-[var(--accent)]"
+                      ? "bg-[var(--accent-12)] text-[var(--accent)]"
                       : "text-zinc-300 hover:bg-white/[0.04] hover:text-white"
                   }`}
                   style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}>
@@ -95,8 +104,8 @@ export default function Header() {
               );
             })}
             <Link href="/solicitar-atendimento"
-              className="animate-enter-up mt-6 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-6 py-4 text-sm font-bold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
-              style={{ animationDelay: `${links.length * 60 + 60}ms`, animationFillMode: "both" }}>
+              className="animate-enter-up mt-4 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+              style={{ animationDelay: `${links.length * 60}ms`, animationFillMode: "both" }}>
               Solicitar orçamento <ArrowRight size={16} />
             </Link>
           </nav>
