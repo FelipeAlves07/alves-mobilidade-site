@@ -187,9 +187,9 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
 
   function enterFullViewport() {
     setSettingsOpen(false);
-    containerRef.current?.requestFullscreen?.({ navigationUI: "hide" });
-    try { (screen.orientation as any)?.lock?.("landscape")?.catch?.(); } catch {}
     setFullViewport(true);
+    frameRef.current?.requestFullscreen?.({ navigationUI: "hide" });
+    try { (screen.orientation as any)?.lock?.("landscape")?.catch?.(); } catch {}
   }
 
   function exitFullViewport() {
