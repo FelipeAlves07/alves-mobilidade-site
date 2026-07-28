@@ -195,6 +195,16 @@ export class VisionPlayer {
   }
 
   startScaleToFit() {
+    const root = document.documentElement;
+    const REF_H = 1080;
+    const fit = () => {
+      const vh = document.documentElement.clientHeight;
+      const ratio = Math.max(0.4, Math.min(1.5, vh / REF_H));
+      root.style.setProperty("--header-height", Math.round(176 * ratio) + "px");
+      root.style.setProperty("--footer-height", Math.round(82 * ratio) + "px");
+    };
+    fit();
+    window.addEventListener("resize", fit);
   }
 
   listenForSettings() {
