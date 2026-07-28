@@ -92,6 +92,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   const [vehicleModel, setVehicleModel] = useState("");
   const [tripMessage, setTripMessage] = useState("");
   const [fullViewport, setFullViewport] = useState(false);
+  const [confirmExit, setConfirmExit] = useState(false);
 
   const upcomingTrips = useMemo(() => trips
     .filter(trip => trip.status === "Agendada")
@@ -188,12 +189,13 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   function enterFullViewport() {
     setSettingsOpen(false);
     setFullViewport(true);
-    frameRef.current?.requestFullscreen?.({ navigationUI: "hide" });
-    try { (screen.orientation as any)?.lock?.("landscape")?.catch?.(); } catch {}
+    try { frameRef.current?.requestFullscreen?.({ navigationUI: "hide" })?.catch?.(); } catch {}
+    try { (screen.orientation as any)?.lock?.("landscape-primary")?.catch?.(() => (screen.orientation as any)?.lock?.("landscape")?.catch?.()); } catch {}
   }
 
   function exitFullViewport() {
     setFullViewport(false);
+    setConfirmExit(false);
     if (document.fullscreenElement) document.exitFullscreen();
     try { screen.orientation?.unlock?.(); } catch {}
   }
@@ -203,7 +205,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
     tapCount.current += 1;
     if (tapCount.current >= 5) {
       tapCount.current = 0;
-      exitFullViewport();
+      setConfirmExit(true);
       return;
     }
     tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 1000);
@@ -339,20 +341,11 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
       )}
 
       {fullViewport && (
-        <div className="absolute right-4 top-4 z-10 flex gap-2">
-          <button
-            type="button"
-            onClick={exitFullViewport}
-            className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/20 bg-black/50 px-4 py-2 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/10"
-          >
-            <X size={14} /> Sair
-          </button>
-          <div
-            onClick={handleCenterTap}
-            className="absolute left-1/2 top-1/2 z-20 size-20 -translate-x-1/2 -translate-y-1/2 cursor-pointer opacity-0"
-            aria-label="Sair (5 toques)"
-          />
-        </div>
+        <div
+          onClick={handleCenterTap}
+          className="absolute left-1/2 top-1/2 z-20 size-24 -translate-x-1/2 -translate-y-1/2 cursor-pointer opacity-0"
+          aria-label="Sair (5 toques)"
+        />
       )}
 
       <div className={fullViewport ? "flex-1" : "overflow-hidden rounded-2xl border border-[var(--accent-15)] bg-black shadow-2xl"}>
@@ -362,9 +355,22 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
           title="AME Vision"
           srcDoc={visionDocument}
           allow="fullscreen; geolocation"
+          allowFullScreen
           className={fullViewport ? "h-full w-full border-0 bg-black" : "block aspect-video min-h-[300px] w-full border-0 bg-black sm:min-h-[450px] lg:min-h-[700px]"}
         />
       </div>
+
+      {confirmExit && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setConfirmExit(false)}>
+          <div className="rounded-2xl border border-white/15 bg-zinc-900 p-8 text-center shadow-2xl" onClick={e => e.stopPropagation()}>
+            <p className="text-lg font-bold text-white">Sair do modo AME Vision?</p>
+            <div className="mt-6 flex justify-center gap-4">
+              <button type="button" onClick={() => setConfirmExit(false)} className="rounded-xl border border-white/15 px-6 py-3 text-sm font-bold text-zinc-300 transition hover:bg-white/5">Cancelar</button>
+              <button type="button" onClick={exitFullViewport} className="rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5">Sair</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {settingsOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">

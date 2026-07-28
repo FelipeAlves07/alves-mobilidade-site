@@ -1,0 +1,26 @@
+{
+  "name": "Alves Mobilidade Executiva",
+  "short_name": "AME Control",
+  "description": "Sistema de gerenciamento de mobilidade executiva premium",
+  "start_url": "/admin",
+  "display": "standalone",
+  "orientation": "landscape-primary",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "categories": ["business", "transportation"],
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/branding/ame-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

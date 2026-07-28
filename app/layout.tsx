@@ -15,7 +15,10 @@ export const metadata: Metadata = {
   publisher: "Alves Mobilidade Executiva",
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   verification: { google: "az6wA9QSXZNyF-uYtEYZl3zQ7Gm9-FMAWzo3_SNHCag" },
-  icons: { icon: "/branding/favicon.png" },
+  icons: { icon: "/branding/favicon.png", apple: "/branding/ame-icon.svg" },
+  manifest: "/manifest.json",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "AME Control" },
+  other: { "theme-color": "#050505", "apple-mobile-web-app-capable": "yes", "apple-mobile-web-app-status-bar-style": "black-translucent" },
   openGraph: {
     title: "Alves Mobilidade Executiva",
     description: "Mobilidade executiva premium em Belo Horizonte para empresas e clientes particulares.",
