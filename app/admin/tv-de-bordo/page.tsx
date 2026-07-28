@@ -2,28 +2,45 @@
 
 import { Maximize2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { readAMEVisionState } from "@/lib/ameVisionSync";
+import { readAMEVisionState, type AMEVisionState } from "@/lib/ameVisionSync";
 import { visionDocument } from "@/lib/ameVisionHTML";
 
 export default function TVDebordoPage() {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const [fullscreen, setFullscreen] = useState(false);
+  const lastStateRef = useRef<string>("");
+  const lastSettingsRef = useRef<string>("");
+
+  function post(msg: object) {
+    frameRef.current?.contentWindow?.postMessage(msg, "*");
+  }
 
   function sendSettings() {
     try {
-      const stored = localStorage.getItem("ame-vision-settings-v6");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        frameRef.current?.contentWindow?.postMessage({
-          type: "AME_VISION_SETTINGS",
-          durations: parsed.durations,
-          mode: parsed.longTripEnabled ? "long" : "short",
-          longTripEnabled: parsed.longTripEnabled,
-          restDuration: parsed.restDuration,
-          gpsEnabled: parsed.gpsEnabled,
-          route: { origin: parsed.routeOrigin?.trim() || "", destination: parsed.routeDestination?.trim() || "" }
-        }, "*");
+      const raw = localStorage.getItem("ame-vision-settings-v6") || "{}";
+      if (raw === lastSettingsRef.current) return;
+      lastSettingsRef.current = raw;
+      const p = JSON.parse(raw);
+      post({
+        type: "AME_VISION_SETTINGS",
+        durations: p.durations,
+        mode: p.longTripEnabled ? "long" : "short",
+        longTripEnabled: p.longTripEnabled,
+        restDuration: p.restDuration,
+        gpsEnabled: p.gpsEnabled,
+        route: { origin: (p.routeOrigin || "").trim(), destination: (p.routeDestination || "").trim() }
+      });
+    } catch {}
+  }
+
+  async function pollState() {
+    try {
+      const state = await readAMEVisionState();
+      const serialized = JSON.stringify(state);
+      if (serialized !== lastStateRef.current) {
+        lastStateRef.current = serialized;
+        post({ type: "AME_VISION_SESSION", session: state });
       }
     } catch {}
   }
@@ -54,20 +71,22 @@ export default function TVDebordoPage() {
   }, []);
 
   useEffect(() => {
-    const listener = async (event: MessageEvent) => {
-      if (event.data?.type === "AME_VISION_READY") {
-        sendSettings();
-        try {
-          const state = await readAMEVisionState();
-          frameRef.current?.contentWindow?.postMessage({ type: "AME_VISION_SESSION", session: state }, "*");
-        } catch {}
-      }
+    function onReady() {
+      pollState();
+      sendSettings();
+    }
+    const listener = (event: MessageEvent) => {
+      if (event.data?.type === "AME_VISION_READY") onReady();
     };
     window.addEventListener("message", listener);
     return () => window.removeEventListener("message", listener);
   }, []);
 
-  useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    const timer = window.setInterval(() => { pollState(); sendSettings(); }, 3000);
+    return () => { document.body.style.overflow = ""; window.clearInterval(timer); };
+  }, []);
 
   return (
     <div
