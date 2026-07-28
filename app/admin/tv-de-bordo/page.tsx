@@ -7,6 +7,7 @@ import { visionDocument } from "@/lib/ameVisionHTML";
 
 export default function TVDebordoPage() {
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const screenRef = useRef<HTMLDivElement>(null);
   const [fullscreen, setFullscreen] = useState(false);
 
   function sendSettings() {
@@ -27,10 +28,12 @@ export default function TVDebordoPage() {
     } catch {}
   }
 
-  function enterFullscreen() {
-    document.documentElement.requestFullscreen?.({ navigationUI: "hide" })?.catch?.();
-    try { (screen.orientation as any)?.lock?.("landscape")?.catch?.(); } catch {}
-    setFullscreen(true);
+  async function enterFullscreen() {
+    try {
+      await screenRef.current?.requestFullscreen?.({ navigationUI: "hide" });
+      try { await (screen.orientation as any)?.lock?.("landscape"); } catch {}
+      setFullscreen(true);
+    } catch {}
   }
 
   function exitFullscreenMode() {
@@ -41,7 +44,10 @@ export default function TVDebordoPage() {
 
   useEffect(() => {
     const handler = () => {
-      if (!document.fullscreenElement) setFullscreen(false);
+      if (!document.fullscreenElement) {
+        setFullscreen(false);
+        try { screen.orientation?.unlock?.(); } catch {}
+      }
     };
     document.addEventListener("fullscreenchange", handler);
     return () => document.removeEventListener("fullscreenchange", handler);
@@ -61,8 +67,13 @@ export default function TVDebordoPage() {
     return () => window.removeEventListener("message", listener);
   }, []);
 
+  useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
+
   return (
-    <div className="fixed inset-0 bg-black">
+    <div
+      ref={screenRef}
+      className="fixed inset-0 flex flex-col bg-black"
+    >
       <iframe
         ref={frameRef}
         title="AME Vision"
@@ -72,7 +83,7 @@ export default function TVDebordoPage() {
       />
 
       {!fullscreen && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 bg-black/60 backdrop-blur-sm">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 bg-black/80 backdrop-blur-sm">
           <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">Alves Mobilidade Executiva</p>
             <h2 className="mt-2 text-3xl font-black text-white">AME Vision</h2>
