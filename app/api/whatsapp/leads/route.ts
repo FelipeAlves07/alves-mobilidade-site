@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
+export async function DELETE() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return NextResponse.json({ error: "Supabase não configurado" }, { status: 400 });
+  }
+
+  const { data: deleted, error } = await supabase
+    .from("contacts")
+    .delete()
+    .eq("origin", "WhatsApp")
+    .select("id, name, phone");
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ deleted: deleted?.length ?? 0, contacts: deleted });
+}
+
 export async function POST(request: NextRequest) {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return NextResponse.json({ error: "Supabase não configurado" }, { status: 400 });

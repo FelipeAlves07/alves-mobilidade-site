@@ -1,5 +1,7 @@
 "use client";
 
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
 import InfoCard from "@/components/admin/InfoCard";
 import Panel from "@/components/admin/Panel";
 import type { Lead } from "@/domain/lead/types";
@@ -14,6 +16,26 @@ interface WhatsAppViewProps {
 }
 
 export default function WhatsAppView({ messages, selectedMessage, leads, onSetSelectedMessage, onSendLeadMessage }: WhatsAppViewProps) {
+  const [clearing, setClearing] = useState(false);
+  const [clearResult, setClearResult] = useState<{ deleted: number } | null>(null);
+
+  async function handleClear() {
+    if (!confirm("Tem certeza? Isso vai deletar TODOS os contatos importados do WhatsApp.")) return;
+    setClearing(true);
+    setClearResult(null);
+    try {
+      const res = await fetch("/api/whatsapp/leads", { method: "DELETE" });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setClearResult({ deleted: data.deleted });
+      window.setTimeout(() => window.location.reload(), 1500);
+    } catch (err: any) {
+      alert("Erro ao limpar: " + (err.message || "desconhecido"));
+    } finally {
+      setClearing(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Panel title="Mensagens prontas">
@@ -33,6 +55,24 @@ export default function WhatsAppView({ messages, selectedMessage, leads, onSetSe
             {leads.map((lead) => <option value={lead.id} key={lead.id}>{lead.name} - {lead.phone}</option>)}
           </select>
         </div>
+      </Panel>
+
+      <Panel title="Dados do WhatsApp">
+        <p className="mb-4 text-sm text-zinc-400">
+          Foram importados <strong className="text-white">{leads.filter(l => l.origin === "WhatsApp").length}</strong> contatos do WhatsApp sem nome.
+        </p>
+        {clearResult ? (
+          <p className="text-sm font-bold text-emerald-400">{clearResult.deleted} contatos removidos.</p>
+        ) : (
+          <button
+            type="button"
+            onClick={handleClear}
+            disabled={clearing}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-700 disabled:opacity-50"
+          >
+            <Trash2 size={16} /> {clearing ? "Limpando..." : "Limpar contatos do WhatsApp"}
+          </button>
+        )}
       </Panel>
     </div>
   );

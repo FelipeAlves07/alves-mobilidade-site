@@ -88,6 +88,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   const [driverName, setDriverName] = useState("");
   const [vehicleModel, setVehicleModel] = useState("");
   const [tripMessage, setTripMessage] = useState("");
+  const [fullViewport, setFullViewport] = useState(false);
 
   const upcomingTrips = useMemo(() => trips
     .filter(trip => trip.status === "Agendada")
@@ -258,8 +259,11 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
           <button type="button" onClick={() => setSettingsOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-25)] px-5 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)]">
             <Settings2 size={17} /> Configurar tempos
           </button>
-          <button type="button" onClick={openFullscreen} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5">
-            <Maximize2 size={17} /> Abrir em tela cheia
+          <button type="button" onClick={() => setFullViewport(v => !v)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5">
+            <Maximize2 size={17} /> Tela cheia real
+          </button>
+          <button type="button" onClick={openFullscreen} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-25)] px-5 py-3 text-sm font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)]">
+            <Maximize2 size={17} /> Fullscreen navegador
           </button>
         </div>
       </div>
@@ -312,16 +316,45 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[var(--accent-15)] bg-black shadow-2xl">
-        <iframe
-          ref={frameRef}
-          onLoad={() => window.setTimeout(() => { sendSettings(); frameRef.current?.contentWindow?.postMessage({ type: "AME_VISION_SESSION", session: remoteState }, "*"); }, 350)}
-          title="AME Vision"
-          srcDoc={visionDocument}
-          allow="fullscreen; geolocation"
-          className="block aspect-video min-h-[300px] w-full border-0 bg-black sm:min-h-[450px] lg:min-h-[700px]"
-        />
-      </div>
+      {fullViewport ? (
+        <div className="fixed inset-0 z-[60] flex flex-col bg-black">
+          <div className="absolute right-4 top-4 z-10 flex gap-2">
+            <button
+              type="button"
+              onClick={() => frameRef.current?.requestFullscreen?.()}
+              className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/20 px-4 py-2 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/10"
+            >
+              <Maximize2 size={14} /> Fullscreen
+            </button>
+            <button
+              type="button"
+              onClick={() => setFullViewport(false)}
+              className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/20 bg-black/50 px-4 py-2 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/10"
+            >
+              <X size={14} /> Sair
+            </button>
+          </div>
+          <iframe
+            ref={frameRef}
+            onLoad={() => window.setTimeout(() => { sendSettings(); frameRef.current?.contentWindow?.postMessage({ type: "AME_VISION_SESSION", session: remoteState }, "*"); }, 350)}
+            title="AME Vision"
+            srcDoc={visionDocument}
+            allow="fullscreen; geolocation"
+            className="h-full w-full border-0 bg-black"
+          />
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-[var(--accent-15)] bg-black shadow-2xl">
+          <iframe
+            ref={frameRef}
+            onLoad={() => window.setTimeout(() => { sendSettings(); frameRef.current?.contentWindow?.postMessage({ type: "AME_VISION_SESSION", session: remoteState }, "*"); }, 350)}
+            title="AME Vision"
+            srcDoc={visionDocument}
+            allow="fullscreen; geolocation"
+            className="block aspect-video min-h-[300px] w-full border-0 bg-black sm:min-h-[450px] lg:min-h-[700px]"
+          />
+        </div>
+      )}
 
       {settingsOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
