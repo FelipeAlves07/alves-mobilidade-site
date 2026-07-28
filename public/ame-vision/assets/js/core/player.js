@@ -194,7 +194,8 @@ export class VisionPlayer {
     this.navigation.querySelector("button.active")?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }
 
-  startScaleToFit() {}
+  startScaleToFit() {
+  }
 
   listenForSettings() {
     window.addEventListener("message", event => {
