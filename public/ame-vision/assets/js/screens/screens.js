@@ -54,11 +54,12 @@ export const screens = [
     render: async () => {
       const trip = window.AME_VISION_TRIP || {};
       const firstName = String(trip.client || "").trim().split(/\s+/)[0];
+      const universal = firstName === "Passageiro(a)";
       return `
       <section class="screen screen--hero">
         <div class="hero-copy">
           <span class="eyebrow">Bem-vindo a bordo</span>
-          <h1>${firstName ? `Olá, <em>${escapeHtml(firstName)}.</em>` : `Sua experiência <em>começa aqui.</em>`}</h1>
+          <h1>${universal ? `Olá, <em>seja bem-vindo.</em>` : firstName ? `Olá, <em>${escapeHtml(firstName)}.</em>` : `Sua experiência <em>começa aqui.</em>`}</h1>
           <p>Aproveite sua viagem com conforto, segurança e tranquilidade.</p>
           <div class="service-chips">
             <span>Transfer aeroporto</span><span>Viagens executivas</span><span>Eventos</span>
