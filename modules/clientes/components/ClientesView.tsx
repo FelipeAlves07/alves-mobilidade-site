@@ -1,6 +1,7 @@
 "use client";
 
-import { Plus, Import, Search } from "lucide-react";
+import { Plus, Import, Search, FileText } from "lucide-react";
+import { useRef } from "react";
 import VoiceInput from "@/components/admin/VoiceInput";
 import VoiceTextarea from "@/components/admin/VoiceTextarea";
 import Panel from "@/components/admin/Panel";
@@ -33,6 +34,19 @@ export default function ClientesView({
   onSetQuery, onSetLeadForm, onSetImportText,
   onAddLead, onUpdateLead, onDeleteLead, onCompleteAction, onSendLeadMessage, onImportLeads,
 }: ClientesViewProps) {
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") onSetImportText(reader.result);
+    };
+    reader.readAsText(file);
+    event.target.value = "";
+  }
+
   const filteredLeads = leads.filter((lead) =>
     `${lead.name} ${lead.phone} ${lead.type} ${lead.status} ${lead.origin}`.toLowerCase().includes(query.toLowerCase())
   );
@@ -59,9 +73,13 @@ export default function ClientesView({
     return (
       <div className="rounded-xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-6">
         <h3 className="text-xl font-black">Importar contatos em massa</h3>
-        <p className="mt-2 text-sm text-zinc-400">Cole um por linha no formato: Nome, telefone</p>
-        <VoiceTextarea value={importText} onValue={onSetImportText} placeholder={"João, 31999999999\nMaria, 31988888888"} className="mt-4 min-h-32" />
-        <button onClick={onImportLeads} className="mt-4 rounded-xl bg-[var(--secondary)] px-6 py-3 font-bold text-white transition hover:opacity-90"><Import className="inline" size={18} /> Importar</button>
+        <p className="mt-2 text-sm text-zinc-400">Cole um por linha no formato: Nome, telefone ou Nome: Nome , Contato: Telefone</p>
+        <VoiceTextarea value={importText} onValue={onSetImportText} placeholder={"Nome: João , Contato: 31999999999\nNome: Maria , Contato: 31988888888"} className="mt-4 min-h-32" />
+        <div className="mt-4 flex flex-wrap gap-3">
+          <input ref={fileRef} type="file" accept=".txt" onChange={handleFile} className="hidden" />
+          <button onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/5"><FileText size={16} /> Importar .txt</button>
+          <button onClick={onImportLeads} className="inline-flex items-center gap-2 rounded-xl bg-[var(--secondary)] px-5 py-3 text-sm font-bold text-white transition hover:opacity-90"><Import size={16} /> Importar</button>
+        </div>
       </div>
     );
   }

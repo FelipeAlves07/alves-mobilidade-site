@@ -4,6 +4,14 @@ import { addDaysISO } from "@/lib/format";
 
 export function parseImportText(text: string) {
   return text.split("\n").map((line) => line.trim()).filter(Boolean).map((line) => {
+    const nomeMatch = line.match(/Nome:\s*(.+?)(?:[,;]\s*Contato:|Contato:)/i);
+    if (nomeMatch) {
+      const contatoMatch = line.match(/Contato:\s*(.+)/i);
+      return {
+        name: nomeMatch[1].trim().replace(/,\s*$/, "") || "Novo contato",
+        phone: contatoMatch ? contatoMatch[1].trim() : "",
+      };
+    }
     const parts = line.split(/[;,]/).map((part) => part.trim());
     return {
       name: parts[0] || "Novo contato",
