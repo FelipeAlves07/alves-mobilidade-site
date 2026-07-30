@@ -78,11 +78,12 @@ export const screens = [
     duration: 26000,
     render: async () => {
       const activeTrip = window.AME_VISION_TRIP || null;
+      const gps = window.AME_VISION_GPS || {};
       const trip = activeTrip ? {
         origin: activeTrip.origin || "Origem cadastrada",
         destination: activeTrip.destination || "Destino cadastrado",
-        eta: "Em atualização",
-        distance: "Em atualização",
+        eta: gps.eta || "Em atualização",
+        distance: gps.distance || "Em atualização",
         driverMessage: activeTrip.message || `Viagem preparada para ${activeTrip.client || "o passageiro"}.`,
         driver: activeTrip.driver || null,
         vehicle: activeTrip.vehicle || null
@@ -99,8 +100,8 @@ export const screens = [
               <div class="route-line"><span></span></div>
               <small>Destino</small><strong>${escapeHtml(trip.destination)}</strong>
             </article>
-            <article class="metric-card"><small>Previsão</small><strong>${escapeHtml(trip.eta)}</strong><p>Tempo estimado de viagem</p></article>
-            <article class="metric-card"><small>Distância</small><strong>${escapeHtml(trip.distance)}</strong><p>Estimativa do percurso</p></article>
+            <article class="metric-card"><small>Previsão</small><strong${gps.eta ? ' class="gps-live"' : ''}>${escapeHtml(trip.eta)}</strong><p>Tempo estimado de viagem</p></article>
+            <article class="metric-card"><small>Distância</small><strong${gps.distance ? ' class="gps-live"' : ''}>${escapeHtml(trip.distance)}</strong><p>Estimativa do percurso</p></article>
           </div>
           ${trip.driver || trip.vehicle ? `<div class="trip-crew"><span>${trip.driver ? `<small>Motorista</small>${escapeHtml(trip.driver)}` : ""}</span>${trip.driver && trip.vehicle ? `<span class="trip-crew-divider"></span>` : ""}${trip.vehicle ? `<span><small>Veículo</small>${escapeHtml(trip.vehicle)}</span>` : ""}</div>` : ""}
           <div class="trip-message">${escapeHtml(trip.driverMessage)}</div>

@@ -85,6 +85,60 @@ async function requestRoute(routeSettings, current) {
   return data;
 }
 
+window.AME_VISION_GPS = { distance: '—', eta: '—', speed: '—', coords: '', status: 'Aguardando GPS…', destination: '' };
+
+export function initGPSTracker(routeSettings = {}) {
+  if (!navigator.geolocation) return () => {};
+  window.AME_VISION_GPS.destination = routeSettings.destination || '';
+  let stopped = false;
+  let routeData = { points: [], remaining: [], distance: 0, duration: 0 };
+  let routeRequested = false;
+
+  async function loadRoute(current) {
+    if (routeRequested || !routeSettings.destination) return;
+    routeRequested = true;
+    try {
+      const data = await requestRoute(routeSettings, current);
+      if (stopped) return;
+      routeData.points = data.coordinates.map(([lon, lat]) => [lat, lon]);
+      routeData.remaining = buildRouteMetrics(routeData.points);
+      routeData.duration = Number(data.durationSeconds || 0);
+      routeData.distance = Number(data.distanceMeters || routeData.remaining[0] || 0);
+      window.AME_VISION_GPS.distance = formatDistance(routeData.distance);
+      window.AME_VISION_GPS.eta = formatDuration(routeData.duration);
+      window.AME_VISION_GPS.status = 'Rota ativa';
+    } catch { routeRequested = false; }
+  }
+
+  const watchId = navigator.geolocation.watchPosition(position => {
+    if (stopped) return;
+    const { latitude, longitude, speed: metersPerSecond, accuracy } = position.coords;
+    const point = [latitude, longitude];
+    window.AME_VISION_GPS.speed = formatSpeed(metersPerSecond);
+    window.AME_VISION_GPS.coords = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+
+    if (!window.AME_VISION_GPS._firstFix) {
+      window.AME_VISION_GPS._firstFix = true;
+      loadRoute(point);
+    }
+    if (routeData.points.length) {
+      const index = nearestRouteIndex(routeData.points, point);
+      const remaining = routeData.remaining[index] || 0;
+      const fraction = routeData.distance > 0 ? remaining / routeData.distance : 0;
+      window.AME_VISION_GPS.distance = formatDistance(remaining);
+      window.AME_VISION_GPS.eta = formatDuration(routeData.duration * fraction);
+    }
+    if (!routeSettings.destination) {
+      window.AME_VISION_GPS.status = `GPS ativo · precisão aprox. ${Math.round(accuracy)} m`;
+    }
+  }, error => {
+    const messages = { 1: 'Permissão negada.', 2: 'Indisponível.', 3: 'GPS lento.' };
+    window.AME_VISION_GPS.status = messages[error.code] || 'Erro no GPS.';
+  }, { enableHighAccuracy: true, maximumAge: 3000, timeout: 12000 });
+
+  return () => { stopped = true; navigator.geolocation.clearWatch(watchId); };
+}
+
 export async function startLiveMap(container, routeSettings = {}) {
   const screen = container.closest('.live-map-screen');
   const status = screen?.querySelector('[data-gps-status]');
@@ -134,6 +188,9 @@ export async function startLiveMap(container, routeSettings = {}) {
       if (remainingValue) remainingValue.textContent = formatDistance(routeDistance);
       if (etaValue) etaValue.textContent = formatDuration(routeDuration);
       if (status) status.textContent = 'Rota ativa · acompanhando o deslocamento em tempo real.';
+      window.AME_VISION_GPS.distance = formatDistance(routeDistance);
+      window.AME_VISION_GPS.eta = formatDuration(routeDuration);
+      window.AME_VISION_GPS.status = 'Rota ativa';
     } catch (error) {
       routeRequested = false;
       if (status) status.textContent = error instanceof Error ? error.message : 'Não foi possível calcular a rota.';
@@ -164,8 +221,12 @@ export async function startLiveMap(container, routeSettings = {}) {
       const fraction = routeDistance > 0 ? remaining / routeDistance : 0;
       if (remainingValue) remainingValue.textContent = formatDistance(remaining);
       if (etaValue) etaValue.textContent = formatDuration(routeDuration * fraction);
+      window.AME_VISION_GPS.distance = formatDistance(remaining);
+      window.AME_VISION_GPS.eta = formatDuration(routeDuration * fraction);
     }
 
+    window.AME_VISION_GPS.speed = formatSpeed(metersPerSecond);
+    window.AME_VISION_GPS.coords = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
     if (status && !routeSettings.destination) status.textContent = `GPS ativo · precisão aproximada de ${Math.round(accuracy)} m · informe um destino no AME Control para desenhar a rota.`;
     if (speed) speed.textContent = formatSpeed(metersPerSecond);
     if (coords) coords.textContent = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;

@@ -23,6 +23,7 @@ export class VisionPlayer {
     this.routeSettings = { origin: "", destination: "" };
     this.session = { status: "idle", trip: null, started_at: null };
     this.sessionTimer = null;
+    this.stopGPSTracker = null;
     this.renderNavigation();
     this.listenForSettings();
     this.startScaleToFit();
@@ -128,6 +129,7 @@ export class VisionPlayer {
     if (trip) {
       this.routeSettings = { origin: String(trip.origin || ""), destination: String(trip.destination || "") };
       window.AME_VISION_TRIP = trip;
+      this.restartGPSTracker();
     }
     if (status === "prepared") { this.renderSessionScreen("prepared"); return; }
     if (status === "completed") {
@@ -157,7 +159,6 @@ export class VisionPlayer {
     window.clearInterval(this.carouselTimer);
     window.clearInterval(this.restClockTimer);
     window.clearTimeout(this.sessionTimer);
-    if (this.stopMap) { this.stopMap(); this.stopMap = null; }
   }
 
   animateProgress(duration) {
@@ -196,6 +197,14 @@ export class VisionPlayer {
   startScaleToFit() {
   }
 
+  async restartGPSTracker() {
+    try {
+      if (this.stopGPSTracker) { this.stopGPSTracker(); this.stopGPSTracker = null; }
+      const { initGPSTracker } = await import("./gps.js");
+      this.stopGPSTracker = initGPSTracker({ ...this.routeSettings });
+    } catch {}
+  }
+
   listenForSettings() {
     window.addEventListener("message", event => {
       if (event.data?.type === "AME_VISION_SESSION") {
@@ -218,6 +227,7 @@ export class VisionPlayer {
         origin: String(event.data.route?.origin || "").trim(),
         destination: String(event.data.route?.destination || "").trim()
       };
+      this.restartGPSTracker();
       if (nextMode !== this.mode) {
         this.mode = nextMode;
         this.schedule = getSchedule(this.mode).filter(id => this.screenMap.has(id));
