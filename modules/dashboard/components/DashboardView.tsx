@@ -10,12 +10,14 @@ import AISuggestions from "@/components/admin/AISuggestions";
 import { addDaysISO } from "@/lib/format";
 import type { Lead } from "@/domain/lead/types";
 import type { Trip } from "@/domain/trip/types";
+import type { FinanceEntry } from "@/domain/finance/types";
 import type { DashboardStats } from "@/domain/shared/types";
 import type { MessageKey } from "@/domain/marketing/types";
 
 interface DashboardViewProps {
   stats: DashboardStats;
   leads: Lead[];
+  finance: FinanceEntry[];
   today: string;
   currentTask: Lead | undefined;
   selectedMessage: MessageKey;
@@ -25,8 +27,55 @@ interface DashboardViewProps {
   onUpdateLead: (id: string, patch: Partial<Lead>) => void;
 }
 
+function LeadStatusChart({ leads }: { leads: Lead[] }) {
+  const counts: Record<string, number> = {};
+  for (const l of leads) { counts[l.status] = (counts[l.status] || 0) + 1; }
+  const items = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const max = Math.max(...items.map(([, c]) => c), 1);
+  const colors = ["from-cyan-400 to-blue-500", "from-emerald-400 to-green-500", "from-amber-400 to-orange-500", "from-rose-400 to-pink-500", "from-violet-400 to-purple-500", "from-sky-400 to-indigo-500"];
+  return (
+    <div className="flex flex-col gap-2">
+      {items.map(([status, count], i) => (
+        <div key={status} className="flex items-center gap-3">
+          <span className="w-28 shrink-0 truncate text-xs text-zinc-400">{status}</span>
+          <div className="h-5 flex-1 overflow-hidden rounded-full bg-[#222]">
+            <div className={`h-full rounded-full bg-gradient-to-r ${colors[i % colors.length]} transition-all`} style={{ width: `${(count / max) * 100}%` }} />
+          </div>
+          <span className="w-8 text-right text-xs font-bold text-zinc-300">{count}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FinanceChart({ finance }: { finance: FinanceEntry[] }) {
+  const months: Record<string, { entradas: number; saidas: number }> = {};
+  for (const f of finance) {
+    const key = f.date.slice(0, 7);
+    if (!months[key]) months[key] = { entradas: 0, saidas: 0 };
+    if (f.type === "Entrada") months[key].entradas += Number(f.value);
+    else months[key].saidas += Number(f.value);
+  }
+  const items = Object.entries(months).sort(([a], [b]) => a.localeCompare(b));
+  const maxVal = Math.max(...items.flatMap(([, v]) => [v.entradas, v.saidas]), 1);
+  return (
+    <div className="flex items-end gap-3" style={{ height: 120 }}>
+      {items.map(([month, vals]) => (
+        <div key={month} className="flex flex-1 flex-col items-center justify-end gap-0.5">
+          <div className="w-full flex flex-col items-center justify-end" style={{ height: 100 }}>
+            <div className="w-4 rounded-t-sm bg-emerald-400 transition-all" style={{ height: `${(vals.entradas / maxVal) * 100}%` }} />
+            <div className="w-4 rounded-b-sm bg-red-400 transition-all" style={{ height: `${(vals.saidas / maxVal) * 100}%` }} />
+          </div>
+          <span className="text-[9px] text-zinc-500">{month.slice(5)}</span>
+        </div>
+      ))}
+      {!items.length && <p className="w-full text-center text-xs text-zinc-500">Nenhum lançamento</p>}
+    </div>
+  );
+}
+
 export default function DashboardView({
-  stats, leads, today, currentTask, selectedMessage,
+  stats, leads, finance, today, currentTask, selectedMessage,
   onCompleteAction, onSendLeadMessage, onFinishTrip, onUpdateLead,
 }: DashboardViewProps) {
   const progress = Math.min(100, Math.round(((leads.length - stats.pending.length) / Math.max(leads.length, 1)) * 100));
@@ -82,6 +131,10 @@ export default function DashboardView({
         <Metric title="Follow-ups hoje" value={String(stats.pending.length)} icon={ClipboardList} />
         <Metric title="Transfers acumulados" value={String(stats.credits)} icon={Gift} />
         <Metric title="Faturamento previsto" value={`R$ ${stats.revenueTrips.toLocaleString("pt-BR")}`} icon={DollarSign} />
+      </div>
+      <div className="grid gap-5 xl:grid-cols-2">
+        <Panel title="Status dos leads"><LeadStatusChart leads={leads} /></Panel>
+        <Panel title="Financeiro mensal"><FinanceChart finance={finance} /></Panel>
       </div>
       <div className="grid gap-5 xl:grid-cols-2">
         <Panel title="Próximas viagens de hoje"><TripList trips={stats.todayTrips} onFinish={onFinishTrip} /></Panel>

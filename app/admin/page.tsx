@@ -386,7 +386,7 @@ export default function AdminPage() {
     switch (active) {
       case "dashboard": case "trabalhar":
         return <DashboardView
-          stats={stats} leads={leads} today={today} currentTask={currentTask}
+          stats={stats} leads={leads} finance={finance} today={today} currentTask={currentTask}
           selectedMessage={selectedMessage}
           onCompleteAction={completeAction} onSendLeadMessage={sendLeadMessage}
           onFinishTrip={finishTrip} onUpdateLead={updateLead}
