@@ -47,6 +47,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   const [selectedTripId, setSelectedTripId] = useState("");
   const [universalMode, setUniversalMode] = useState(false);
   const [driverName, setDriverName] = useState("");
+  const [connected, setConnected] = useState(false);
   const [vehicleModel, setVehicleModel] = useState("");
   const [tripMessage, setTripMessage] = useState("");
 
@@ -99,10 +100,11 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   }, []);
 
   const totalMinutes = useMemo(() => {
-    const schedule = ["news","weather","destinations","pause-one","welcome","news","comfort","trip","fleet","weather","pause-two","destinations","news","reviews","weather","pause-one","referral","news","contact","fleet"];
-    const seconds = schedule.reduce((sum, id) => sum + (durations[id] || defaults[id] || 24), 0);
-    return Math.round(seconds / 60);
-  }, [durations]);
+    const schedule = ["welcome","news","destinations","fleet","referral","contact","live-map","news","weather","destinations","fleet","news","reviews","contact","trip","news","weather","comfort","referral","contact","live-map"];
+    const contentSeconds = schedule.reduce((sum, id) => sum + (durations[id] || defaults[id] || 24), 0);
+    const restMinutes = Math.round(restDuration / 60);
+    return Math.round(contentSeconds / 60) + restMinutes * 3;
+  }, [durations, restDuration]);
 
   function sendSettings(next = durations, nextLong = longTripEnabled, nextRest = restDuration, nextOrigin = routeOrigin, nextDestination = routeDestination) {
     frameRef.current?.contentWindow?.postMessage({
@@ -122,6 +124,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   useEffect(() => {
     const listener = (event: MessageEvent) => {
       if (event.data?.type === "AME_VISION_READY") {
+        setConnected(true);
         sendSettings();
         frameRef.current?.contentWindow?.postMessage({ type: "AME_VISION_SESSION", session: remoteState }, "*");
       }
@@ -251,7 +254,10 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
           </div>
         )}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
-          <span>Status do tablet: <strong className="text-[var(--accent)]">{remoteState.status}</strong>{remoteState.trip ? ` · ${remoteState.trip.client}` : ""}{universalMode ? <span className="ml-2 text-[var(--accent)] font-bold">[Modo Universal]</span> : ""}</span>
+          <span className="flex items-center gap-2">
+            <span className={`inline-block h-2 w-2 rounded-full ${connected ? "bg-green-400" : "bg-zinc-600"}`} />
+            Status do tablet: <strong className="text-[var(--accent)]">{remoteState.status}</strong>{remoteState.trip ? ` · ${remoteState.trip.client}` : ""}{universalMode ? <span className="ml-2 text-[var(--accent)] font-bold">[Modo Universal]</span> : ""}
+          </span>
           {syncMessage && <span>{syncMessage}</span>}
         </div>
       </div>

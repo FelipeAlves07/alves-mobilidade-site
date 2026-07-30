@@ -105,6 +105,7 @@ export const screens = [
           </div>
           ${trip.driver || trip.vehicle ? `<div class="trip-crew"><span>${trip.driver ? `<small>Motorista</small>${escapeHtml(trip.driver)}` : ""}</span>${trip.driver && trip.vehicle ? `<span class="trip-crew-divider"></span>` : ""}${trip.vehicle ? `<span><small>Veículo</small>${escapeHtml(trip.vehicle)}</span>` : ""}</div>` : ""}
           <div class="trip-message">${escapeHtml(trip.driverMessage)}</div>
+          <div class="trip-gps-status">${escapeHtml(gps.status || '')}</div>
         </section>`;
     }
   },

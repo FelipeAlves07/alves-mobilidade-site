@@ -9,6 +9,9 @@ export default function TVDebordoPage() {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const [fullscreen, setFullscreen] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(true);
+  const [online, setOnline] = useState(true);
   const lastStateRef = useRef<string>("");
   const lastSettingsRef = useRef<string>("");
 
@@ -50,6 +53,7 @@ export default function TVDebordoPage() {
       await screenRef.current?.requestFullscreen?.({ navigationUI: "hide" });
       try { await (screen.orientation as any)?.lock?.("landscape"); } catch {}
       setFullscreen(true);
+      setShowPrompt(false);
     } catch {}
   }
 
@@ -57,6 +61,7 @@ export default function TVDebordoPage() {
     const handler = () => {
       if (!document.fullscreenElement) {
         setFullscreen(false);
+        setShowPrompt(true);
         try { screen.orientation?.unlock?.(); } catch {}
       }
     };
@@ -66,6 +71,7 @@ export default function TVDebordoPage() {
 
   useEffect(() => {
     function onReady() {
+      setReady(true);
       pollState();
       sendSettings();
     }
@@ -79,7 +85,18 @@ export default function TVDebordoPage() {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     const timer = window.setInterval(() => { pollState(); sendSettings(); }, 3000);
-    return () => { document.body.style.overflow = ""; window.clearInterval(timer); };
+    const onlineTimer = window.setInterval(() => setOnline(navigator.onLine), 2000);
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => {
+      document.body.style.overflow = "";
+      window.clearInterval(timer);
+      window.clearInterval(onlineTimer);
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
   }, []);
 
   return (
@@ -87,15 +104,28 @@ export default function TVDebordoPage() {
       ref={screenRef}
       className="fixed inset-0 flex flex-col bg-black"
     >
+      {!ready && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-black">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-zinc-700 border-t-[var(--accent)]" />
+          <p className="text-sm text-zinc-500">Carregando AME Vision…</p>
+        </div>
+      )}
+
       <iframe
         ref={frameRef}
         title="AME Vision"
         srcDoc={visionDocument}
         allow="fullscreen; geolocation"
-        className="h-full w-full border-0"
+        className={`h-full w-full border-0 ${ready ? "" : "invisible"}`}
       />
 
-      {!fullscreen && (
+      <div className="absolute right-3 top-3 z-30 flex items-center gap-2">
+        <span className={`inline-block h-2 w-2 rounded-full ${ready ? "bg-green-400" : "bg-zinc-600"}`} />
+        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{ready ? "Conectado" : "Conectando…"}</span>
+        {!online && <span className="ml-1 text-[10px] font-bold text-red-400">Sinal perdido</span>}
+      </div>
+
+      {showPrompt && ready && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 bg-black/80 backdrop-blur-sm">
           <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-400">Alves Mobilidade Executiva</p>
@@ -108,8 +138,9 @@ export default function TVDebordoPage() {
             className="flex cursor-pointer items-center gap-3 rounded-2xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-8 py-4 text-base font-bold text-white shadow-2xl transition hover:scale-105 active:scale-95"
           >
             <Maximize2 size={20} />
-            Entrar em tela cheia
+            {fullscreen === false && !showPrompt ? "Reativar tela cheia" : "Entrar em tela cheia"}
           </button>
+          <p className="text-xs text-zinc-600">Toque para entrar em modo paisagem</p>
         </div>
       )}
 
