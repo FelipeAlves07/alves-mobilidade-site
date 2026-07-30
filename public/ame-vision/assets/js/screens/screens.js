@@ -79,9 +79,10 @@ export const screens = [
     render: async () => {
       const activeTrip = window.AME_VISION_TRIP || null;
       const gps = window.AME_VISION_GPS || {};
+      const routeActive = gps.destination && gps.status !== 'Rota desligada';
       const trip = activeTrip ? {
-        origin: activeTrip.origin || "Origem cadastrada",
-        destination: activeTrip.destination || "Destino cadastrado",
+        origin: activeTrip.origin || "",
+        destination: activeTrip.destination || "",
         eta: gps.eta || "Em atualização",
         distance: gps.distance || "Em atualização",
         driverMessage: activeTrip.message || `Viagem preparada para ${activeTrip.client || "o passageiro"}.`,
@@ -95,13 +96,13 @@ export const screens = [
             <h2>Seu trajeto, de forma <em>clara.</em></h2>
           </div>
           <div class="metric-grid">
-            <article class="metric-card metric-card--wide">
+            ${routeActive && trip.origin ? `<article class="metric-card metric-card--wide">
               <small>Origem</small><strong>${escapeHtml(trip.origin)}</strong>
               <div class="route-line"><span></span></div>
               <small>Destino</small><strong>${escapeHtml(trip.destination)}</strong>
-            </article>
-            <article class="metric-card"><small>Previsão</small><strong${gps.eta ? ' class="gps-live"' : ''}>${escapeHtml(trip.eta)}</strong><p>Tempo estimado de viagem</p></article>
-            <article class="metric-card"><small>Distância</small><strong${gps.distance ? ' class="gps-live"' : ''}>${escapeHtml(trip.distance)}</strong><p>Estimativa do percurso</p></article>
+            </article>` : ''}
+            <article class="metric-card"><small>Previsão</small><strong${gps.eta && routeActive ? ' class="gps-live"' : ''}>${escapeHtml(trip.eta)}</strong><p>Tempo estimado de viagem</p></article>
+            <article class="metric-card"><small>Distância</small><strong${gps.distance && routeActive ? ' class="gps-live"' : ''}>${escapeHtml(trip.distance)}</strong><p>Estimativa do percurso</p></article>
           </div>
           ${trip.driver || trip.vehicle ? `<div class="trip-crew"><span>${trip.driver ? `<small>Motorista</small>${escapeHtml(trip.driver)}` : ""}</span>${trip.driver && trip.vehicle ? `<span class="trip-crew-divider"></span>` : ""}${trip.vehicle ? `<span><small>Veículo</small>${escapeHtml(trip.vehicle)}</span>` : ""}</div>` : ""}
           <div class="trip-message">${escapeHtml(trip.driverMessage)}</div>
