@@ -11,8 +11,6 @@ export const LONG_PROGRAM_SCHEDULE = [
   "news", "weather", "comfort", "referral", "contact", "pause-two"
 ];
 
-export function getSchedule(mode = "long", universal = false) {
-  const schedule = mode === "short" ? SHORT_PROGRAM_SCHEDULE : LONG_PROGRAM_SCHEDULE;
-  if (universal) return schedule.filter(id => id !== "live-map" && id !== "trip");
-  return schedule;
+export function getSchedule(mode = "long") {
+  return mode === "short" ? SHORT_PROGRAM_SCHEDULE : LONG_PROGRAM_SCHEDULE;
 }

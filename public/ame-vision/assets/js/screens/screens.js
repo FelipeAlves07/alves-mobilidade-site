@@ -251,22 +251,14 @@ export const screens = [
     label: "Indicação",
     duration: 32000,
     render: async () => `
-      <section class="screen screen--referral">
-        <div class="referral-copy">
-          <span class="eyebrow">Programa de indicação</span>
-          <h2>Indicou, fechou, <em>ganhou transfer.</em></h2>
-          <p>Indique um novo passageiro. Quando ele concluir uma viagem elegível, você recebe um transfer executivo de ida de Belo Horizonte para Confins.</p>
-          <div class="step-grid">
-            <article><span>1</span><h3>Indique</h3><p>Compartilhe o contato da AME com um amigo, familiar ou colega.</p></article>
-            <article><span>2</span><h3>O indicado viaja</h3><p>O novo cliente agenda e realiza uma viagem elegível.</p></article>
-            <article><span>3</span><h3>Você ganha</h3><p>Receba seu transfer executivo de ida para o Aeroporto de Confins.</p></article>
-          </div>
-          <div class="rules-strip"><span>Novo cliente indicado</span><span>Benefício após a viagem</span><span>Indicações acumulam</span><span>Resgate mediante disponibilidade</span></div>
+      <section class="screen">
+        <div class="section-heading"><span class="eyebrow">Programa de indicação</span><h2>Indicou, fechou, <em>ganhou transfer.</em></h2><p>Indique um novo passageiro. Quando ele concluir uma viagem elegível, você recebe um transfer executivo de ida de Belo Horizonte para Confins.</p></div>
+        <div class="step-grid">
+          <article><span>1</span><h3>Indique</h3><p>Compartilhe o contato da AME com um amigo, familiar ou colega.</p></article>
+          <article><span>2</span><h3>O indicado viaja</h3><p>O novo cliente agenda e realiza uma viagem elegível para Confins ou cidade próxima.</p></article>
+          <article><span>3</span><h3>Você ganha</h3><p>Receba seu transfer executivo de ida para o Aeroporto de Confins.</p></article>
         </div>
-        <div class="referral-media">
-          ${image("assets/images/destinos/confins1.jpg", "Aeroporto de Confins")}
-          <div class="media-label">Transfer executivo · cortesia</div>
-        </div>
+        <div class="rules-strip"><span>Novo cliente indicado</span><span>Benefício após a viagem</span><span>Indicações acumulam</span><span>Resgate mediante disponibilidade</span></div>
       </section>`
   },
   {

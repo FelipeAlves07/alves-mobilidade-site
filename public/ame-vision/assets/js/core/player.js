@@ -11,8 +11,7 @@ export class VisionPlayer {
     this.status = status;
     this.screenMap = new Map(screens.map(screen => [screen.id, screen]));
     this.mode = "long";
-    this.universal = false;
-    this.schedule = getSchedule(this.mode, this.universal).filter(id => this.screenMap.has(id));
+    this.schedule = getSchedule(this.mode).filter(id => this.screenMap.has(id));
     this.position = 0;
     this.timeout = null;
     this.carouselTimer = null;
@@ -130,13 +129,6 @@ export class VisionPlayer {
       this.routeSettings = { origin: String(trip.origin || ""), destination: String(trip.destination || "") };
       window.AME_VISION_TRIP = trip;
     }
-    this.universal = trip?.client === "Passageiro(a)";
-    const oldSchedule = this.schedule;
-    this.schedule = getSchedule(this.mode, this.universal).filter(id => this.screenMap.has(id));
-    if (JSON.stringify(this.schedule) !== JSON.stringify(oldSchedule)) {
-      this.position = 0;
-      this.refreshNavigation();
-    }
     if (status === "prepared") { this.renderSessionScreen("prepared"); return; }
     if (status === "completed") {
       this.renderSessionScreen("completed");
@@ -228,7 +220,7 @@ export class VisionPlayer {
       };
       if (nextMode !== this.mode) {
         this.mode = nextMode;
-        this.schedule = getSchedule(this.mode, this.universal).filter(id => this.screenMap.has(id));
+        this.schedule = getSchedule(this.mode).filter(id => this.screenMap.has(id));
         this.position = 0;
         this.refreshNavigation();
       }
