@@ -477,7 +477,8 @@ export default function AdminPage() {
       case "financeiro":
         return <FinanceiroView
           stats={stats} trips={trips} financeForm={financeForm} finance={finance}
-          onSetFinanceForm={setFinanceForm} onAddFinance={addFinance}
+          today={today}
+          onSetFinanceForm={setFinanceForm} onAddFinance={addFinance} onDeleteFinance={deleteFinanceFn}
         />;
       case "ia":
         return <AIView stats={stats} onExportBackup={exportBackup} />;
