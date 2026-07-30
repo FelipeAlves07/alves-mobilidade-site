@@ -32,6 +32,7 @@ export default function TVDebordoPage() {
         longTripEnabled: p.longTripEnabled,
         restDuration: p.restDuration,
         gpsEnabled: p.gpsEnabled,
+        routeEnabled: p.routeEnabled !== false,
         route: { origin: (p.routeOrigin || "").trim(), destination: (p.routeDestination || "").trim() }
       });
     } catch {}

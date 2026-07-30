@@ -21,6 +21,7 @@ export class VisionPlayer {
     this.visitCounts = new Map();
     this.renderVersion = 0;
     this.routeSettings = { origin: "", destination: "" };
+    this.routeEnabled = true;
     this.session = { status: "idle", trip: null, started_at: null };
     this.sessionTimer = null;
     this.stopGPSTracker = null;
@@ -86,7 +87,7 @@ export class VisionPlayer {
     try {
       const { startLiveMap } = await import("./gps.js");
       const container = this.viewport.querySelector("[data-live-map]");
-      if (container) this.stopMap = await startLiveMap(container, this.routeSettings);
+      if (container) this.stopMap = await startLiveMap(container, { ...this.routeSettings, routeEnabled: this.routeEnabled });
     } catch (error) {
       console.warn("[AME Vision] GPS indisponível", error);
     }
@@ -201,7 +202,7 @@ export class VisionPlayer {
     try {
       if (this.stopGPSTracker) { this.stopGPSTracker(); this.stopGPSTracker = null; }
       const { initGPSTracker } = await import("./gps.js");
-      this.stopGPSTracker = initGPSTracker({ ...this.routeSettings });
+      this.stopGPSTracker = initGPSTracker({ ...this.routeSettings, routeEnabled: this.routeEnabled });
     } catch {}
   }
 
@@ -227,6 +228,7 @@ export class VisionPlayer {
         origin: String(event.data.route?.origin || "").trim(),
         destination: String(event.data.route?.destination || "").trim()
       };
+      this.routeEnabled = event.data.routeEnabled !== false;
       this.restartGPSTracker();
       if (nextMode !== this.mode) {
         this.mode = nextMode;

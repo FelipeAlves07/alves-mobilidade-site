@@ -90,12 +90,13 @@ window.AME_VISION_GPS = { distance: '—', eta: '—', speed: '—', coords: '',
 export function initGPSTracker(routeSettings = {}) {
   if (!navigator.geolocation) return () => {};
   window.AME_VISION_GPS.destination = routeSettings.destination || '';
+  const routeEnabled = routeSettings.routeEnabled !== false;
   let stopped = false;
   let routeData = { points: [], remaining: [], distance: 0, duration: 0 };
   let routeRequested = false;
 
   async function loadRoute(current) {
-    if (routeRequested || !routeSettings.destination) return;
+    if (routeRequested || !routeSettings.destination || !routeEnabled) { window.AME_VISION_GPS.status = routeEnabled ? 'GPS ativo' : 'Rota desligada'; return; }
     routeRequested = true;
     try {
       const data = await requestRoute(routeSettings, current);
@@ -121,7 +122,7 @@ export function initGPSTracker(routeSettings = {}) {
       window.AME_VISION_GPS._firstFix = true;
       loadRoute(point);
     }
-    if (routeData.points.length) {
+    if (routeData.points.length && routeEnabled) {
       const index = nearestRouteIndex(routeData.points, point);
       const remaining = routeData.remaining[index] || 0;
       const fraction = routeData.distance > 0 ? remaining / routeData.distance : 0;
@@ -130,6 +131,8 @@ export function initGPSTracker(routeSettings = {}) {
     }
     if (!routeSettings.destination) {
       window.AME_VISION_GPS.status = `GPS ativo · precisão aprox. ${Math.round(accuracy)} m`;
+    } else if (!routeEnabled) {
+      window.AME_VISION_GPS.status = 'Rota desligada';
     }
   }, error => {
     const messages = { 1: 'Permissão negada.', 2: 'Indisponível.', 3: 'GPS lento.' };
@@ -147,6 +150,7 @@ export async function startLiveMap(container, routeSettings = {}) {
   const remainingValue = screen?.querySelector('[data-route-distance]');
   const etaValue = screen?.querySelector('[data-route-eta]');
   const routeLabel = screen?.querySelector('[data-route-label]');
+  const routeEnabled = routeSettings.routeEnabled !== false;
 
   if (!navigator.geolocation) {
     if (status) status.textContent = 'Este dispositivo não oferece GPS pelo navegador.';
@@ -170,7 +174,10 @@ export async function startLiveMap(container, routeSettings = {}) {
   let stopped = false;
 
   async function loadRoute(current) {
-    if (routeRequested || !routeSettings.destination) return;
+    if (routeRequested || !routeSettings.destination || !routeEnabled) {
+      if (status && !routeEnabled) status.textContent = 'Rota desligada · ligue nas configurações para traçar o trajeto.';
+      return;
+    }
     routeRequested = true;
     try {
       if (status) status.textContent = 'Calculando rota rodoviária…';
@@ -215,7 +222,7 @@ export async function startLiveMap(container, routeSettings = {}) {
       map.panTo(point, { animate: true, duration: 0.8 });
     }
 
-    if (routePoints.length) {
+    if (routePoints.length && routeEnabled) {
       const index = nearestRouteIndex(routePoints, point);
       const remaining = routeRemaining[index] || 0;
       const fraction = routeDistance > 0 ? remaining / routeDistance : 0;
@@ -228,6 +235,7 @@ export async function startLiveMap(container, routeSettings = {}) {
     window.AME_VISION_GPS.speed = formatSpeed(metersPerSecond);
     window.AME_VISION_GPS.coords = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
     if (status && !routeSettings.destination) status.textContent = `GPS ativo · precisão aproximada de ${Math.round(accuracy)} m · informe um destino no AME Control para desenhar a rota.`;
+    else if (status && !routeEnabled) status.textContent = 'Rota desligada · ligue nas configurações para traçar o trajeto.';
     if (speed) speed.textContent = formatSpeed(metersPerSecond);
     if (coords) coords.textContent = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
   }, error => {
