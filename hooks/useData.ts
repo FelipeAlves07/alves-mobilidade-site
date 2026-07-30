@@ -9,6 +9,7 @@ import { useTrips } from "./useTrips";
 import { useFinance } from "./useFinance";
 import { useReferrals } from "./useReferrals";
 import { useProposals } from "./useProposals";
+import { useMotoristas } from "./useMotoristas";
 import type { DashboardStats } from "@/domain/shared/types";
 
 function loadLocal<T>(key: string, fallback: T): T {
@@ -39,6 +40,7 @@ export function useData() {
   const finance = useFinance();
   const referrals = useReferrals();
   const proposals = useProposals();
+  const motoristas = useMotoristas();
 
   const today = todayISO();
 
@@ -109,6 +111,7 @@ export function useData() {
     ...finance,
     ...referrals,
     ...proposals,
+    ...motoristas,
     completedMarketing,
     completeMarketingTask,
     resetMarketingTasks,
