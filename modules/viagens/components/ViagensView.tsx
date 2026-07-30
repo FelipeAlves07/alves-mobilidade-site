@@ -1,6 +1,7 @@
 "use client";
 
-import { DollarSign, Download, Mic, Plus } from "lucide-react";
+import { useState } from "react";
+import { ChevronLeft, ChevronRight, DollarSign, Download, Mic, Plus } from "lucide-react";
 import VoiceInput from "@/components/admin/VoiceInput";
 import Panel from "@/components/admin/Panel";
 import TripList from "@/components/admin/TripList";
@@ -35,6 +36,58 @@ interface ViagensViewProps {
   onSetQuoteResult: (v: QuoteResult | null) => void;
   onOpenGoogleMapsRoute: (origin: string, destination: string) => void;
   onOpenWazeRoute: (destination: string) => void;
+}
+
+const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+function TripCalendar({ trips }: { trips: Trip[] }) {
+  const today = new Date();
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth());
+
+  const tripMap = new Map<string, Trip[]>();
+  for (const t of trips) {
+    if (!t.date || t.status === "Cancelada") continue;
+    const prev = tripMap.get(t.date) || [];
+    prev.push(t);
+    tripMap.set(t.date, prev);
+  }
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const prevMonth = () => { if (month === 0) { setYear(y => y - 1); setMonth(11); } else setMonth(m => m - 1); };
+  const nextMonth = () => { if (month === 11) { setYear(y => y + 1); setMonth(0); } else setMonth(m => m + 1); };
+
+  const cells: React.ReactNode[] = [];
+  for (let i = 0; i < firstDay; i++) cells.push(<div key={`empty-${i}`} />);
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const dayTrips = tripMap.get(dateStr) || [];
+    cells.push(
+      <div key={dateStr} className="flex min-h-[56px] flex-col rounded-lg border border-white/5 bg-[var(--bg-surface)] p-1 text-xs">
+        <span className="text-[10px] font-bold text-zinc-500">{d}</span>
+        {dayTrips.slice(0, 2).map((t) => (
+          <span key={t.id} className="mt-0.5 truncate rounded bg-[var(--secondary)]/20 px-1 py-0.5 text-[9px] leading-tight text-[var(--secondary)]">{t.client}</span>
+        ))}
+        {dayTrips.length > 2 && <span className="mt-0.5 text-[8px] text-zinc-600">+{dayTrips.length - 2}</span>}
+      </div>,
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-[var(--accent-10)] bg-[var(--bg-card)] p-6" style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.18)" }}>
+      <div className="mb-4 flex items-center justify-between">
+        <button onClick={prevMonth} className="rounded-lg border border-white/10 p-1.5 text-zinc-400 transition hover:text-white"><ChevronLeft size={16} /></button>
+        <h3 className="text-lg font-black tracking-tight">{MONTHS[month]} {year}</h3>
+        <button onClick={nextMonth} className="rounded-lg border border-white/10 p-1.5 text-zinc-400 transition hover:text-white"><ChevronRight size={16} /></button>
+      </div>
+      <div className="grid grid-cols-7 gap-1">
+        {WEEKDAYS.map((w) => <div key={w} className="text-center text-[9px] font-bold uppercase tracking-wider text-zinc-600">{w}</div>)}
+        {cells}
+      </div>
+    </div>
+  );
 }
 
 export default function ViagensView({
@@ -141,6 +194,7 @@ export default function ViagensView({
           <button onClick={onAddTrip} className="cursor-pointer rounded-xl bg-[var(--secondary)] px-5 py-3.5 font-bold text-white transition hover:bg-[var(--accent)] xl:col-span-6"><Plus className="inline" size={18} /> Adicionar viagem</button>
         </div>
       </div>
+      <TripCalendar trips={trips} />
       <Panel title="Viagens e agenda" extra={<button onClick={() => downloadCSV(trips, "viagens-export.csv")} className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-400 transition hover:text-white"><Download size={13} className="inline" /> CSV</button>}><TripList trips={trips} onFinish={onFinishTrip} onDelete={onDeleteTrip} /></Panel>
     </div>
   );
