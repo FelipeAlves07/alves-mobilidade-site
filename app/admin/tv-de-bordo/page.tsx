@@ -1,6 +1,6 @@
 "use client";
 
-import { Maximize2, X } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { readAMEVisionState, type AMEVisionState } from "@/lib/ameVisionSync";
 import { visionDocument } from "@/lib/ameVisionHTML";
@@ -51,12 +51,6 @@ export default function TVDebordoPage() {
       try { await (screen.orientation as any)?.lock?.("landscape"); } catch {}
       setFullscreen(true);
     } catch {}
-  }
-
-  function exitFullscreenMode() {
-    if (document.fullscreenElement) document.exitFullscreen();
-    try { screen.orientation?.unlock?.(); } catch {}
-    setFullscreen(false);
   }
 
   useEffect(() => {
@@ -119,15 +113,6 @@ export default function TVDebordoPage() {
         </div>
       )}
 
-      {fullscreen && (
-        <button
-          type="button"
-          onClick={exitFullscreenMode}
-          className="fixed right-4 top-4 z-20 flex cursor-pointer items-center gap-2 rounded-xl border border-white/20 bg-black/50 px-4 py-2 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/10"
-        >
-          <X size={14} /> Sair
-        </button>
-      )}
     </div>
   );
 }

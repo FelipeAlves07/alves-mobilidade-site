@@ -161,22 +161,13 @@ export const screens = [
     carousel: { items: Array.from({ length: 10 }) },
     render: async ({ carouselIndex = 0, visitIndex = 0 } = {}) => {
       const allNews = await getCachedNews();
-      const safeNews = Array.isArray(allNews) && allNews.length ? allNews : [{ category: "AME Vision", title: "Conteúdo sendo atualizado", summary: "A programação continuará automaticamente." }];
+      const withImage = Array.isArray(allNews) ? allNews.filter(item => item.image) : [];
+      const safeNews = withImage.length ? withImage : [{ category: "AME Vision", title: "Conteúdo sendo atualizado", summary: "A programação continuará automaticamente.", image: "assets/images/destinos/pc-liberdade2.jpg" }];
       const absoluteIndex = (visitIndex * 10 + carouselIndex) % safeNews.length;
       const item = safeNews[absoluteIndex];
-      const fallbackImages = {
-        "Minas Gerais": "assets/images/destinos/pc-liberdade1.jpg",
-        "Turismo": "assets/images/destinos/ouro-preto1.jpg",
-        "Cultura": "assets/images/destinos/pampulha-igrejinha.jpg",
-        "Esportes": "assets/images/destinos/serra-do-cipo1.jpg",
-        "Tecnologia": "assets/images/destinos/pc-liberdade2.jpg",
-        "Economia": "assets/images/destinos/savassi2.jpg",
-        "Brasil": "assets/images/destinos/pc-liberdade1.jpg"
-      };
-      const visual = item.image || fallbackImages[item.category] || "assets/images/destinos/pc-liberdade2.jpg";
       return `
         <section class="screen screen--news-single">
-          <div class="news-single-media">${image(visual, item.title)}</div>
+          <div class="news-single-media">${image(item.image, item.title)}</div>
           <article class="news-single-copy">
             <div class="news-single-topline"><span class="eyebrow">${escapeHtml(item.category || "Atualidades")}</span><span>${absoluteIndex + 1} de ${safeNews.length}</span></div>
             <h2>${escapeHtml(cleanNewsText(item.title))}</h2>
