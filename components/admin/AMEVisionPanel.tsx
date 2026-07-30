@@ -40,7 +40,6 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   const [saved, setSaved] = useState(false);
   const [longTripEnabled, setLongTripEnabled] = useState(true);
   const [restDuration, setRestDuration] = useState(600);
-  const [gpsEnabled, setGpsEnabled] = useState(false);
   const [routeOrigin, setRouteOrigin] = useState("");
   const [routeDestination, setRouteDestination] = useState("");
   const [remoteState, setRemoteState] = useState<AMEVisionState>(DEFAULT_VISION_STATE);
@@ -95,7 +94,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) { const parsed = JSON.parse(stored); setDurations({ ...defaults, ...(parsed.durations || parsed) }); setLongTripEnabled(parsed.longTripEnabled ?? parsed.mode !== "short"); setRestDuration(Number(parsed.restDuration) || 600); setGpsEnabled(Boolean(parsed.gpsEnabled)); setRouteOrigin(String(parsed.routeOrigin || "")); setRouteDestination(String(parsed.routeDestination || "")); }
+      if (stored) { const parsed = JSON.parse(stored); setDurations({ ...defaults, ...(parsed.durations || parsed) }); setLongTripEnabled(parsed.longTripEnabled ?? parsed.mode !== "short"); setRestDuration(Number(parsed.restDuration) || 600); setRouteOrigin(String(parsed.routeOrigin || "")); setRouteDestination(String(parsed.routeDestination || "")); }
     } catch {}
   }, []);
 
@@ -105,14 +104,13 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
     return Math.round(seconds / 60);
   }, [durations]);
 
-  function sendSettings(next = durations, nextLong = longTripEnabled, nextRest = restDuration, nextGps = gpsEnabled, nextOrigin = routeOrigin, nextDestination = routeDestination) {
+  function sendSettings(next = durations, nextLong = longTripEnabled, nextRest = restDuration, nextOrigin = routeOrigin, nextDestination = routeDestination) {
     frameRef.current?.contentWindow?.postMessage({
       type: "AME_VISION_SETTINGS",
       durations: next,
       mode: nextLong ? "long" : "short",
       longTripEnabled: nextLong,
       restDuration: nextRest,
-      gpsEnabled: nextGps,
       route: { origin: nextOrigin.trim(), destination: nextDestination.trim() }
     }, "*");
   }
@@ -137,8 +135,8 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   }
 
   function saveSettings() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ durations, longTripEnabled, restDuration, gpsEnabled, routeOrigin, routeDestination }));
-    sendSettings(durations, longTripEnabled, restDuration, gpsEnabled, routeOrigin, routeDestination);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ durations, longTripEnabled, restDuration, routeOrigin, routeDestination }));
+    sendSettings(durations, longTripEnabled, restDuration, routeOrigin, routeDestination);
     setSaved(true);
     window.setTimeout(() => setSaved(false), 1800);
   }
@@ -147,18 +145,15 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
     setDurations(defaults);
     setLongTripEnabled(true);
     setRestDuration(600);
-    setGpsEnabled(false);
     setRouteOrigin("");
     setRouteDestination("");
     localStorage.removeItem(STORAGE_KEY);
-    sendSettings(defaults, true, 600, false, "", "");
+    sendSettings(defaults, true, 600, "", "");
   }
 
   function startRoute() {
-    const enabled = true;
-    setGpsEnabled(enabled);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ durations, longTripEnabled, restDuration, gpsEnabled: enabled, routeOrigin, routeDestination }));
-    sendSettings(durations, longTripEnabled, restDuration, enabled, routeOrigin, routeDestination);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ durations, longTripEnabled, restDuration, routeOrigin, routeDestination }));
+    sendSettings(durations, longTripEnabled, restDuration, routeOrigin, routeDestination);
     window.setTimeout(() => frameRef.current?.contentWindow?.postMessage({ type: "AME_VISION_OPEN_SCREEN", screenId: "live-map" }, "*"), 250);
     setSettingsOpen(false);
   }
@@ -184,8 +179,8 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
       setRemoteState(next);
       setSyncMessage(status === "prepared" ? "Viagem preparada no tablet." : status === "running" ? "Ciclo iniciado no tablet." : status === "completed" ? "Tela de despedida enviada." : "AME Vision voltou ao modo de espera.");
       if (currentTrip) {
-        setRouteOrigin(route.origin); setRouteDestination(route.destination); setGpsEnabled(true);
-        sendSettings(durations, longTripEnabled, restDuration, true, route.origin, route.destination);
+        setRouteOrigin(route.origin); setRouteDestination(route.destination);
+        sendSettings(durations, longTripEnabled, restDuration, route.origin, route.destination);
       }
     } catch {
       setSyncMessage("Não foi possível sincronizar. Crie a tabela ame_vision_state no Supabase.");
@@ -294,9 +289,9 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
                   <div className={`mt-4 flex items-center gap-2 ${longTripEnabled ? "" : "opacity-40"}`}><input disabled={!longTripEnabled} type="number" min={1} max={20} value={Math.round(restDuration / 60)} onChange={(event) => setRestDuration(Math.max(60, Number(event.target.value || 10) * 60))} className="w-24 rounded-xl border border-white/10 bg-black px-4 py-3 text-center font-bold text-white outline-none focus:border-[var(--accent)] disabled:cursor-not-allowed"/><span className="text-sm text-zinc-400">minutos de descanso</span></div>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-black/40 p-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <div><span className="block text-sm font-bold text-white">GPS e rota ao vivo</span><small className="mt-1 block text-xs text-zinc-400">Cole os endereços abaixo. Na viagem longa, o mapa funciona como uma pausa informativa. Ao ser aberto pelo menu, permanece por 10 minutos.</small></div>
-                    <button type="button" role="switch" aria-checked={gpsEnabled} onClick={() => setGpsEnabled(value => !value)} className={`relative h-8 w-14 rounded-full transition ${gpsEnabled ? "bg-[var(--accent)]" : "bg-zinc-700"}`}><span className={`absolute top-1 h-6 w-6 rounded-full bg-white transition ${gpsEnabled ? "left-7" : "left-1"}`} /></button>
+                  <div>
+                    <span className="block text-sm font-bold text-white">GPS e rota ao vivo</span>
+                    <small className="mt-1 block text-xs text-zinc-400">Defina o destino para traçar a rota no mapa. Se vazio, o mapa mostra apenas a localização atual do veículo.</small>
                   </div>
                   <div className="mt-4 space-y-3">
                     <label className="block">
