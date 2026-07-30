@@ -1,14 +1,14 @@
 export const SHORT_PROGRAM_SCHEDULE = [
-  "welcome", "news", "destinations", "fleet", "referral", "contact",
-  "news", "weather", "comfort", "contact", "reviews"
+  "welcome", "news", "destinations", "fleet", "referral", "contact", "live-map",
+  "news", "weather", "comfort", "contact", "trip", "reviews"
 ];
 
 export const LONG_PROGRAM_SCHEDULE = [
-  "welcome", "news", "destinations", "fleet", "referral", "contact",
+  "welcome", "news", "destinations", "fleet", "referral", "contact", "live-map",
   "rest",
-  "news", "weather", "destinations", "fleet", "news", "reviews", "contact", "pause-one",
+  "news", "weather", "destinations", "fleet", "news", "reviews", "contact", "trip", "pause-one",
   "rest",
-  "news", "weather", "comfort", "referral", "contact", "pause-two"
+  "news", "weather", "comfort", "referral", "contact", "live-map", "pause-two"
 ];
 
 export function getSchedule(mode = "long") {
