@@ -268,16 +268,33 @@ blockquote footer span { color: var(--muted); margin-top: 5px; }
 .screen--news .news-stack span { color: #777; margin-top: 3px; font-size: 10px; }
 .news-footer { color: #777; font-size: 11px; line-height: 1; text-align: right; }
 
-.screen--rest { position: relative; padding: 0; isolation: isolate; }
+.screen--rest { position: relative; padding: 0; isolation: isolate; display: flex; flex-direction: column; }
 .rest-background, .rest-overlay { position: absolute; inset: 0; }
 .rest-background img { width: 100%; height: 100%; object-fit: cover; animation: rest-zoom 40s ease-in-out infinite alternate; }
-.rest-overlay { z-index: 1; background: linear-gradient(90deg, rgba(0,0,0,.86), rgba(0,0,0,.30)), linear-gradient(0deg, rgba(0,0,0,.55), transparent 55%); }
-.rest-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 6vw; }
-.rest-clock { margin-top: 18px; color: #fff; font-size: clamp(78px, 11vw, 190px); font-weight: 850; line-height: .9; letter-spacing: -.055em; font-variant-numeric: tabular-nums; text-shadow: 0 8px 35px rgba(0,0,0,.45); }
-.rest-date { margin-top: 22px; color: var(--accent); font-size: clamp(20px, 2.2vw, 38px); font-weight: 700; text-transform: capitalize; }
-.rest-content p { margin-top: 18px; max-width: 720px; color: rgba(255,255,255,.78); }
-.rest-brand { position: absolute; z-index: 2; right: 34px; bottom: 26px; color: rgba(255,255,255,.55); font-size: 12px; letter-spacing: .18em; }
+.rest-overlay { z-index: 1; background: linear-gradient(90deg, rgba(0,0,0,.82), rgba(0,0,0,.25)), linear-gradient(0deg, rgba(0,0,0,.50), transparent 50%); }
+.rest-topbar { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 3vw 4vw; }
+.rest-logo { height: clamp(44px, 4.5vw, 80px); width: auto; }
+.rest-timegroup { text-align: right; }
+.rest-clock { color: #fff; font-size: clamp(36px, 4vw, 72px); font-weight: 800; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; text-shadow: 0 4px 20px rgba(0,0,0,.4); }
+.rest-date { margin-top: 4px; color: var(--accent); font-size: clamp(14px, 1.4vw, 24px); font-weight: 600; text-transform: capitalize; }
+.rest-content { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 0 4vw; }
+.rest-content p { margin-top: 10px; max-width: 660px; color: rgba(255,255,255,.72); font-size: clamp(15px, 1.5vw, 24px); }
+.rest-footer { position: relative; z-index: 2; padding: 2vw 4vw 2.5vw; display: flex; flex-direction: column; align-items: center; gap: 1.5vw; }
+.rest-qr { display: flex; gap: clamp(16px, 2.5vw, 48px); justify-content: center; flex-wrap: wrap; }
+.qr-block { text-align: center; }
+.qr-block h4 { color: var(--accent); font-size: clamp(11px, 1vw, 16px); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.qr-block img { width: clamp(80px, 8vw, 140px); height: clamp(80px, 8vw, 140px); border-radius: 10px; background: #fff; padding: 6px; display: block; margin: 0 auto; }
+.qr-block span { display: block; margin-top: 4px; color: rgba(255,255,255,.55); font-size: clamp(10px, .9vw, 14px); }
+.qr-placeholder { width: clamp(80px, 8vw, 140px); height: clamp(80px, 8vw, 140px); border-radius: 10px; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+.qr-insta-icon { font-size: clamp(32px, 3.5vw, 60px); }
+.rest-footnote { color: rgba(255,255,255,.35); font-size: clamp(10px, .8vw, 13px); letter-spacing: .2em; text-align: center; }
 @keyframes rest-zoom { from { transform: scale(1); } to { transform: scale(1.07); } }
+
+.screen--referral { display: flex; flex-direction: row; gap: 0; }
+.screen--referral .referral-copy { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 4vw; }
+.screen--referral .referral-media { width: 42%; position: relative; overflow: hidden; border-radius: 0; }
+.screen--referral .referral-media img { width: 100%; height: 100%; object-fit: cover; }
+.screen--referral .referral-media .media-label { position: absolute; bottom: 18px; left: 18px; color: #fff; font-size: 12px; letter-spacing: .12em; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
 
 @media (max-width: 1100px) {
   :root { --header-height: 158px; }

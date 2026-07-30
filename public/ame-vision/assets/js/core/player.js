@@ -11,8 +11,8 @@ export class VisionPlayer {
     this.status = status;
     this.screenMap = new Map(screens.map(screen => [screen.id, screen]));
     this.mode = "long";
-    this.gpsEnabled = false;
-    this.schedule = getSchedule(this.mode, this.gpsEnabled).filter(id => this.screenMap.has(id));
+    this.universal = false;
+    this.schedule = getSchedule(this.mode, this.universal).filter(id => this.screenMap.has(id));
     this.position = 0;
     this.timeout = null;
     this.carouselTimer = null;
@@ -115,7 +115,7 @@ export class VisionPlayer {
       ? `<section class="screen session-screen"><div><span class="eyebrow">Viagem concluída</span><h1>${universal ? "Até a <em>próxima!</em>" : `Obrigado, <em>${name}.</em>`}</h1><p>${universal ? "Foi um prazer. Esperamos receber você novamente." : "Foi um prazer acompanhar sua viagem. Esperamos receber você novamente."}</p></div></section>`
       : kind === "idle"
       ? `<section class="screen session-screen"><div><span class="eyebrow">AME Vision</span><h1>Aguardando a <em>próxima viagem.</em></h1><p>O sistema será preparado automaticamente pela agenda do AME Control.</p></div></section>`
-      : `<section class="screen session-screen"><div><span class="eyebrow">Bem-vindo a bordo</span><h1>${universal ? "Olá, <em>seja bem-vindo a bordo!</em>" : `Olá, <em>${name}.</em>`}</h1><p>Sua viagem está preparada.</p><div class="session-route"><span>${origin || "Origem cadastrada"}</span><b>→</b><span>${destination || "Destino cadastrado"}</span></div>${trip.driver || trip.vehicle ? `<div class="session-info">${trip.driver ? `<span><small>Motorista</small>${escapeHtml(trip.driver)}</span>` : ""}${trip.vehicle ? `<span><small>Veículo</small>${escapeHtml(trip.vehicle)}</span>` : ""}</div>` : ""}<small>${kind === "running" ? "A programação começará em instantes." : "Aguardando o início da viagem."}</small></div></section>`;
+      : `<section class="screen session-screen"><div><span class="eyebrow">Bem-vindo a bordo</span><h1>${universal ? "Olá, <em>seja bem-vindo a bordo!</em>" : `Olá, <em>${name}.</em>`}</h1><p>Sua viagem está preparada.</p>${!universal ? `<div class="session-route"><span>${origin || "Origem cadastrada"}</span><b>→</b><span>${destination || "Destino cadastrado"}</span></div>` : ""}${trip.driver || trip.vehicle ? `<div class="session-info">${trip.driver ? `<span><small>Motorista</small>${escapeHtml(trip.driver)}</span>` : ""}${trip.vehicle ? `<span><small>Veículo</small>${escapeHtml(trip.vehicle)}</span>` : ""}</div>` : ""}<small>${kind === "running" ? "A programação começará em instantes." : "Aguardando o início da viagem."}</small></div></section>`;
     this.viewport.classList.remove("is-visible");
     this.viewport.innerHTML = content;
     this.status.textContent = kind === "completed" ? "Obrigado" : kind === "idle" ? "Aguardando" : "Boas-vindas";
@@ -129,6 +129,13 @@ export class VisionPlayer {
     if (trip) {
       this.routeSettings = { origin: String(trip.origin || ""), destination: String(trip.destination || "") };
       window.AME_VISION_TRIP = trip;
+    }
+    this.universal = trip?.client === "Passageiro(a)";
+    const oldSchedule = this.schedule;
+    this.schedule = getSchedule(this.mode, this.universal).filter(id => this.screenMap.has(id));
+    if (JSON.stringify(this.schedule) !== JSON.stringify(oldSchedule)) {
+      this.position = 0;
+      this.refreshNavigation();
     }
     if (status === "prepared") { this.renderSessionScreen("prepared"); return; }
     if (status === "completed") {
@@ -215,15 +222,13 @@ export class VisionPlayer {
       this.durationOverrides = event.data.durations || {};
       this.restDuration = event.data.restDuration || 600;
       const nextMode = event.data.mode === "short" ? "short" : "long";
-      const nextGps = Boolean(event.data.gpsEnabled);
       this.routeSettings = {
         origin: String(event.data.route?.origin || "").trim(),
         destination: String(event.data.route?.destination || "").trim()
       };
-      if (nextMode !== this.mode || nextGps !== this.gpsEnabled) {
+      if (nextMode !== this.mode) {
         this.mode = nextMode;
-        this.gpsEnabled = nextGps;
-        this.schedule = getSchedule(this.mode, this.gpsEnabled).filter(id => this.screenMap.has(id));
+        this.schedule = getSchedule(this.mode, this.universal).filter(id => this.screenMap.has(id));
         this.position = 0;
         this.refreshNavigation();
       }

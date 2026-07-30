@@ -251,14 +251,22 @@ export const screens = [
     label: "Indicação",
     duration: 32000,
     render: async () => `
-      <section class="screen">
-        <div class="section-heading"><span class="eyebrow">Programa de indicação</span><h2>Indicou, fechou, <em>ganhou transfer.</em></h2><p>Indique um novo passageiro. Quando ele concluir uma viagem elegível, você recebe um transfer executivo de ida de Belo Horizonte para Confins.</p></div>
-        <div class="step-grid">
-          <article><span>1</span><h3>Indique</h3><p>Compartilhe o contato da AME com um amigo, familiar ou colega.</p></article>
-          <article><span>2</span><h3>O indicado viaja</h3><p>O novo cliente agenda e realiza uma viagem elegível para Confins ou cidade próxima.</p></article>
-          <article><span>3</span><h3>Você ganha</h3><p>Receba seu transfer executivo de ida para o Aeroporto de Confins.</p></article>
+      <section class="screen screen--referral">
+        <div class="referral-copy">
+          <span class="eyebrow">Programa de indicação</span>
+          <h2>Indicou, fechou, <em>ganhou transfer.</em></h2>
+          <p>Indique um novo passageiro. Quando ele concluir uma viagem elegível, você recebe um transfer executivo de ida de Belo Horizonte para Confins.</p>
+          <div class="step-grid">
+            <article><span>1</span><h3>Indique</h3><p>Compartilhe o contato da AME com um amigo, familiar ou colega.</p></article>
+            <article><span>2</span><h3>O indicado viaja</h3><p>O novo cliente agenda e realiza uma viagem elegível.</p></article>
+            <article><span>3</span><h3>Você ganha</h3><p>Receba seu transfer executivo de ida para o Aeroporto de Confins.</p></article>
+          </div>
+          <div class="rules-strip"><span>Novo cliente indicado</span><span>Benefício após a viagem</span><span>Indicações acumulam</span><span>Resgate mediante disponibilidade</span></div>
         </div>
-        <div class="rules-strip"><span>Novo cliente indicado</span><span>Benefício após a viagem</span><span>Indicações acumulam</span><span>Resgate mediante disponibilidade</span></div>
+        <div class="referral-media">
+          ${image("assets/images/destinos/confins1.jpg", "Aeroporto de Confins")}
+          <div class="media-label">Transfer executivo · cortesia</div>
+        </div>
       </section>`
   },
   {
@@ -291,15 +299,29 @@ export const screens = [
     duration: 600000,
     render: async () => `
       <section class="screen screen--rest">
-        <div class="rest-background">${image("assets/images/destinos/serra-do-cipo2.jpg", "Paisagem tranquila de Minas Gerais")}</div>
+        <div class="rest-background">${image("assets/images/destinos/serra-do-cipo1.jpg", "Paisagem de Minas Gerais")}</div>
         <div class="rest-overlay"></div>
+        <div class="rest-topbar">
+          <div class="rest-branding">
+            <img src="assets/images/logo/ame-logo-white.svg" alt="Alves Mobilidade Executiva" class="rest-logo">
+          </div>
+          <div class="rest-timegroup">
+            <div class="rest-clock" data-rest-clock>00:00:00</div>
+            <div class="rest-date" data-rest-date></div>
+          </div>
+        </div>
         <div class="rest-content">
           <span class="eyebrow">Momento de descanso</span>
-          <div class="rest-clock" data-rest-clock>00:00:00</div>
-          <div class="rest-date" data-rest-date></div>
-          <p>Relaxe e aproveite a viagem. O AME Vision retornará automaticamente.</p>
+          <p>Relaxe e aproveite a viagem. O AME Vision retornará automaticamente com novas informações.</p>
         </div>
-        <div class="rest-brand">AME VISION · ALVES MOBILIDADE EXECUTIVA</div>
+        <div class="rest-footer">
+          <div class="rest-qr">
+            <div class="qr-block"><h4>WhatsApp</h4>${image("assets/images/qr/whatsapp.png", "WhatsApp AME")}<span>(31) 99845-8084</span></div>
+            <div class="qr-block"><h4>Site oficial</h4>${image("assets/images/qr/site.png", "Site AME")}<span>alvesmobilidade.com.br</span></div>
+            <div class="qr-block"><h4>Instagram</h4><div class="qr-placeholder"><span class="qr-insta-icon">📷</span></div><span>@alvesmobilidadeexecutiva</span></div>
+          </div>
+          <div class="rest-footnote">AME VISION · ALVES MOBILIDADE EXECUTIVA</div>
+        </div>
       </section>`
   },
   {
