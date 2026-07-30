@@ -10,6 +10,7 @@ import { useFinance } from "./useFinance";
 import { useReferrals } from "./useReferrals";
 import { useProposals } from "./useProposals";
 import { useMotoristas } from "./useMotoristas";
+import { useVeiculos } from "./useVeiculos";
 import type { DashboardStats } from "@/domain/shared/types";
 
 function loadLocal<T>(key: string, fallback: T): T {
@@ -41,6 +42,7 @@ export function useData() {
   const referrals = useReferrals();
   const proposals = useProposals();
   const motoristas = useMotoristas();
+  const veiculos = useVeiculos();
 
   const today = todayISO();
 
@@ -112,6 +114,7 @@ export function useData() {
     ...referrals,
     ...proposals,
     ...motoristas,
+    ...veiculos,
     completedMarketing,
     completeMarketingTask,
     resetMarketingTasks,
