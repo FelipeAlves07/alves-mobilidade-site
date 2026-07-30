@@ -296,16 +296,7 @@ export const screens = [
       <section class="screen screen--rest">
         <div class="rest-background">${image("assets/images/destinos/serra-do-cipo1.jpg", "Paisagem de Minas Gerais")}</div>
         <div class="rest-overlay"></div>
-        <div class="rest-topbar">
-          <div class="rest-branding">
-            <img src="assets/images/logo/ame-logo-white.svg" alt="Alves Mobilidade Executiva" class="rest-logo">
-          </div>
-          <div class="rest-timegroup">
-            <div class="rest-clock" data-rest-clock>00:00:00</div>
-            <div class="rest-date" data-rest-date></div>
-          </div>
-        </div>
-        <div class="rest-content">
+        <div class="rest-content" style="justify-content:center;align-items:center;text-align:center">
           <span class="eyebrow">Momento de descanso</span>
           <h2>Conforto pensado <em>para você.</em></h2>
           <p>Relaxe e aproveite a viagem. O AME Vision retornará automaticamente com novas informações.</p>
@@ -314,7 +305,7 @@ export const screens = [
           <div class="rest-qr">
             <div class="qr-block"><h4>WhatsApp</h4>${image("assets/images/qr/whatsapp.png", "WhatsApp AME")}<span>(31) 99845-8084</span></div>
             <div class="qr-block"><h4>Site oficial</h4>${image("assets/images/qr/site.png", "Site AME")}<span>alvesmobilidade.com.br</span></div>
-            <div class="qr-block"><h4>Instagram</h4><div class="qr-placeholder"><span class="qr-insta-icon">📷</span></div><span>@alvesmobilidadeexecutiva</span></div>
+            <div class="qr-block"><h4>Instagram</h4>${image("assets/images/qr/instagram.png", "Instagram AME")}<span>@alvesmobilidadeexecutiva</span></div>
           </div>
           <div class="rest-footnote">AME VISION · ALVES MOBILIDADE EXECUTIVA</div>
         </div>

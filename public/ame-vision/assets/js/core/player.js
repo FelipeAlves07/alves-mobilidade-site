@@ -77,7 +77,6 @@ export class VisionPlayer {
       if (renderVersion !== this.renderVersion) return;
     }
     this.viewport.innerHTML = html;
-    if (screen.id === "rest") this.startRestClock();
     if (screen.id === "live-map") this.startLiveMap();
     requestAnimationFrame(() => this.viewport.classList.add("is-visible"));
     this.status.textContent = screen.label;
@@ -91,18 +90,6 @@ export class VisionPlayer {
     } catch (error) {
       console.warn("[AME Vision] GPS indisponível", error);
     }
-  }
-
-  startRestClock() {
-    const update = () => {
-      const now = new Date();
-      const clock = this.viewport.querySelector("[data-rest-clock]");
-      const date = this.viewport.querySelector("[data-rest-date]");
-      if (clock) clock.textContent = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-      if (date) date.textContent = now.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
-    };
-    update();
-    this.restClockTimer = window.setInterval(update, 1000);
   }
 
   renderSessionScreen(kind) {
@@ -158,7 +145,6 @@ export class VisionPlayer {
   clearTimers() {
     window.clearTimeout(this.timeout);
     window.clearInterval(this.carouselTimer);
-    window.clearInterval(this.restClockTimer);
     window.clearTimeout(this.sessionTimer);
   }
 

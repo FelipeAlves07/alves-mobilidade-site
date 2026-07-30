@@ -39,6 +39,9 @@ yarn-error.log*
 # whatsapp scanner
 /whatsapp-scanner/node_modules
 /whatsapp-scanner/auth_info
+/whatsapp-scanner/*.json
+/whatsapp-scanner/*.log
+/whatsapp-scanner/*.html
 
 # typescript
 *.tsbuildinfo
