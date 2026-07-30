@@ -39,7 +39,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   const [durations, setDurations] = useState<DurationMap>(defaults);
   const [saved, setSaved] = useState(false);
   const [longTripEnabled, setLongTripEnabled] = useState(true);
-  const [restDuration, setRestDuration] = useState(600);
+  const [restDuration, setRestDuration] = useState(420);
   const [routeOrigin, setRouteOrigin] = useState("");
   const [routeDestination, setRouteDestination] = useState("");
   const [remoteState, setRemoteState] = useState<AMEVisionState>(DEFAULT_VISION_STATE);
@@ -94,7 +94,7 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) { const parsed = JSON.parse(stored); setDurations({ ...defaults, ...(parsed.durations || parsed) }); setLongTripEnabled(parsed.longTripEnabled ?? parsed.mode !== "short"); setRestDuration(Number(parsed.restDuration) || 600); setRouteOrigin(String(parsed.routeOrigin || "")); setRouteDestination(String(parsed.routeDestination || "")); }
+      if (stored) { const parsed = JSON.parse(stored); setDurations({ ...defaults, ...(parsed.durations || parsed) }); setLongTripEnabled(parsed.longTripEnabled ?? parsed.mode !== "short"); setRestDuration(Number(parsed.restDuration) || 420); setRouteOrigin(String(parsed.routeOrigin || "")); setRouteDestination(String(parsed.routeDestination || "")); }
     } catch {}
   }, []);
 
@@ -144,11 +144,11 @@ export default function AMEVisionPanel({ trips = [] }: { trips?: AdminTrip[] }) 
   function resetSettings() {
     setDurations(defaults);
     setLongTripEnabled(true);
-    setRestDuration(600);
+    setRestDuration(420);
     setRouteOrigin("");
     setRouteDestination("");
     localStorage.removeItem(STORAGE_KEY);
-    sendSettings(defaults, true, 600, "", "");
+    sendSettings(defaults, true, 420, "", "");
   }
 
   function startRoute() {

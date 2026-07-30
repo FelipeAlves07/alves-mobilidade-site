@@ -288,7 +288,7 @@ export const screens = [
   {
     id: "rest",
     label: "Descanso",
-    duration: 600000,
+    duration: 420000,
     render: async () => `
       <section class="screen screen--rest">
         <div class="rest-background">${image("assets/images/destinos/serra-do-cipo1.jpg", "Paisagem de Minas Gerais")}</div>
@@ -304,6 +304,7 @@ export const screens = [
         </div>
         <div class="rest-content">
           <span class="eyebrow">Momento de descanso</span>
+          <h2>Conforto pensado <em>para você.</em></h2>
           <p>Relaxe e aproveite a viagem. O AME Vision retornará automaticamente com novas informações.</p>
         </div>
         <div class="rest-footer">

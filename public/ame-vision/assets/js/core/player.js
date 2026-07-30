@@ -17,7 +17,7 @@ export class VisionPlayer {
     this.carouselTimer = null;
     this.carouselIndex = 0;
     this.durationOverrides = {};
-    this.restDuration = 600;
+    this.restDuration = 420;
     this.visitCounts = new Map();
     this.renderVersion = 0;
     this.routeSettings = { origin: "", destination: "" };
@@ -34,7 +34,7 @@ export class VisionPlayer {
   }
 
   getDuration(screen) {
-    if (screen.id === "rest") return Math.max(60, Number(this.restDuration) || 600) * 1000;
+    if (screen.id === "rest") return Math.max(60, Number(this.restDuration) || 420) * 1000;
     const seconds = Number(this.durationOverrides[screen.id]);
     return Number.isFinite(seconds) && seconds >= 5 ? seconds * 1000 : (screen.duration || APP_CONFIG.defaultScreenDuration);
   }
@@ -212,7 +212,7 @@ export class VisionPlayer {
       }
       if (event.data?.type !== "AME_VISION_SETTINGS") return;
       this.durationOverrides = event.data.durations || {};
-      this.restDuration = event.data.restDuration || 600;
+      this.restDuration = event.data.restDuration || 420;
       const nextMode = event.data.mode === "short" ? "short" : "long";
       this.routeSettings = {
         origin: String(event.data.route?.origin || "").trim(),
