@@ -1,11 +1,12 @@
 "use client";
 
-import { DollarSign, Mic, Plus } from "lucide-react";
+import { DollarSign, Download, Mic, Plus } from "lucide-react";
 import VoiceInput from "@/components/admin/VoiceInput";
 import Panel from "@/components/admin/Panel";
 import TripList from "@/components/admin/TripList";
 import { money, quoteValidityDate } from "@/lib/quotes";
 import type { Trip, QuoteResult } from "@/domain/trip/types";
+import { downloadCSV } from "@/lib/csv";
 
 interface ViagensViewProps {
   quoteResult: QuoteResult | null;
@@ -140,7 +141,7 @@ export default function ViagensView({
           <button onClick={onAddTrip} className="cursor-pointer rounded-xl bg-[var(--secondary)] px-5 py-3.5 font-bold text-white transition hover:bg-[var(--accent)] xl:col-span-6"><Plus className="inline" size={18} /> Adicionar viagem</button>
         </div>
       </div>
-      <Panel title="Viagens e agenda"><TripList trips={trips} onFinish={onFinishTrip} onDelete={onDeleteTrip} /></Panel>
+      <Panel title="Viagens e agenda" extra={<button onClick={() => downloadCSV(trips, "viagens-export.csv")} className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-400 transition hover:text-white"><Download size={13} className="inline" /> CSV</button>}><TripList trips={trips} onFinish={onFinishTrip} onDelete={onDeleteTrip} /></Panel>
     </div>
   );
 }

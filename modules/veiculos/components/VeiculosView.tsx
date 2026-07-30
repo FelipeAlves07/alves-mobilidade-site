@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Download, Plus, Search, Trash2 } from "lucide-react";
 import type { Veiculo, VeiculoForm, VeiculoStatus } from "@/domain/veiculo/types";
+import { downloadCSV } from "@/lib/csv";
 
 const statuses: VeiculoStatus[] = ["Ativo", "Inativo", "Manutencao"];
 
@@ -45,7 +46,10 @@ export default function VeiculosView({ veiculos, onAdd, onUpdate, onDelete }: Pr
       </div>
 
       <div className="rounded-xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-6">
-        <h3 className="mb-4 text-xl font-black">Veículos cadastrados</h3>
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h3 className="text-xl font-black">Veículos cadastrados</h3>
+          <button onClick={() => downloadCSV(veiculos, "veiculos-export.csv")} className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-400 transition hover:text-white"><Download size={13} className="inline" /> CSV</button>
+        </div>
         <div className="relative mb-4">
           <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar veículo..." className="input-admin w-full pl-10" />

@@ -1,12 +1,13 @@
 "use client";
 
-import { BarChart3, DollarSign, Plane } from "lucide-react";
+import { BarChart3, DollarSign, Download, Plane } from "lucide-react";
 import VoiceInput from "@/components/admin/VoiceInput";
 import Panel from "@/components/admin/Panel";
 import Metric from "@/components/admin/Metric";
 import type { FinanceEntry } from "@/domain/finance/types";
 import type { DashboardStats } from "@/domain/shared/types";
 import type { Trip } from "@/domain/trip/types";
+import { downloadCSV } from "@/lib/csv";
 
 interface FinanceiroViewProps {
   stats: DashboardStats;
@@ -34,7 +35,7 @@ export default function FinanceiroView({ stats, trips, financeForm, finance, onS
           <button onClick={onAddFinance} className="rounded-xl bg-[var(--secondary)] px-5 py-4 font-bold text-white transition hover:opacity-90">Adicionar</button>
         </div>
       </div>
-      <Panel title="Histórico financeiro"><div className="grid gap-3">{finance.map((item) => <div key={item.id} className="flex items-center justify-between rounded-xl border border-[var(--accent-10)] bg-[var(--bg-surface)] p-4"><div><strong>{item.description}</strong><p className="text-sm text-zinc-400">{item.date} • {item.type}</p></div><strong className={item.type === "Entrada" ? "text-emerald-300" : "text-red-300"}>{item.type === "Entrada" ? "+" : "-"} R$ {item.value}</strong></div>)}</div></Panel>
+      <Panel title="Histórico financeiro" extra={<button onClick={() => downloadCSV(finance, "financeiro-export.csv")} className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-400 transition hover:text-white"><Download size={13} className="inline" /> CSV</button>}><div className="grid gap-3">{finance.map((item) => <div key={item.id} className="flex items-center justify-between rounded-xl border border-[var(--accent-10)] bg-[var(--bg-surface)] p-4"><div><strong>{item.description}</strong><p className="text-sm text-zinc-400">{item.date} • {item.type}</p></div><strong className={item.type === "Entrada" ? "text-emerald-300" : "text-red-300"}>{item.type === "Entrada" ? "+" : "-"} R$ {item.value}</strong></div>)}</div></Panel>
     </div>
   );
 }

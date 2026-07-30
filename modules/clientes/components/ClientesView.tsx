@@ -1,12 +1,13 @@
 "use client";
 
-import { Plus, Import, Search, FileText } from "lucide-react";
+import { Plus, Import, Search, FileText, Download } from "lucide-react";
 import { useRef } from "react";
 import VoiceInput from "@/components/admin/VoiceInput";
 import VoiceTextarea from "@/components/admin/VoiceTextarea";
 import Panel from "@/components/admin/Panel";
 import LeadCard from "@/components/admin/LeadCard";
 import type { Lead, LeadType } from "@/domain/lead/types";
+import { downloadCSV } from "@/lib/csv";
 
 interface ClientesViewProps {
   leads: Lead[];
@@ -91,6 +92,7 @@ export default function ClientesView({
       <div className="flex items-center gap-3 rounded-xl border border-[var(--accent-15)] bg-[var(--bg-card)] px-4 py-3">
         <Search size={18} className="text-[var(--accent)]" />
         <input value={query} onChange={(e) => onSetQuery(e.target.value)} placeholder="Buscar por nome, telefone, tipo ou status" className="w-full bg-transparent outline-none" />
+        <button onClick={() => downloadCSV(leads, "clientes-export.csv")} className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-400 transition hover:text-white"><Download size={13} className="inline" /> CSV</button>
       </div>
       <Panel title={title}>
         <div className="grid gap-4">
