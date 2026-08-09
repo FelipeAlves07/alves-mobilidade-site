@@ -11,6 +11,7 @@ import { useReferrals } from "./useReferrals";
 import { useProposals } from "./useProposals";
 import { useMotoristas } from "./useMotoristas";
 import { useVeiculos } from "./useVeiculos";
+import { useAutoProspect } from "./useAutoProspect";
 import type { DashboardStats } from "@/domain/shared/types";
 
 function loadLocal<T>(key: string, fallback: T): T {
@@ -43,6 +44,7 @@ export function useData() {
   const proposals = useProposals();
   const motoristas = useMotoristas();
   const veiculos = useVeiculos();
+  const autoProspect = useAutoProspect();
 
   const today = todayISO();
 
@@ -115,6 +117,7 @@ export function useData() {
     ...proposals,
     ...motoristas,
     ...veiculos,
+    ...autoProspect,
     completedMarketing,
     completeMarketingTask,
     resetMarketingTasks,

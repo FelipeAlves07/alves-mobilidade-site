@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   BarChart3, Bot, Briefcase, Car, ChevronRight, ClipboardList, DollarSign, Download, Gift,
-  LogOut, Megaphone, MessageCircle, Mic, Monitor, Plane, Sparkles, Target, Users,
+  LogOut, Megaphone, MessageCircle, Mic, Monitor, Plane, Radar, Sparkles, Target, Users,
 } from "lucide-react";
 import Sidebar from "@/components/admin/Sidebar";
 import MobileNav from "@/components/admin/MobileNav";
@@ -41,6 +41,7 @@ import VozView from "@/modules/voz/components/VozView";
 import AMEVisionPanel from "@/components/admin/AMEVisionPanel";
 import MotoristasView from "@/modules/motoristas/components/MotoristasView";
 import VeiculosView from "@/modules/veiculos/components/VeiculosView";
+import AutoProspectView from "@/modules/autoprospect/components/AutoProspectView";
 
 const WHATSAPP_QR_DATA_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWcAAAFpCAYAAABAsun9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACPlSURBVHhe7d0LcFTl+fjxF8FAwAsKiFHABESpohLxAgQQScdLp7YdpzKdWOSisaLVqVoHVCygCE6r1kurFQzBS6AoaKmOAxoMGbl4R2stNlSCBJSL4AWMoAF+++48v/9/XJ/z7nv62928ge9n5hnPc2bfc86e3X2WifPs02pfggEABOUg+S8AICAUZwAIEMUZAAJEcQaAAFGcASBAFGcACBDFGQACRHEGgABRnAEgQBRnAAgQxRkAAkRxBoAAUZwBIEAUZwAIEMUZAAJEcQaAAFGcASBAFGcACBDFGQACRHEGgABRnAEgQBRnAAgQxRkAAkRxBoAAtdqXINtZt337dtmCy5FHHilbmbN161bZSq9Lly6y5RbnmG3atDFHHHGEZNG++uor09jYKFl6vtfqa9u2bWbv3r2SuX3++eemY8eOkrll+jqz5euvv04G0svG5/Q7bHHOhcSb3n4JEB7R1NQkdy1zysrK1HOlRl5enqxIb8aMGeoxNFi2bJmscqurq1PXazF16lRZlTnV1dXqubQoKSlR96dG69at5ejhq6mpUZ8D8d0YNGiQ3LHs4c8aABAgijMABIjiDAABojgDQIAozgAQIIozAASI4gwAAaI4A0CAKM4AEKCctW/b1u1OnTpJ5jZ69GhzzjnnSLZ/qK2tNbNnz5bMrampybRu3VqyzHjqqadky82ee+HChZK52VbnK6+8UjK3Y4891pSUlEgWbc2aNWbVqlWSuc2bNy/ZFu7jnnvuMd26dZMs2t13322eeeYZydw++ugjc9xxx0nmtmLFCtlymzVrllm8eLFkbtdcc40ZOnSoZJmxdOlSc+6550rmNnnyZO/n31I89thjyXuQzqBBg8zy5csly5Jkn2AOxGnfrqyslFX7j8QbWX2uWmSjfdvX7t271WvSory8XFY1j4kTJ6rXpUVDQ4Oscmvu9u2Kigr1GFokvvBlVebEad+ur6+XVfuPYcOGqc81NWjfBoADFMUZAAJEcQaAAFGcASBAFGcACBDFGQACRHEGgABRnAEgQC26OP/vMMrmjOakXY8rfHzzzTcmPz/fK3bv3q2eJyp8aOuiwnYzatelxa5du9RjpIZ9Ttp6LewgWG1/auTl5cmz86MdQ4uWQrvPuY4WSZpRsi4bHYKNjY3q+lxFnz595ErSy0aH4KJFi9T1WlRVVckqtzgdgkOGDFH3a9HcA167deumHiM1SktLZUV6I0eOVI+RGvvrgFffDsHmHho7atQouZL06BAEADhRnAEgQBRnAAgQxRkAAkRxBoAAUZwBIEAUZwAIEMUZAAJEcQaAAAU54LWysjI55DUd25bZvn17yXKvT58+ZvXq1ZK5TZkyJTkQ04fvgFc7CNR3GKttXz7zzDMli2bP7fuc/vWvf5mTTjpJMjf7OvXq1UuyaPbc7777rmRuHTt29H7+V199tWy5bdiwwVx44YWSuS1YsMCccMIJkkWzH7FTTz1VsvTGjRsnW7kXZ8BrfX29KSwslCxanGNmw6hRo7yHK9vrZMCrI2jfzvyA17KyMvVcqZGXlycrMst3GGriw67u1+KOO+6Qo2dOnAGvjz/+uKxys6+ntl6LsWPHyqrmQfs27dsAAAeKMwAEiOIMAAGiOKPFatWqlWwB+x+KMwAEiOIMAAGiOANAgCjOABAgijMABIj27f+DENq3fY/Z2NiYnBbt47333pMtt5kzZ5pZs2ZJ5jZmzBivFubXX389eVwfdqq172RrO1Xc57H2fep7zIsvvjj5uqZjz92/f3/J3Gw79HPPPSdZ7tG+Tfu2M2jfzvz0bdtuqu1PjTjt2zNmzFCPoUU2pm/7...";
 
@@ -57,6 +58,7 @@ const menu = [
   { id: "viagens", group: "Operação", label: "Viagens e Agenda", icon: Plane },
   { id: "indicacoes", group: "Comercial", label: "Indicações", icon: Gift },
   { id: "empresas", group: "Comercial", label: "Empresas", icon: Briefcase },
+  { id: "auto-prospect", group: "Comercial", label: "Auto Prospect", icon: Radar },
   { id: "marketing", group: "Gestão", label: "Marketing", icon: Megaphone },
   { id: "ia", group: "Gestão", label: "IA da Alves", icon: Bot },
   { id: "ame-vision", group: "Gestão", label: "AME Vision", icon: Monitor },
@@ -72,6 +74,9 @@ export default function AdminPage() {
     proposals, setProposals, addProposal: addProposalFn,
     motoristas, addMotorista, updateMotorista, deleteMotorista,
     veiculos, addVeiculo, updateVeiculo, deleteVeiculo,
+    campaigns, addCampaign, updateCampaign, deleteCampaign,
+    companies, discoveries, discoverCompany, deleteCompany, runCampaignDiscovery,
+    analyses, intelligence, analyzeCompany, reanalyzeIntelligence,
     completedMarketing, completeMarketingTask, resetMarketingTasks,
     stats, today, migrationStatus, executarMigracao,
   } = useData();
@@ -484,6 +489,15 @@ export default function AdminPage() {
         return <AIView stats={stats} onExportBackup={exportBackup} />;
       case "ame-vision":
         return <AMEVisionPanel trips={trips} />;
+      case "auto-prospect":
+        return <AutoProspectView
+          campaigns={campaigns} companies={companies} discoveries={discoveries}
+          analyses={analyses} intelligence={intelligence}
+          onAddCampaign={addCampaign} onUpdateCampaign={updateCampaign} onDeleteCampaign={deleteCampaign}
+          onDiscoverCompany={discoverCompany} onDeleteCompany={deleteCompany}
+          onRunDiscovery={runCampaignDiscovery} onAnalyzeCompany={analyzeCompany}
+          onReanalyzeIntelligence={reanalyzeIntelligence}
+        />;
       default:
         return null;
     }
