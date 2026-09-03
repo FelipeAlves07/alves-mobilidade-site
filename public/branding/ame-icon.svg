@@ -1,10 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
   <defs>
-    <linearGradient id="a1" x1="0" y1="0" x2="0.8" y2="1">
-      <stop offset="0%" stop-color="#1a3a6b"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0c2340"/>
+      <stop offset="100%" stop-color="#1a3a6b"/>
+    </linearGradient>
+    <linearGradient id="car" x1="120" y1="200" x2="392" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5a9fd4"/>
       <stop offset="100%" stop-color="#2d6da8"/>
     </linearGradient>
   </defs>
-  <path d="M14 52 L24 8 L34 52" stroke="url(#a1)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <line x1="16" y1="28" x2="32" y2="28" stroke="url(#a1)" stroke-width="4" stroke-linecap="round"/>
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- Road line -->
+  <rect x="60" y="380" width="392" height="8" rx="4" fill="rgba(255,255,255,0.15)"/>
+  <rect x="60" y="380" width="80" height="8" rx="4" fill="rgba(255,255,255,0.35)"/>
+  <rect x="180" y="380" width="80" height="8" rx="4" fill="rgba(255,255,255,0.35)"/>
+  <rect x="300" y="380" width="80" height="8" rx="4" fill="rgba(255,255,255,0.35)"/>
+  <!-- Car body -->
+  <path d="M140 310 L170 250 L342 250 L372 310 Z" fill="url(#car)" opacity="0.9"/>
+  <rect x="130" y="300" width="252" height="50" rx="12" fill="url(#car)"/>
+  <!-- Car windows -->
+  <path d="M180 258 L195 220 L250 220 L250 258 Z" fill="rgba(255,255,255,0.2)" rx="4"/>
+  <path d="M262 258 L262 220 L318 220 L333 258 Z" fill="rgba(255,255,255,0.2)" rx="4"/>
+  <!-- Wheels -->
+  <circle cx="195" cy="355" r="28" fill="#111"/>
+  <circle cx="195" cy="355" r="16" fill="#333"/>
+  <circle cx="195" cy="355" r="6" fill="#666"/>
+  <circle cx="317" cy="355" r="28" fill="#111"/>
+  <circle cx="317" cy="355" r="16" fill="#333"/>
+  <circle cx="317" cy="355" r="6" fill="#666"/>
+  <!-- Headlights -->
+  <rect x="370" y="305" width="18" height="10" rx="5" fill="#ffe066" opacity="0.9"/>
+  <rect x="124" y="305" width="18" height="10" rx="5" fill="#ff6b6b" opacity="0.7"/>
+  <!-- AME text -->
+  <text x="256" y="170" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="72" fill="white" letter-spacing="8">AME</text>
+  <!-- Subtle shine -->
+  <rect x="60" y="60" width="392" height="200" rx="80" fill="white" opacity="0.03"/>
 </svg>

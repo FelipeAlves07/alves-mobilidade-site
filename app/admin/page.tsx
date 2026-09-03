@@ -431,10 +431,10 @@ export default function AdminPage() {
   const moreMenuItems = menu.filter((item) => !["dashboard", "agenda", "orcamento", "whatsapp"].includes(item.id));
 
   return (
-    <main className="min-h-screen bg-[var(--bg-primary)]">
-      <div className="flex min-h-screen">
+    <div className="flex h-dvh flex-col bg-[var(--bg-primary)]">
+      <div className="flex min-h-0 flex-1">
         <Sidebar active={active} menu={menu} setActive={setActive} onLogout={logout} />
-        <section className="flex min-w-0 flex-1 flex-col">
+        <section className="flex min-w-0 flex-1 flex-col overflow-y-auto">
           <Topbar active={active} title={activeLabel} menu={menu} setActive={setActive} onBackup={exportBackup} />
           <div className="mobile-content flex-1 px-3 pb-28 pt-4 md:px-6 md:pb-8 md:pt-6">
             <div key={active} className="animate-enter-up">{renderContent()}</div>
@@ -494,6 +494,6 @@ export default function AdminPage() {
       {voiceStatus && !ameOpen && active !== "viagens" && (
         <div className="fixed bottom-24 right-4 z-[80] max-w-sm rounded-xl border border-[var(--accent-15)] bg-[var(--bg-card)] px-4 py-3 text-sm text-[var(--accent)] shadow-2xl backdrop-blur-xl lg:bottom-6 lg:right-20">{voiceStatus}</div>
       )}
-    </main>
+    </div>
   );
 }

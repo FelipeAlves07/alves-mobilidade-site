@@ -37,11 +37,11 @@ function LeadStatusChart({ leads }: { leads: Lead[] }) {
     <div className="flex flex-col gap-2">
       {items.map(([status, count], i) => (
         <div key={status} className="flex items-center gap-3">
-          <span className="w-28 shrink-0 truncate text-xs text-zinc-400">{status}</span>
-          <div className="h-5 flex-1 overflow-hidden rounded-full bg-[#222]">
+          <span className="w-28 shrink-0 truncate text-xs text-[var(--text-muted)]">{status}</span>
+          <div className="h-5 flex-1 overflow-hidden rounded-full bg-[var(--border-medium)]">
             <div className={`h-full rounded-full bg-gradient-to-r ${colors[i % colors.length]} transition-all`} style={{ width: `${(count / max) * 100}%` }} />
           </div>
-          <span className="w-8 text-right text-xs font-bold text-zinc-300">{count}</span>
+          <span className="w-8 text-right text-xs font-bold text-[var(--foreground)]">{count}</span>
         </div>
       ))}
     </div>
@@ -84,7 +84,7 @@ export default function DashboardView({
     <>
       <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--accent)]">Bom dia, Felipe</p>
       <h2 className="mt-2 text-3xl font-black tracking-tight md:text-4xl">Hoje faça exatamente isso:</h2>
-      <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-[#262626] shadow-inner">
+      <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-[var(--border-medium)] shadow-inner">
         <div className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] transition-all duration-700" style={{ width: `${progress}%` }} />
       </div>
       <p className="mt-2 text-sm text-zinc-500">Seu dia está <span className="font-bold text-zinc-300">{progress}%</span> encaminhado.</p>
@@ -103,7 +103,7 @@ export default function DashboardView({
 
   const nextActionBlock = currentTask && (
     <div className="mx-auto max-w-3xl">
-      <div className="rounded-2xl border border-[var(--accent-15)] bg-gradient-to-br from-[#1d1d1d] to-[#101010] p-6 text-center md:p-8"
+      <div className="rounded-2xl border border-[var(--accent-15)] bg-[var(--bg-card)] p-6 text-center md:p-8"
         style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.25)" }}
       >
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--accent)]">Próxima ação</p>
@@ -120,7 +120,7 @@ export default function DashboardView({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-[var(--accent-10)] bg-gradient-to-br from-[#191919] to-[#101010] p-6 md:p-8"
+      <div className="rounded-2xl border border-[var(--accent-10)] bg-[var(--bg-card)] p-6 md:p-8"
         style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}
       >
         {heroContent}
