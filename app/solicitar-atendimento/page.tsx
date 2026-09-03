@@ -24,8 +24,8 @@ export default function SolicitarAtendimentoPage() {
       <section className="relative flex min-h-[420px] items-center overflow-hidden pt-28 md:min-h-[500px]">
         <Image src="/images/servicos-premium.jpg" alt="Solicitar Atendimento" fill priority className="object-cover object-center opacity-100 dark:opacity-40" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-transparent dark:from-[var(--bg-primary)]/85 dark:via-[var(--bg-primary)]/50" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(var(--accent-rgb),0.10),transparent_50%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent dark:from-[var(--bg-primary)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(var(--accent-rgb),0.10),transparent_50%)] dark:block hidden" />
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 lg:px-8">
           <div className="max-w-2xl">
             <span className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--accent)]">Solicitação de Orçamento</span>
