@@ -51,7 +51,7 @@ export default function MobileNav({ active, menu, setActive }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-[#1a1a1a] p-2.5 text-zinc-300 transition hover:bg-[#222] lg:hidden"
+        className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-[var(--border-medium)] bg-[var(--bg-card)] p-2.5 text-[var(--foreground)] transition hover:bg-[var(--bg-card-hover)] lg:hidden"
         aria-label="Abrir menu"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>

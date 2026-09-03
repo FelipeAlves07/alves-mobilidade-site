@@ -1,10 +1,9 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { fetchCompanySettings } from "@/domain/company/repository";
 import type { CompanySettings } from "@/domain/company/types";
 
-// ── Azul Navy Luxo fallback ──────────────────────────────────────────────
 const FALLBACK: CompanySettings = {
   id: "",
   company_name: "Alves Mobilidade Executiva",
@@ -22,6 +21,48 @@ const FALLBACK: CompanySettings = {
   updated_at: null,
 };
 
+const LIGHT_VARS: Record<string, string> = {
+  "--bg-primary": "#f5f5f5",
+  "--bg-elevated": "#ffffff",
+  "--bg-card": "#ffffff",
+  "--bg-card-hover": "#f0f0f0",
+  "--bg-surface": "#fafafa",
+  "--background": "#f5f5f5",
+  "--background-soft": "#ffffff",
+  "--background-card": "#ffffff",
+  "--foreground": "#1a1a1a",
+  "--text-muted": "#666666",
+  "--border-subtle": "rgba(0,0,0,0.06)",
+  "--border-light": "rgba(0,0,0,0.08)",
+  "--border-medium": "rgba(0,0,0,0.12)",
+  "--border-strong": "rgba(0,0,0,0.18)",
+  "--shadow-card": "0 4px 20px rgba(0,0,0,0.08)",
+  "--shadow-card-hover": "0 8px 30px rgba(0,0,0,0.12)",
+  "--shadow-glow": "0 0 40px rgba(var(--accent-rgb), 0.06)",
+  "--shadow-glow-hover": "0 0 50px rgba(var(--accent-rgb), 0.10)",
+};
+
+const DARK_VARS: Record<string, string> = {
+  "--bg-primary": "#0a0a0a",
+  "--bg-elevated": "#121212",
+  "--bg-card": "#1a1a1a",
+  "--bg-card-hover": "#222222",
+  "--bg-surface": "#181818",
+  "--background": "#0a0a0a",
+  "--background-soft": "#111111",
+  "--background-card": "#1a1a1a",
+  "--foreground": "#e8e3dc",
+  "--text-muted": "#8a8580",
+  "--border-subtle": "rgba(255,255,255,0.06)",
+  "--border-light": "rgba(255,255,255,0.08)",
+  "--border-medium": "rgba(255,255,255,0.12)",
+  "--border-strong": "rgba(255,255,255,0.18)",
+  "--shadow-card": "0 8px 30px rgba(0,0,0,0.35)",
+  "--shadow-card-hover": "0 12px 40px rgba(0,0,0,0.45)",
+  "--shadow-glow": "0 0 40px rgba(var(--accent-rgb), 0.04)",
+  "--shadow-glow-hover": "0 0 50px rgba(var(--accent-rgb), 0.08)",
+};
+
 function hexToRgb(hex: string): string {
   const clean = hex.replace("#", "");
   if (clean.length !== 6) return "45, 109, 168";
@@ -31,22 +72,20 @@ function hexToRgb(hex: string): string {
   return `${r}, ${g}, ${b}`;
 }
 
-function applyTheme(settings: CompanySettings) {
+function applyBrandColors(settings: CompanySettings) {
   const root = document.documentElement;
   root.style.setProperty("--primary", settings.primary_color);
   root.style.setProperty("--secondary", settings.secondary_color);
   root.style.setProperty("--accent", settings.accent_color);
 
   const accentRgb = hexToRgb(settings.accent_color);
-  root.style.setProperty("--accent-rgb", accentRgb);
-
   const primaryRgb = hexToRgb(settings.primary_color);
-  root.style.setProperty("--primary-rgb", primaryRgb);
-
   const secondaryRgb = hexToRgb(settings.secondary_color);
+
+  root.style.setProperty("--accent-rgb", accentRgb);
+  root.style.setProperty("--primary-rgb", primaryRgb);
   root.style.setProperty("--secondary-rgb", secondaryRgb);
 
-  // Derived opacity variables (avoids Tailwind opacity-modifier limitation with vars)
   root.style.setProperty("--accent-6", `rgba(${accentRgb}, 0.06)`);
   root.style.setProperty("--accent-8", `rgba(${accentRgb}, 0.08)`);
   root.style.setProperty("--accent-10", `rgba(${accentRgb}, 0.10)`);
@@ -66,31 +105,63 @@ function applyTheme(settings: CompanySettings) {
   root.style.setProperty("--secondary-30", `rgba(${secondaryRgb}, 0.30)`);
 }
 
+function applyMode(mode: "dark" | "light") {
+  const root = document.documentElement;
+  const vars = mode === "light" ? LIGHT_VARS : DARK_VARS;
+  for (const [key, value] of Object.entries(vars)) {
+    root.style.setProperty(key, value);
+  }
+  root.classList.toggle("light-mode", mode === "light");
+  root.classList.toggle("dark-mode", mode === "dark");
+  root.setAttribute("data-theme", mode);
+}
+
 type ThemeContextValue = {
   settings: CompanySettings;
   loaded: boolean;
+  mode: "dark" | "light";
+  toggleMode: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue>({
   settings: FALLBACK,
   loaded: false,
+  mode: "dark",
+  toggleMode: () => {},
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<CompanySettings>(FALLBACK);
   const [loaded, setLoaded] = useState(false);
+  const [mode, setMode] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("ame-theme-mode") as "dark" | "light" | null;
+    const initial = saved || "dark";
+    setMode(initial);
+    applyMode(initial);
+  }, []);
 
   useEffect(() => {
     fetchCompanySettings().then((result) => {
       const s = result ?? FALLBACK;
       setSettings(s);
-      applyTheme(s);
+      applyBrandColors(s);
       setLoaded(true);
     });
   }, []);
 
+  const toggleMode = useCallback(() => {
+    setMode((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      localStorage.setItem("ame-theme-mode", next);
+      applyMode(next);
+      return next;
+    });
+  }, []);
+
   return (
-    <ThemeContext.Provider value={{ settings, loaded }}>
+    <ThemeContext.Provider value={{ settings, loaded, mode, toggleMode }}>
       {children}
     </ThemeContext.Provider>
   );

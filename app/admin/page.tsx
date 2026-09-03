@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/admin/Sidebar";
 import Topbar from "@/components/admin/Topbar";
+import BottomTabBar from "@/components/admin/BottomTabBar";
 
 import type { Lead } from "@/domain/lead/types";
 import type { Trip } from "@/domain/trip/types";
@@ -86,6 +87,7 @@ export default function AdminPage() {
   const [loginEmail, setLoginEmail] = useState("admin@alvesmobilidade.com.br");
   const [loginPassword, setLoginPassword] = useState("");
   const [active, setActive] = useState("dashboard");
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [query, setQuery] = useState("");
   const [importText, setImportText] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<MessageKey>("apresentacao");
@@ -426,23 +428,60 @@ export default function AdminPage() {
 
   const activeLabel = menu.find((item) => item.id === active)?.label ?? "Dashboard";
 
+  const moreMenuItems = menu.filter((item) => !["dashboard", "agenda", "orcamento", "whatsapp"].includes(item.id));
+
   return (
     <main className="min-h-screen bg-[var(--bg-primary)]">
       <div className="flex min-h-screen">
         <Sidebar active={active} menu={menu} setActive={setActive} onLogout={logout} />
         <section className="flex min-w-0 flex-1 flex-col">
           <Topbar active={active} title={activeLabel} menu={menu} setActive={setActive} onBackup={exportBackup} />
-          <div className="flex-1 px-3 pb-28 pt-4 md:px-6 md:pb-8 md:pt-6">
+          <div className="mobile-content flex-1 px-3 pb-28 pt-4 md:px-6 md:pb-8 md:pt-6">
             <div key={active} className="animate-enter-up">{renderContent()}</div>
           </div>
         </section>
       </div>
 
+      <BottomTabBar active={active} onSelect={setActive} onOpenMore={() => setShowMoreMenu(true)} />
+
+      {showMoreMenu && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center lg:hidden" onClick={() => setShowMoreMenu(false)}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="relative w-full max-w-lg rounded-t-2xl bg-[var(--bg-card)] p-4 pb-8 animate-slide-up" onClick={(e) => e.stopPropagation()}>
+            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-zinc-600" />
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-zinc-500">Mais opções</p>
+            <div className="grid grid-cols-3 gap-2">
+              {moreMenuItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => { setActive(item.id); setShowMoreMenu(false); }}
+                  className={`flex flex-col items-center gap-2 rounded-xl p-3 transition ${
+                    active === item.id ? "bg-[var(--accent-15)] text-[var(--accent)]" : "text-zinc-400 hover:bg-white/5"
+                  }`}
+                >
+                  <item.icon size={22} />
+                  <span className="text-[10px] font-bold leading-tight">{item.label}</span>
+                </button>
+              ))}
+            </div>
+            <button onClick={logout} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 py-3 text-sm font-bold text-red-400 transition hover:bg-red-500/10">
+              <LogOut size={16} /> Sair
+            </button>
+          </div>
+        </div>
+      )}
+
       <button type="button" onClick={startAmeAssistant}
-        className="fixed bottom-4 right-4 z-[80] flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-4 py-3.5 text-sm font-bold text-white shadow-lg md:bottom-5 md:right-5 md:px-5 md:py-4"
+        className="fixed bottom-20 right-4 z-[80] flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-4 py-3.5 text-sm font-bold text-white shadow-lg md:bottom-5 md:right-5 md:px-5 md:py-4 lg:hidden"
         title="Comando AME"
         style={{ boxShadow: "0 20px 70px rgba(var(--accent-rgb), 0.24)" }}
-      ><Mic size={16} className="md:size-[18px]" /> <span className="hidden sm:inline">Comando AME</span></button>
+      ><Mic size={16} /></button>
+
+      <button type="button" onClick={startAmeAssistant}
+        className="fixed bottom-5 right-5 z-[80] hidden cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-4 text-sm font-bold text-white shadow-lg lg:flex"
+        title="Comando AME"
+        style={{ boxShadow: "0 20px 70px rgba(var(--accent-rgb), 0.24)" }}
+      ><Mic size={18} /> <span>Comando AME</span></button>
 
       <VozView
         ameOpen={ameOpen} ameStep={ameStep} ameText={ameText}
@@ -453,7 +492,7 @@ export default function AdminPage() {
       />
 
       {voiceStatus && !ameOpen && active !== "viagens" && (
-        <div className="fixed bottom-6 right-20 z-[80] max-w-sm rounded-xl border border-[var(--accent-15)] bg-[var(--bg-card)] px-4 py-3 text-sm text-[var(--accent)] shadow-2xl backdrop-blur-xl max-sm:bottom-20 max-sm:right-4">{voiceStatus}</div>
+        <div className="fixed bottom-24 right-4 z-[80] max-w-sm rounded-xl border border-[var(--accent-15)] bg-[var(--bg-card)] px-4 py-3 text-sm text-[var(--accent)] shadow-2xl backdrop-blur-xl lg:bottom-6 lg:right-20">{voiceStatus}</div>
       )}
     </main>
   );

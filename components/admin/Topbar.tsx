@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Download } from "lucide-react";
+import { ChevronRight, Download, Sun, Moon } from "lucide-react";
 import MobileNav from "./MobileNav";
+import { useTheme } from "@/contexts/ThemeContext";
 import type { ElementType } from "react";
 
 type MenuItem = {
@@ -21,6 +22,8 @@ type Props = {
 };
 
 export default function Topbar({ active, title, menu, setActive, onBackup }: Props) {
+  const { mode, toggleMode } = useTheme();
+
   return (
     <div className="sticky top-0 z-40 border-b border-[var(--accent-8)] bg-[var(--bg-primary)]/85 backdrop-blur-2xl">
       <div className="flex items-center justify-between gap-2 px-3 py-2 md:px-6 md:py-3">
@@ -34,6 +37,14 @@ export default function Topbar({ active, title, menu, setActive, onBackup }: Pro
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1.5 md:gap-2">
+          <button
+            type="button"
+            onClick={toggleMode}
+            className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-white/8 px-2 py-1.5 text-zinc-400 transition hover:border-white/15 hover:text-zinc-200 md:px-3 md:py-2"
+            title={mode === "dark" ? "Modo claro" : "Modo escuro"}
+          >
+            {mode === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
           <button
             type="button"
             onClick={onBackup}
