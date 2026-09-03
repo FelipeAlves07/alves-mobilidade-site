@@ -46,8 +46,8 @@ export default function HomePage() {
 
       {/* ── HERO ── */}
       <section className="relative flex min-h-screen items-center overflow-hidden">
-        <Image src="/images/hero-byd.jpg" alt="Alves Mobilidade Executiva" fill priority className="object-cover object-center opacity-70 dark:opacity-55" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)]/70 via-[var(--bg-primary)]/10 to-transparent dark:from-[var(--bg-primary)]/85 dark:via-[var(--bg-primary)]/30" />
+        <Image src="/images/hero-byd.jpg" alt="Alves Mobilidade Executiva" fill priority className="object-cover object-center opacity-30 dark:opacity-55" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)]/25 via-[var(--bg-primary)]/5 to-transparent dark:from-[var(--bg-primary)]/85 dark:via-[var(--bg-primary)]/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(var(--accent-rgb),0.15),transparent_50%)]" />
 
