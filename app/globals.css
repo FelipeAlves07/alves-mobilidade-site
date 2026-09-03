@@ -564,3 +564,91 @@ input, textarea, select {
 .light-mode .text-zinc-500 { color: #888 !important; }
 .light-mode .text-zinc-300 { color: #444 !important; }
 .light-mode .text-zinc-200 { color: #333 !important; }
+.light-mode .text-zinc-600 { color: #999 !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PUBLIC SITE — LIGHT MODE OVERRIDES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Header nav links */
+.light-mode header .text-zinc-300 { color: #555 !important; }
+.light-mode header .text-zinc-300:hover { color: #1a1a1a !important; }
+.light-mode header .bg-white\/\[0\.04\] { background: rgba(0,0,0,0.04) !important; }
+.light-mode header .bg-white\/\[0\.08\] { background: rgba(0,0,0,0.08) !important; }
+
+/* Hero section — keep white text on dark image overlay */
+.light-mode main section:first-child .text-white { color: #ffffff !important; }
+.light-mode main section:first-child .text-zinc-400 { color: rgba(255,255,255,0.7) !important; }
+
+/* Sections after hero — adapt text to foreground */
+.light-mode main section:not(:first-child) h2,
+.light-mode main section:not(:first-child) h3 {
+  color: var(--foreground) !important;
+}
+
+/* Cards in light sections */
+.light-mode .bg-\[var\(--bg-card\)\] {
+  background: #ffffff !important;
+}
+
+/* Footer */
+.light-mode footer { background: #ffffff !important; }
+.light-mode footer .text-zinc-500 { color: #777 !important; }
+.light-mode footer .text-zinc-600 { color: #999 !important; }
+.light-mode footer p:hover,
+.light-mode footer a:hover {
+  color: #1a1a1a !important;
+}
+
+/* Service cards — white text in dark hero only */
+.light-mode main section:first-child .text-white span { color: #ffffff !important; }
+
+/* Stat cards, feature cards */
+.light-mode .border-\[var\(--border-light\)\] {
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+/* WhatsApp floating button — keep green */
+.light-mode .bg-\[\#25D366\] { background-color: #25D366 !important; }
+
+/* Form inputs on public pages */
+.light-mode input,
+.light-mode textarea,
+.light-mode select {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #999 !important;
+}
+
+/* Mobile menu overlay */
+.light-mode .bg-\[var\(--bg-primary\)\] {
+  background: #f5f5f5 !important;
+}
+
+/* Backdrop blur elements */
+.light-mode .backdrop-blur-xl,
+.light-mode .backdrop-blur-2xl {
+  background: rgba(255,255,255,0.85) !important;
+}
+
+/* Gradient accent text — keep visible on light */
+.light-mode .text-gradient-accent {
+  background: linear-gradient(135deg, var(--accent), var(--secondary)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Fleet cards */
+.light-mode .fleet-card {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+/* CTA section */
+.light-mode .cta-section {
+  background: #ffffff !important;
+}

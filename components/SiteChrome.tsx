@@ -38,7 +38,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
               <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--accent)]">Serviços</h4>
               <div className="mt-5 space-y-2.5">
                 {["Aeroportos", "Empresas", "Eventos", "Viagens"].map((s) => (
-                  <p key={s} className="text-sm text-zinc-500 transition hover:text-white cursor-default">{s}</p>
+                  <p key={s} className="text-sm text-zinc-500 transition hover:text-[var(--foreground)] cursor-default">{s}</p>
                 ))}
               </div>
             </div>
@@ -52,16 +52,16 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
                   { href: "/corporativo", label: "Corporativo" },
                   { href: "/contato", label: "Contato" },
                 ].map((p) => (
-                  <Link key={p.href} href={p.href} className="block text-sm text-zinc-500 transition hover:text-white">{p.label}</Link>
+                  <Link key={p.href} href={p.href} className="block text-sm text-zinc-500 transition hover:text-[var(--foreground)]">{p.label}</Link>
                 ))}
               </div>
             </div>
             <div>
               <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--accent)]">Contato</h4>
               <div className="mt-5 space-y-2.5 text-sm text-zinc-500">
-                <p className="transition hover:text-white cursor-default">(31) 99845-8084</p>
-                <p className="transition hover:text-white cursor-default">contato@alvesmobilidade.com.br</p>
-                <p className="transition hover:text-white cursor-default">Belo Horizonte • MG</p>
+                <p className="transition hover:text-[var(--foreground)] cursor-default">(31) 99845-8084</p>
+                <p className="transition hover:text-[var(--foreground)] cursor-default">contato@alvesmobilidade.com.br</p>
+                <p className="transition hover:text-[var(--foreground)] cursor-default">Belo Horizonte • MG</p>
               </div>
               <Link href="/solicitar-atendimento" className="group mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95">
                 Solicitar <ArrowRight size={12} className="transition group-hover:translate-x-0.5" />

@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { usePublicTheme } from "@/contexts/PublicThemeContext";
 
 const links = [
   { href: "/", label: "Home" },
@@ -18,6 +19,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { mode, toggleMode } = usePublicTheme();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -65,6 +67,12 @@ export default function Header() {
             </nav>
 
             <div className="flex items-center gap-3">
+              <button onClick={toggleMode}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border-medium)] bg-white/[0.04] text-zinc-300 transition hover:bg-white/[0.08] hover:text-[var(--accent)]"
+                aria-label={mode === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}>
+                {mode === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+
               <Link href="/solicitar-atendimento"
                 className="hidden lg:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 shrink-0">
                 Orçamento <ArrowRight size={14} />
@@ -108,6 +116,11 @@ export default function Header() {
               style={{ animationDelay: `${links.length * 60}ms`, animationFillMode: "both" }}>
               Solicitar orçamento <ArrowRight size={16} />
             </Link>
+            <button onClick={toggleMode}
+              className="animate-enter-up mt-3 flex items-center justify-center gap-3 rounded-xl border border-[var(--border-medium)] bg-white/[0.04] px-5 py-4 text-sm font-bold tracking-[0.08em] text-zinc-300 transition hover:bg-white/[0.08] hover:text-[var(--accent)]"
+              style={{ animationDelay: `${(links.length + 1) * 60}ms`, animationFillMode: "both" }}>
+              {mode === "dark" ? <><Sun size={16} /> Modo claro</> : <><Moon size={16} /> Modo escuro</>}
+            </button>
           </nav>
         </div>
       )}

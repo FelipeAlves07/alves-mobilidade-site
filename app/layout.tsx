@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SiteChrome from "@/components/SiteChrome";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { PublicThemeProvider } from "@/contexts/PublicThemeContext";
 
 const siteUrl = "https://www.alvesmobilidade.com.br";
 
@@ -40,7 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <body>
-        <SiteChrome>{children}</SiteChrome>
+        <PublicThemeProvider>
+          <SiteChrome>{children}</SiteChrome>
+        </PublicThemeProvider>
       </body>
       <GoogleAnalytics gaId="G-ZRK4D4XD7B" />
     </html>
