@@ -13,9 +13,10 @@ interface WhatsAppViewProps {
   leads: Lead[];
   onSetSelectedMessage: (key: MessageKey) => void;
   onSendLeadMessage: (lead: Lead, key: MessageKey) => void;
+  onRefreshLeads?: () => void;
 }
 
-export default function WhatsAppView({ messages, selectedMessage, leads, onSetSelectedMessage, onSendLeadMessage }: WhatsAppViewProps) {
+export default function WhatsAppView({ messages, selectedMessage, leads, onSetSelectedMessage, onSendLeadMessage, onRefreshLeads }: WhatsAppViewProps) {
   const [clearing, setClearing] = useState(false);
   const [clearResult, setClearResult] = useState<{ deleted: number } | null>(null);
 
@@ -28,7 +29,9 @@ export default function WhatsAppView({ messages, selectedMessage, leads, onSetSe
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setClearResult({ deleted: data.deleted });
-      window.setTimeout(() => window.location.reload(), 1500);
+      if (onRefreshLeads) {
+        window.setTimeout(() => onRefreshLeads(), 1500);
+      }
     } catch (err: any) {
       alert("Erro ao limpar: " + (err.message || "desconhecido"));
     } finally {

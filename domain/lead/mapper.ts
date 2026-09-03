@@ -12,6 +12,7 @@ export interface LeadDatabase {
   next_date: string;
   created_at: string;
   last_contact?: string;
+  address?: string;
 }
 
 export function leadToDatabase(lead: Lead): LeadDatabase {
@@ -27,6 +28,7 @@ export function leadToDatabase(lead: Lead): LeadDatabase {
     next_date: lead.nextDate,
     created_at: lead.createdAt,
     last_contact: lead.lastContact,
+    address: lead.address,
   };
 }
 
@@ -43,6 +45,7 @@ export function leadFromDatabase(db: LeadDatabase): Lead {
     nextDate: db.next_date,
     createdAt: db.created_at,
     lastContact: db.last_contact,
+    address: db.address,
   };
 }
 
@@ -56,5 +59,6 @@ export function leadFormToDatabase(form: LeadForm): Omit<LeadDatabase, "id" | "c
     notes: form.notes,
     next_action: form.nextAction,
     next_date: form.nextDate,
+    address: form.address,
   };
 }

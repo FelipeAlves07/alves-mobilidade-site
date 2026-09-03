@@ -8,6 +8,7 @@ import Panel from "@/components/admin/Panel";
 import LeadCard from "@/components/admin/LeadCard";
 import type { Lead, LeadType } from "@/domain/lead/types";
 import { downloadCSV } from "@/lib/csv";
+import { nextActionOptions } from "@/app/admin/constants";
 
 interface ClientesViewProps {
   leads: Lead[];
@@ -61,10 +62,12 @@ export default function ClientesView({
           <VoiceInput value={leadForm.phone} onValue={(value) => onSetLeadForm({ ...leadForm, phone: value })} placeholder="WhatsApp" />
           <select value={leadForm.type} onChange={(e) => onSetLeadForm({ ...leadForm, type: e.target.value as LeadType })} className="input-admin">{leadTypes.map((type) => <option key={type}>{type}</option>)}</select>
           <VoiceInput value={leadForm.origin} onValue={(value) => onSetLeadForm({ ...leadForm, origin: value })} placeholder="Origem do contato" />
-          <VoiceInput value={leadForm.nextAction} onValue={(value) => onSetLeadForm({ ...leadForm, nextAction: value })} placeholder="Próxima ação" className="md:col-span-2" />
+          <select value={leadForm.nextAction} onChange={(e) => onSetLeadForm({ ...leadForm, nextAction: e.target.value })} className="input-admin md:col-span-2">
+            {nextActionOptions.map((option) => <option key={option}>{option}</option>)}
+          </select>
           <input type="date" value={leadForm.nextDate} onChange={(e) => onSetLeadForm({ ...leadForm, nextDate: e.target.value })} className="input-admin" />
+          <VoiceInput value={leadForm.address || ""} onValue={(value) => onSetLeadForm({ ...leadForm, address: value })} placeholder="Endereço (opcional)" className="md:col-span-2" />
           <button onClick={onAddLead} className="rounded-xl bg-[var(--secondary)] px-5 py-4 font-bold text-white transition hover:opacity-90"><Plus className="inline" size={18} /> Adicionar</button>
-          <VoiceTextarea value={leadForm.notes} onValue={(value) => onSetLeadForm({ ...leadForm, notes: value })} placeholder="Observações" className="md:col-span-2 xl:col-span-4" />
         </div>
       </div>
     );

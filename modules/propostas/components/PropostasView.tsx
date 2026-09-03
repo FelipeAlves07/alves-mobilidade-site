@@ -1,14 +1,18 @@
 "use client";
 
+import { useMemo } from "react";
 import { DollarSign, Mic } from "lucide-react";
 import VoiceInput from "@/components/admin/VoiceInput";
 import Panel from "@/components/admin/Panel";
+import ClientSelect from "@/components/admin/ClientSelect";
 import { cleanPhone } from "@/lib/whatsapp";
 import { money } from "@/lib/quotes";
 import type { Proposal } from "@/domain/proposal/types";
 import type { QuoteResult } from "@/domain/trip/types";
+import type { Lead } from "@/domain/lead/types";
 
 interface PropostasViewProps {
+  leads: Lead[];
   quoteResult: QuoteResult | null;
   quoteClient: string;
   quotePhone: string;
@@ -47,6 +51,7 @@ interface PropostasViewProps {
 }
 
 export default function PropostasView({
+  leads,
   quoteResult, quoteClient, quotePhone, quoteDate, quoteTime,
   quoteOrigin, quoteDestination, quoteKm, quotePassengers, quoteBags, quoteSpecialLuggage,
   proposals, voiceStatus,
@@ -58,9 +63,12 @@ export default function PropostasView({
   onOpenGoogleMapsRoute, onOpenWazeRoute,
 }: PropostasViewProps) {
   const activeQuote = quoteResult;
-  const currentProposal = activeQuote && activeQuote.value && !activeQuote.manual
-    ? getCurrentProposal("Rascunho")
-    : null;
+  const currentProposal = useMemo(() => 
+    activeQuote && activeQuote.value && !activeQuote.manual
+      ? getCurrentProposal("Rascunho")
+      : null,
+    [activeQuote, getCurrentProposal]
+  );
 
   return (
     <div className="space-y-6">
@@ -79,7 +87,15 @@ export default function PropostasView({
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <VoiceInput value={quoteClient} onValue={onSetQuoteClient} placeholder="Cliente" />
+          <ClientSelect
+            leads={leads}
+            value={quoteClient}
+            placeholder="Cliente"
+            onSelect={(lead) => {
+              onSetQuoteClient(lead.name);
+              onSetQuotePhone(lead.phone);
+            }}
+          />
           <VoiceInput value={quotePhone} onValue={onSetQuotePhone} placeholder="WhatsApp do cliente" />
           <input type="date" value={quoteDate} onChange={(e) => onSetQuoteDate(e.target.value)} className="input-admin" />
           <input type="time" value={quoteTime} onChange={(e) => onSetQuoteTime(e.target.value)} className="input-admin" />

@@ -1,9 +1,11 @@
-export type ReferralStatus = "Indicado" | "Transfer realizado" | "Transfer creditado";
+export type ReferralStatus = "Pendente" | "Convertida" | "Cancelada";
 
 export interface Referral {
   id: string;
   referrer: string;
   referred: string;
+  referrerPhone?: string;
+  referredPhone?: string;
   status: ReferralStatus;
   credits: number;
 }

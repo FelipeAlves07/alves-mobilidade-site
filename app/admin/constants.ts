@@ -29,7 +29,7 @@ export const messages = {
   orcamento:
     "Olá! Para eu preparar seu orçamento, me envie por favor: origem, destino, data, horário, quantidade de passageiros e quantidade de malas.",
   confirmacao:
-    "Olá, tudo bem? Passando para confirmar nosso atendimento. Se puder, me confirme origem, destino, horário e quantidade de passageiros para deixarmos tudo organizado.",
+    "Olá, tudo bem? Passando para confirmar seu atendimento com a AME. Está tudo certo para sua viagem? Qualquer ajuste é só me avisar.",
 };
 
 export const defaultLeads: Lead[] = [
@@ -43,7 +43,7 @@ export const defaultTrips: Trip[] = [
   { id: "2", client: "Cliente Corporativo", phone: "31999999999", date: new Date(Date.now() + 86400000).toISOString().slice(0, 10), time: "14:30", route: "Savassi → Vila da Serra", value: 120, status: "Agendada" },
 ];
 
-export const defaultReferrals: Referral[] = [{ id: "1", referrer: "Rayssa", referred: "Rafaela", status: "Transfer realizado", credits: 1 }];
+export const defaultReferrals: Referral[] = [{ id: "1", referrer: "Rayssa", referred: "Rafaela", status: "Pendente", credits: 1 }];
 export const defaultFinance: FinanceEntry[] = [{ id: "1", description: "Transfer Rayssa - Confins", value: 150, type: "Entrada", date: today }];
 export const defaultProposals: Proposal[] = [];
 
@@ -114,6 +114,19 @@ export function nextActionText(status: Status) {
   };
   return map[status];
 }
+
+// Próximo passo padronizado: seleção controlada (não texto livre),
+// usada no cadastro/edição de cliente e reconhecida pelo Dashboard.
+export const nextActionOptions: string[] = [
+  "Enviar apresentação da Alves",
+  "Aguardar resposta ou enviar follow-up",
+  "Enviar orçamento ou coletar dados da viagem",
+  "Fazer follow-up do orçamento",
+  "Tentar fechar a viagem",
+  "Agendar viagem e confirmar pagamento",
+  "Agradecer e apresentar Programa de Indicação",
+  "Sem ação no momento",
+];
 
 export function nextStatus(status: Status): Status {
   const order: Status[] = ["Novo contato", "Apresentação enviada", "Respondeu", "Orçamento enviado", "Negociação", "Fechou", "Pós-atendimento"];

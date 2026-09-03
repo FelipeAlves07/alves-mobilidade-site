@@ -1,15 +1,14 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ReactNode, ElementType } from "react";
 import Sidebar from "./Sidebar";
-import MobileNav from "./MobileNav";
 import Topbar from "./Topbar";
 
 type MenuItem = {
   id: string;
   group: string;
   label: string;
-  icon: any;
+  icon: ElementType;
 };
 
 type Props = {
@@ -42,9 +41,7 @@ export default function AdminLayout({
         />
 
         <section className="flex-1 p-5 md:p-8">
-          <MobileNav active={active} menu={menu} setActive={setActive} />
-
-          <Topbar title={title} onBackup={onBackup} />
+          <Topbar active={active} title={title} menu={menu} setActive={setActive} onBackup={onBackup} />
 
           {children}
         </section>

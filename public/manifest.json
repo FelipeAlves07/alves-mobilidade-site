@@ -1,14 +1,17 @@
 {
-  "name": "Alves Mobilidade Executiva",
+  "name": "AME Control - Alves Mobilidade Executiva",
   "short_name": "AME Control",
   "description": "Sistema de gerenciamento de mobilidade executiva premium",
   "start_url": "/admin",
+  "scope": "/admin",
   "display": "standalone",
-  "orientation": "landscape-primary",
+  "orientation": "any",
   "background_color": "#050505",
   "theme_color": "#050505",
   "categories": ["business", "transportation"],
   "lang": "pt-BR",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/branding/ame-icon.svg",
@@ -18,9 +21,39 @@
     },
     {
       "src": "/branding/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/favicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/branding/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/admin",
+      "description": "Painel principal"
+    },
+    {
+      "name": "Agenda",
+      "url": "/admin#agenda",
+      "description": "Agenda de viagens"
+    },
+    {
+      "name": "Orçamento",
+      "url": "/admin#orcamento",
+      "description": "Central de orçamentos"
     }
   ]
 }

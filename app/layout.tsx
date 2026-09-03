@@ -18,7 +18,12 @@ export const metadata: Metadata = {
   icons: { icon: "/branding/favicon.png", apple: "/branding/ame-icon.svg" },
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "AME Control" },
-  other: { "theme-color": "#050505", "apple-mobile-web-app-capable": "yes", "apple-mobile-web-app-status-bar-style": "black-translucent" },
+  other: {
+    "theme-color": "#050505",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-title": "AME Control",
+  },
   openGraph: {
     title: "Alves Mobilidade Executiva",
     description: "Mobilidade executiva premium em Belo Horizonte para empresas e clientes particulares.",

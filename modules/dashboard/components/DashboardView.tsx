@@ -138,7 +138,7 @@ export default function DashboardView({
       </div>
       <div className="grid gap-5 xl:grid-cols-2">
         <Panel title="Próximas viagens de hoje"><TripList trips={stats.todayTrips} onFinish={onFinishTrip} /></Panel>
-        <Panel title="Inteligência rápida"><AISuggestions pending={stats.pending.length} trips={stats.todayTrips.length} credits={stats.credits} /></Panel>
+        <Panel title="Inteligência rápida"><AISuggestions leads={leads} pending={stats.pending.length} trips={stats.todayTrips.length} credits={stats.credits} today={today} onSendLeadMessage={onSendLeadMessage} onCompleteAction={onCompleteAction} /></Panel>
       </div>
     </div>
   );

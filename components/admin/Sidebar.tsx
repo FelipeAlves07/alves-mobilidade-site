@@ -36,7 +36,7 @@ export default function Sidebar({ active, menu, setActive, onLogout }: Props) {
 
       <button
         type="button"
-        onClick={() => setActive("trabalhar")}
+        onClick={() => setActive("agenda")}
         className="group mb-3 w-full cursor-pointer rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-4 py-3 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]"
         style={{ boxShadow: "0 4px 16px rgba(var(--secondary-rgb), 0.30)" }}
       >

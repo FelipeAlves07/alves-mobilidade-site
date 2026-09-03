@@ -6,16 +6,27 @@ export interface ReferralDatabase {
   referred: string;
   status: string;
   credits: number;
+  referrer_phone?: string;
+  referred_phone?: string;
 }
 
 export function referralToDatabase(ref: Referral): ReferralDatabase {
-  return { ...ref };
+  return {
+    ...ref,
+    referrer_phone: ref.referrerPhone,
+    referred_phone: ref.referredPhone,
+  };
 }
 
 export function referralFromDatabase(db: ReferralDatabase): Referral {
   return {
-    ...db,
+    id: db.id,
+    referrer: db.referrer,
+    referred: db.referred,
     status: db.status as Referral["status"],
+    credits: db.credits,
+    referrerPhone: db.referrer_phone || "",
+    referredPhone: db.referred_phone || "",
   };
 }
 

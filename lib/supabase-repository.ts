@@ -27,9 +27,10 @@ export class SupabaseRepository<T extends { id: string }, TCreate = T>
   }
 
   async create(input: TCreate): Promise<T> {
+    const id = crypto.randomUUID();
     const dbData = this.options.toDb
-      ? this.options.toDb(input)
-      : mapKeysToSnake(input as Record<string, unknown>);
+      ? this.options.toDb({ ...input, id } as TCreate)
+      : { id, ...mapKeysToSnake(input as Record<string, unknown>) };
 
     const { data, error } = await supabase
       .from(this.tableName)

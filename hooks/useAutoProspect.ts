@@ -14,6 +14,7 @@ import type { AutomaticDiscoveryResponse } from "@/domain/autoprospect/discovery
 import type { EnrichmentOutcome } from "@/domain/autoprospect/enrichment";
 import type { QualificationAnalysis } from "@/domain/autoprospect/qualification";
 import { createRepository } from "@/lib/repository-factory";
+import { supabase } from "@/lib/supabase";
 import {
   apCampaignFromSupabase,
   apCampaignFormToSupabase,
@@ -33,6 +34,12 @@ import {
 } from "@/lib/repository-mappers";
 import { latestIntelligencePerCompany } from "@/domain/autoprospect/intelligence";
 import type { IntelligenceAnalysis } from "@/domain/autoprospect/intelligence";
+import { isTerminalBatchStatus, type BatchRunDetail, type BatchRunListItem } from "@/domain/autoprospect/batch";
+import type { OpportunityInteractionForm, OpportunityStatus } from "@/domain/autoprospect/opportunity";
+import type {
+  OpportunityInteractionRow,
+  OpportunityListItemRow,
+} from "@/lib/repository-mappers";
 
 export interface CompanyAnalysisResult {
   enrichment: EnrichmentOutcome | null;
@@ -68,15 +75,34 @@ function qualificationRowToAnalysis(row: CompanyQualificationRow): Qualification
   };
 }
 
+async function batchRequestHeaders(contentType = false): Promise<HeadersInit> {
+  const { data } = await supabase.auth.getSession();
+  const accessToken = data.session?.access_token;
+  if (!accessToken) {
+    throw new Error("Faça login para executar ações de lote.");
+  }
+  return {
+    ...(contentType ? { "Content-Type": "application/json" } : {}),
+    Authorization: `Bearer ${accessToken}`,
+  };
+}
+
 export function useAutoProspect() {
   const [campaigns, setCampaigns] = useState<AutoProspectCampaign[]>([]);
   const [companies, setCompanies] = useState<ProspectCompany[]>([]);
   const [discoveries, setDiscoveries] = useState<ProspectDiscovery[]>([]);
   const [analyses, setAnalyses] = useState<Record<string, CompanyAnalysisResult>>({});
   const [intelligence, setIntelligence] = useState<Record<string, CompanyIntelligenceRow>>({});
+  const [opportunities, setOpportunities] = useState<OpportunityListItemRow[]>([]);
+  const [interactions, setInteractions] = useState<Record<string, OpportunityInteractionRow[]>>({});
+  const [batchRuns, setBatchRuns] = useState<BatchRunListItem[]>([]);
+  const [batchDetail, setBatchDetail] = useState<BatchRunDetail | null>(null);
+  const [batchPolling, setBatchPolling] = useState(false);
 
   const companiesRef = useRef<ProspectCompany[]>([]);
   const discoveriesRef = useRef<ProspectDiscovery[]>([]);
+  const batchPollRef = useRef<number | null>(null);
+  const lastBatchIdRef = useRef<string | null>(null);
 
   useEffect(() => { companiesRef.current = companies; }, [companies]);
   useEffect(() => { discoveriesRef.current = discoveries; }, [discoveries]);
@@ -178,7 +204,36 @@ export function useAutoProspect() {
       for (const row of latest.values()) map[row.companyId] = row;
       setIntelligence(map);
     }).catch(() => {});
+    // Oportunidades comerciais (Etapa 6): leitura via API (join com a empresa)
+    fetch("/api/autoprospect/opportunities")
+      .then((response) => response.json().catch(() => null))
+      .then((payload) => {
+        if (payload?.ok && Array.isArray(payload.opportunities)) {
+          setOpportunities(payload.opportunities);
+        }
+      })
+      .catch(() => {});
+    // Processamentos em lote (Etapa 7): apenas leitura; execução é manual.
+    batchRequestHeaders()
+      .then((headers) => fetch("/api/autoprospect/batch", { headers }))
+      .then((response) => response.json().catch(() => null))
+      .then((payload) => {
+        if (payload?.ok && Array.isArray(payload.runs)) {
+          setBatchRuns(payload.runs);
+        }
+      })
+      .catch(() => {});
   }, [campaignRepo, companyRepo, discoveryRepo, qualificationRepo, intelligenceRepo]);
+
+  useEffect(
+    () => () => {
+      if (batchPollRef.current !== null) {
+        window.clearInterval(batchPollRef.current);
+        batchPollRef.current = null;
+      }
+    },
+    [],
+  );
 
   const addCampaign = useCallback(
     async (form: AutoProspectCampaignForm) => {
@@ -420,12 +475,286 @@ export function useAutoProspect() {
     [],
   );
 
+  // ─── Oportunidade comercial (Etapa 6) ──────────────────────────
+  // Fluxo manual: criar a partir da inteligência persistida, alterar
+  // status e registrar interações. Nenhum envio automático.
+
+  const createOpportunity = useCallback(
+    async (companyId: string): Promise<OpportunityListItemRow> => {
+      const response = await fetch("/api/autoprospect/opportunities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ companyId }),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok: boolean;
+        opportunity?: OpportunityListItemRow;
+        error?: string;
+        detail?: string;
+      } | null;
+      if (!response.ok) {
+        throw new Error(payload?.detail || payload?.error || "Oportunidade não criada.");
+      }
+      if (!payload?.ok || !payload.opportunity) {
+        throw new Error("Oportunidade não criada.");
+      }
+      setOpportunities((prev) => [payload.opportunity as OpportunityListItemRow, ...prev]);
+      return payload.opportunity;
+    },
+    [],
+  );
+
+  const updateOpportunityStatus = useCallback(
+    async (opportunityId: string, status: OpportunityStatus): Promise<void> => {
+      const response = await fetch(`/api/autoprospect/opportunities/${opportunityId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok: boolean;
+        opportunity?: OpportunityListItemRow;
+        error?: string;
+        detail?: string;
+      } | null;
+      if (!response.ok || !payload?.ok || !payload.opportunity) {
+        throw new Error(payload?.detail || payload?.error || "Status não alterado.");
+      }
+      setOpportunities((prev) =>
+        prev.map((item) =>
+          item.id === opportunityId ? (payload.opportunity as OpportunityListItemRow) : item,
+        ),
+      );
+    },
+    [],
+  );
+
+  const loadInteractions = useCallback(
+    async (opportunityId: string): Promise<OpportunityInteractionRow[]> => {
+      const response = await fetch(`/api/autoprospect/opportunities/${opportunityId}/interactions`);
+      const payload = (await response.json().catch(() => null)) as {
+        ok: boolean;
+        interactions?: OpportunityInteractionRow[];
+        error?: string;
+      } | null;
+      if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.error || "Histórico não carregado.");
+      }
+      const rows = payload.interactions || [];
+      setInteractions((prev) => ({ ...prev, [opportunityId]: rows }));
+      return rows;
+    },
+    [],
+  );
+
+  const addInteraction = useCallback(
+    async (opportunityId: string, form: OpportunityInteractionForm): Promise<OpportunityInteractionRow> => {
+      const response = await fetch(`/api/autoprospect/opportunities/${opportunityId}/interactions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok: boolean;
+        interaction?: OpportunityInteractionRow;
+        error?: string;
+        detail?: string;
+      } | null;
+      if (!response.ok || !payload?.ok || !payload.interaction) {
+        throw new Error(payload?.detail || payload?.error || "Interação não registrada.");
+      }
+      setInteractions((prev) => ({
+        ...prev,
+        [opportunityId]: [
+          payload.interaction as OpportunityInteractionRow,
+          ...(prev[opportunityId] ?? []),
+        ],
+      }));
+      return payload.interaction;
+    },
+    [],
+  );
+
+  // ─── Processamento em lote (Etapa 7) ───────────────────────────
+  // Lote = fila persistida de empresas para processamento contínuo.
+  // A execução é disparada manualmente (botão) e acompanhada por
+  // polling do detalhe enquanto o lote não atinge estado terminal.
+
+  const refreshBatchRuns = useCallback(async (): Promise<void> => {
+    const response = await fetch("/api/autoprospect/batch", {
+      headers: await batchRequestHeaders(),
+    });
+    const payload = (await response.json().catch(() => null)) as {
+      ok: boolean;
+      runs?: BatchRunListItem[];
+      error?: string;
+    } | null;
+    if (!response.ok || !payload?.ok || !Array.isArray(payload.runs)) {
+      throw new Error(payload?.error || "Lote não carregado.");
+    }
+    setBatchRuns(payload.runs);
+  }, []);
+
+  const loadBatchDetail = useCallback(async (runId: string): Promise<BatchRunDetail | null> => {
+    const response = await fetch(`/api/autoprospect/batch/${runId}`, {
+      headers: await batchRequestHeaders(),
+    });
+    const payload = (await response.json().catch(() => null)) as {
+      ok: boolean;
+      detail?: BatchRunDetail | string;
+      error?: string;
+    } | null;
+    if (!response.ok || !payload?.ok || !payload.detail || typeof payload.detail === "string") {
+      throw new Error(
+        typeof payload?.detail === "string"
+          ? payload.detail
+          : payload?.error || "Lote não carregado.",
+      );
+    }
+    setBatchDetail(payload.detail);
+    return payload.detail;
+  }, []);
+
+  const stopBatchPolling = useCallback((): void => {
+    if (batchPollRef.current !== null) {
+      window.clearInterval(batchPollRef.current);
+      batchPollRef.current = null;
+    }
+    setBatchPolling(false);
+  }, []);
+
+  const startBatchPolling = useCallback(
+    (runId: string): void => {
+      lastBatchIdRef.current = runId;
+      setBatchPolling(true);
+      if (batchPollRef.current !== null) {
+        window.clearInterval(batchPollRef.current);
+      }
+      const tick = async (): Promise<void> => {
+        const current = lastBatchIdRef.current;
+        if (!current) return;
+        const headers = await batchRequestHeaders().catch(() => null);
+        if (!headers) return;
+        const response = await fetch(`/api/autoprospect/batch/${current}`, { headers }).catch(() => null);
+        const payload = response ? await response.json().catch(() => null) : null;
+        if (!payload?.ok || !payload.detail) return;
+        setBatchDetail(payload.detail as BatchRunDetail);
+        refreshBatchRuns().catch(() => {});
+        if (isTerminalBatchStatus((payload.detail as BatchRunDetail).run.status)) {
+          stopBatchPolling();
+        }
+      };
+      tick();
+      batchPollRef.current = window.setInterval(tick, 4000);
+    },
+    [refreshBatchRuns, stopBatchPolling],
+  );
+
+  const createBatch = useCallback(
+    async (campaignId: string, form?: { apenasSemInteligencia?: boolean; limiteMaximo?: number }): Promise<BatchRunListItem> => {
+      const response = await fetch("/api/autoprospect/batch", {
+        method: "POST",
+        headers: await batchRequestHeaders(true),
+        body: JSON.stringify({ campaignId, ...form }),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok: boolean;
+        run?: BatchRunListItem;
+        error?: string;
+        detail?: string;
+      } | null;
+      if (!response.ok || !payload?.ok || !payload.run) {
+        throw new Error(payload?.detail || payload?.error || "Lote não criado.");
+      }
+      setBatchRuns((prev) => [payload.run as BatchRunListItem, ...prev]);
+      setBatchDetail(null);
+      startBatchPolling(payload.run.id);
+      return payload.run;
+    },
+    [startBatchPolling],
+  );
+
+  const processBatch = useCallback(
+    async (runId: string): Promise<{ remaining: number }> => {
+      const response = await fetch(`/api/autoprospect/batch/${runId}/process`, {
+        method: "POST",
+        headers: await batchRequestHeaders(),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok: boolean;
+        remaining?: number;
+        error?: string;
+        detail?: string;
+      } | null;
+      if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.detail || payload?.error || "Processamento não concluído.");
+      }
+      startBatchPolling(runId);
+      refreshBatchRuns().catch(() => {});
+      return { remaining: payload.remaining ?? 0 };
+    },
+    [refreshBatchRuns, startBatchPolling],
+  );
+
+  const runBatchAction = useCallback(
+    async (action: "pause" | "resume" | "cancel", runId: string): Promise<void> => {
+      const response = await fetch(`/api/autoprospect/batch/${runId}/${action}`, {
+        method: "POST",
+        headers: await batchRequestHeaders(),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok: boolean;
+        run?: BatchRunListItem;
+        error?: string;
+        detail?: string;
+      } | null;
+      if (!response.ok || !payload?.ok || !payload.run) {
+        throw new Error(payload?.detail || payload?.error || "Ação não executada.");
+      }
+      const updated = payload.run as BatchRunListItem;
+      setBatchRuns((prev) => prev.map((run) => (run.id === runId ? updated : run)));
+      setBatchDetail((prev) => (prev && prev.run.id === runId ? { ...prev, run: updated } : prev));
+      if (action === "resume") {
+        startBatchPolling(runId);
+      }
+      if (action === "cancel") {
+        stopBatchPolling();
+      }
+    },
+    [startBatchPolling, stopBatchPolling],
+  );
+
+  const retryBatchFailures = useCallback(
+    async (runId: string): Promise<void> => {
+      const response = await fetch(`/api/autoprospect/batch/${runId}/retry-failures`, {
+        method: "POST",
+        headers: await batchRequestHeaders(),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok: boolean;
+        run?: BatchRunListItem;
+        error?: string;
+        detail?: string;
+      } | null;
+      if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.detail || payload?.error || "Falhas não reenfileiradas.");
+      }
+      const newRun = payload.run as BatchRunListItem;
+      setBatchRuns((prev) => [newRun, ...prev.filter((run) => run.id !== newRun.id)]);
+      setBatchDetail(null);
+      startBatchPolling(newRun.id);
+    },
+    [startBatchPolling],
+  );
+
   return {
     campaigns,
     companies,
     discoveries,
     analyses,
     intelligence,
+    opportunities,
+    interactions,
     addCampaign,
     updateCampaign,
     deleteCampaign,
@@ -438,5 +767,20 @@ export function useAutoProspect() {
     runCampaignDiscovery,
     analyzeCompany,
     reanalyzeIntelligence,
+    createOpportunity,
+    updateOpportunityStatus,
+    loadInteractions,
+    addInteraction,
+    batchRuns,
+    batchDetail,
+    batchPolling,
+    refreshBatchRuns,
+    loadBatchDetail,
+    createBatch,
+    processBatch,
+    pauseBatch: (runId: string) => runBatchAction("pause", runId),
+    resumeBatch: (runId: string) => runBatchAction("resume", runId),
+    cancelBatch: (runId: string) => runBatchAction("cancel", runId),
+    retryBatchFailures,
   };
 }

@@ -1,4 +1,5 @@
 import type { Lead, Status } from "@/domain/lead/types";
+import type { MessageKey } from "@/domain/marketing/types";
 import { nextActionText, nextStatus } from "@/app/admin/constants";
 import { addDaysISO } from "@/lib/format";
 
@@ -39,4 +40,19 @@ export function sendLeadMessageData(lead: Lead) {
     nextDate: addDaysISO(1),
     lastContact: new Date().toISOString(),
   } satisfies Partial<Lead>;
+}
+
+// Mensagem de WhatsApp contextual: respeita o próximo passo/categoria
+// atual do cliente em vez de usar sempre o template de apresentação.
+export function messageKeyForLead(lead: Lead): MessageKey {
+  const text = `${lead.status} ${lead.nextAction}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  if (text.includes("pos-atendimento") || text.includes("agradecer") || text.includes("indique para ganhar")) return "agradecimento";
+  if (text.includes("indicacao") || text.includes("indique") || text.includes("programa de indicacao")) return "indicacao";
+  if (text.includes("orcamento") || text.includes("fechar") || text.includes("confirmar pagamento")) return "orcamento";
+  if (text.includes("agendar viagem") || text.includes("confirmar pagamento")) return "confirmacao";
+  if (text.includes("follow-up") || text.includes("aguardar resposta") || text.includes("respondeu") || text.includes("fazer follow")) return "followup";
+  return "apresentacao";
 }

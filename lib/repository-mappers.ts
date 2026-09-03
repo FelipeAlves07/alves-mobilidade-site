@@ -12,6 +12,10 @@ import type {
   ProspectDiscovery,
   ProspectDiscoveryForm,
 } from "@/domain/autoprospect/types";
+import type {
+  BatchCompanyStatus,
+  BatchRunStatus,
+} from "@/domain/autoprospect/batch";
 import {
   leadFromDatabase,
   leadFormToDatabase,
@@ -47,6 +51,7 @@ export function leadFromSupabase(row: Record<string, unknown>): Lead {
     next_date: (row.next_date as string) || "",
     created_at: row.created_at as string,
     last_contact: row.last_contact as string,
+    address: (row.address as string) || "",
   });
 }
 
@@ -82,9 +87,9 @@ export function tripFromSupabase(row: Record<string, unknown>): Trip {
   });
 }
 
-export function tripFormToSupabase(form: TripForm): Record<string, unknown> {
+export function tripFormToSupabase(form: TripForm & { id?: string }): Record<string, unknown> {
   const { origin, destination } = splitRoute(form.route);
-  return {
+  const record: Record<string, unknown> = {
     client_name: form.client,
     client_phone: form.phone,
     origin,
@@ -94,6 +99,8 @@ export function tripFormToSupabase(form: TripForm): Record<string, unknown> {
     value: Number(form.value || 0),
     status: form.status,
   };
+  if (form.id) record.id = form.id;
+  return record;
 }
 
 export function tripPatchToSupabase(patch: Partial<TripForm>): Record<string, unknown> {
@@ -122,16 +129,21 @@ export function financeFromSupabase(row: Record<string, unknown>): FinanceEntry 
     value: Number(row.value || 0),
     type: row.type as string,
     date: row.date as string,
+    category: (row.category as string) || "",
+    trip_id: row.trip_id as string,
   });
 }
 
 export function financeFormToSupabase(form: FinanceEntryForm): Record<string, unknown> {
-  return {
+  const payload: Record<string, unknown> = {
     description: form.description,
     value: Number(form.value),
     type: form.type,
     date: form.date,
+    category: form.category || "outros",
   };
+  if (form.tripId) payload.trip_id = form.tripId;
+  return payload;
 }
 
 // ─── Referral ↔ referrals ──────────────────────────────────────
@@ -144,6 +156,8 @@ export function referralFromSupabase(row: Record<string, unknown>): Referral {
     referred: (row.referred_name as string) || "",
     status: row.status as string,
     credits: Number(row.credits || 0),
+    referrer_phone: (row.referrer_phone as string) || "",
+    referred_phone: (row.referred_phone as string) || "",
   });
 }
 
@@ -151,6 +165,8 @@ export function referralFormToSupabase(form: ReferralForm): Record<string, unkno
   return {
     referrer_name: form.referrer,
     referred_name: form.referred,
+    referrer_phone: form.referrerPhone || "",
+    referred_phone: form.referredPhone || "",
     status: form.status,
     credits: Number(form.credits || 0),
   };
@@ -160,6 +176,8 @@ export function referralPatchToSupabase(patch: Partial<ReferralForm>): Record<st
   const result: Record<string, unknown> = {};
   if (patch.referrer !== undefined) result.referrer_name = patch.referrer;
   if (patch.referred !== undefined) result.referred_name = patch.referred;
+  if (patch.referrerPhone !== undefined) result.referrer_phone = patch.referrerPhone;
+  if (patch.referredPhone !== undefined) result.referred_phone = patch.referredPhone;
   if (patch.status !== undefined) result.status = patch.status;
   if (patch.credits !== undefined) result.credits = Number(patch.credits);
   return result;
@@ -563,4 +581,297 @@ export function apIntelligenceToSupabase(
     cost_estimate: row.costEstimate,
     analysis_version: row.analysisVersion,
   };
+}
+
+// ─── Opportunity ↔ ap_opportunities (Etapa 6) ────────────────────
+
+export interface OpportunityRow {
+  id: string;
+  companyId: string;
+  intelligenceId: string | null;
+  qualificationId: string | null;
+  status: string;
+  priority: number;
+  score: number;
+  potential: string;
+  confidence: string;
+  priorityReason: string;
+  nextAction: string;
+  recommendedServices: unknown[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function apOpportunityFromSupabase(row: Record<string, unknown>): OpportunityRow {
+  return {
+    id: row.id as string,
+    companyId: row.company_id as string,
+    intelligenceId: (row.intelligence_id as string) || null,
+    qualificationId: (row.qualification_id as string) || null,
+    status: (row.status as string) || "Nova",
+    priority: Number(row.priority || 4),
+    score: Number(row.score || 0),
+    potential: (row.potential as string) || "",
+    confidence: (row.confidence as string) || "",
+    priorityReason: (row.priority_reason as string) || "",
+    nextAction: (row.next_action as string) || "",
+    recommendedServices: Array.isArray(row.recommended_services)
+      ? (row.recommended_services as unknown[])
+      : [],
+    createdAt: (row.created_at as string) || "",
+    updatedAt: (row.updated_at as string) || "",
+  };
+}
+
+export function apOpportunityToSupabase(
+  row: Omit<OpportunityRow, "id" | "createdAt" | "updatedAt">,
+): Record<string, unknown> {
+  return {
+    company_id: row.companyId,
+    intelligence_id: row.intelligenceId,
+    qualification_id: row.qualificationId,
+    status: row.status,
+    priority: row.priority,
+    score: row.score,
+    potential: row.potential,
+    confidence: row.confidence,
+    priority_reason: row.priorityReason,
+    next_action: row.nextAction,
+    recommended_services: row.recommendedServices,
+  };
+}
+
+export function apOpportunityPatchToSupabase(
+  patch: Partial<Pick<OpportunityRow, "status">>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (typeof patch.status === "string") out.status = patch.status;
+  return out;
+}
+
+// Lista com dados da empresa (join) — usada na listagem de oportunidades
+
+export interface OpportunityListItemRow extends OpportunityRow {
+  companyName: string;
+  companySegment: string;
+  companyCity: string;
+  companyState: string;
+  companyPhone: string;
+  companyWhatsapp: string;
+  companyEmail: string;
+  companyWebsite: string;
+  companyInstagram: string;
+  companyLinkedin: string;
+}
+
+export function apOpportunityListItemFromSupabase(
+  row: Record<string, unknown>,
+): OpportunityListItemRow {
+  const company = (row.ap_companies ?? {}) as Record<string, unknown>;
+  const base = apOpportunityFromSupabase(row);
+  return {
+    ...base,
+    companyName: (company.name as string) || "",
+    companySegment: (company.segment as string) || "",
+    companyCity: (company.city as string) || "",
+    companyState: (company.state as string) || "",
+    companyPhone: (company.phone as string) || "",
+    companyWhatsapp: (company.whatsapp as string) || "",
+    companyEmail: (company.email as string) || "",
+    companyWebsite: (company.website as string) || "",
+    companyInstagram: (company.instagram as string) || "",
+    companyLinkedin: (company.linkedin as string) || "",
+  };
+}
+
+// ─── Opportunity interaction ↔ ap_opportunity_interactions ───────
+
+export interface OpportunityInteractionRow {
+  id: string;
+  opportunityId: string;
+  channel: string;
+  result: string;
+  note: string;
+  occurredAt: string;
+  createdAt: string;
+}
+
+export function apInteractionFromSupabase(row: Record<string, unknown>): OpportunityInteractionRow {
+  return {
+    id: row.id as string,
+    opportunityId: row.opportunity_id as string,
+    channel: (row.channel as string) || "Outro",
+    result: (row.result as string) || "",
+    note: (row.note as string) || "",
+    occurredAt: (row.occurred_at as string) || "",
+    createdAt: (row.created_at as string) || "",
+  };
+}
+
+export function apInteractionToSupabase(
+  row: Omit<OpportunityInteractionRow, "id" | "createdAt">,
+): Record<string, unknown> {
+  return {
+    opportunity_id: row.opportunityId,
+    channel: row.channel,
+    result: row.result,
+    note: row.note,
+    occurred_at: row.occurredAt,
+  };
+}
+
+// ─── Batch run ↔ ap_batch_runs (Etapa 7 — processamento em lote) ──
+
+export interface BatchRunRow {
+  id: string;
+  campaignId: string;
+  status: BatchRunStatus;
+  filters: unknown;
+  total: number;
+  pending: number;
+  processing: number;
+  completed: number;
+  failed: number;
+  withoutData: number;
+  cancelled: number;
+  errorSummary: unknown[];
+  startedAt: string | null;
+  finishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function apBatchRunFromSupabase(row: Record<string, unknown>): BatchRunRow {
+  return {
+    id: row.id as string,
+    campaignId: row.campaign_id as string,
+    status: (row.status as BatchRunStatus) || "pendente",
+    filters: Array.isArray(row.filters)
+      ? (row.filters as unknown)
+      : (row.filters ?? {}),
+    total: Number(row.total || 0),
+    pending: Number(row.pending || 0),
+    processing: Number(row.processing || 0),
+    completed: Number(row.completed || 0),
+    failed: Number(row.failed || 0),
+    withoutData: Number(row.without_data || 0),
+    cancelled: Number(row.cancelled || 0),
+    errorSummary: Array.isArray(row.error_summary) ? (row.error_summary as unknown[]) : [],
+    startedAt: (row.started_at as string) || null,
+    finishedAt: (row.finished_at as string) || null,
+    createdAt: (row.created_at as string) || "",
+    updatedAt: (row.updated_at as string) || "",
+  };
+}
+
+export function apBatchRunToSupabase(
+  row: Pick<
+    BatchRunRow,
+    "id" | "campaignId" | "status" | "filters" | "total" | "pending"
+  >,
+): Record<string, unknown> {
+  return {
+    id: row.id,
+    campaign_id: row.campaignId,
+    status: row.status,
+    filters: row.filters,
+    total: row.total,
+    pending: row.pending,
+  };
+}
+
+export function apBatchRunPatchToSupabase(
+  patch: Partial<
+    Pick<
+      BatchRunRow,
+      | "status"
+      | "total"
+      | "pending"
+      | "processing"
+      | "completed"
+      | "failed"
+      | "withoutData"
+      | "cancelled"
+      | "startedAt"
+      | "finishedAt"
+    >
+  >,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (patch.status !== undefined) out.status = patch.status;
+  if (patch.total !== undefined) out.total = patch.total;
+  if (patch.pending !== undefined) out.pending = patch.pending;
+  if (patch.processing !== undefined) out.processing = patch.processing;
+  if (patch.completed !== undefined) out.completed = patch.completed;
+  if (patch.failed !== undefined) out.failed = patch.failed;
+  if (patch.withoutData !== undefined) out.without_data = patch.withoutData;
+  if (patch.cancelled !== undefined) out.cancelled = patch.cancelled;
+  if (patch.startedAt !== undefined) out.started_at = patch.startedAt;
+  if (patch.finishedAt !== undefined) out.finished_at = patch.finishedAt;
+  return out;
+}
+
+// ─── Batch company run ↔ ap_batch_company_runs ──────────────────
+
+export interface BatchCompanyRunRow {
+  batchRunId: string;
+  companyId: string;
+  status: BatchCompanyStatus;
+  errorCode: string;
+  errorMessage: string;
+  retryCount: number;
+  nextRetryAt: string | null;
+  claimedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function apBatchCompanyRunFromSupabase(
+  row: Record<string, unknown>,
+): BatchCompanyRunRow {
+  return {
+    batchRunId: row.batch_run_id as string,
+    companyId: row.company_id as string,
+    status: (row.status as BatchCompanyStatus) || "pendente",
+    errorCode: (row.error_code as string) || "",
+    errorMessage: (row.error_message as string) || "",
+    retryCount: Number(row.retry_count || 0),
+    nextRetryAt: (row.next_retry_at as string) || null,
+    claimedAt: (row.claimed_at as string) || null,
+    createdAt: (row.created_at as string) || "",
+    updatedAt: (row.updated_at as string) || "",
+  };
+}
+
+export function apBatchCompanyRunToSupabase(
+  row: Pick<BatchCompanyRunRow, "batchRunId" | "companyId">,
+): Record<string, unknown> {
+  return {
+    batch_run_id: row.batchRunId,
+    company_id: row.companyId,
+    status: "pendente",
+  };
+}
+
+export function apBatchCompanyRunPatchToSupabase(
+  patch: Partial<
+    Pick<
+      BatchCompanyRunRow,
+      | "status"
+      | "errorCode"
+      | "errorMessage"
+      | "retryCount"
+      | "nextRetryAt"
+      | "claimedAt"
+    >
+  >,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (patch.status !== undefined) out.status = patch.status;
+  if (patch.errorCode !== undefined) out.error_code = patch.errorCode;
+  if (patch.errorMessage !== undefined) out.error_message = patch.errorMessage;
+  if (patch.retryCount !== undefined) out.retry_count = patch.retryCount;
+  if (patch.nextRetryAt !== undefined) out.next_retry_at = patch.nextRetryAt;
+  if (patch.claimedAt !== undefined) out.claimed_at = patch.claimedAt;
+  return out;
 }

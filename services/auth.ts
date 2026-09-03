@@ -9,10 +9,10 @@ export async function signIn(email: string, password: string): Promise<AuthState
       throw new Error("Email ou senha incorretos.");
     }
     if (msg.includes("user not found") || msg.includes("no user found")) {
-      throw new Error("Este email nao est� cadastrado. Acesse /api/auth/setup para criar o admin.");
+      throw new Error("Este email não está cadastrado. Solicite o provisionamento a um administrador.");
     }
     if (msg.includes("email not confirmed") || msg.includes("email_confirm")) {
-      throw new Error("Email nao confirmado. Acesse /api/auth/setup para recriar o admin.");
+      throw new Error("Email não confirmado. Solicite a confirmação a um administrador.");
     }
     throw error;
   }

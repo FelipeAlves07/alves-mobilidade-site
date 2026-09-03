@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  BarChart3, Bot, Briefcase, Car, ChevronRight, ClipboardList, DollarSign, Download, Gift,
-  LogOut, Megaphone, MessageCircle, Mic, Monitor, Plane, Radar, Sparkles, Target, Users,
+  BarChart3, Bot, Briefcase, CalendarDays, Calculator, ChevronRight, ClipboardList, DollarSign, Download, Gift,
+  LogOut, Megaphone, MessageCircle, Mic, Monitor, Radar, Sparkles, Users,
 } from "lucide-react";
 import Sidebar from "@/components/admin/Sidebar";
-import MobileNav from "@/components/admin/MobileNav";
+import Topbar from "@/components/admin/Topbar";
 
 import type { Lead } from "@/domain/lead/types";
 import type { Trip } from "@/domain/trip/types";
@@ -16,23 +16,25 @@ import type { FinanceEntry } from "@/domain/finance/types";
 import type { Proposal } from "@/domain/proposal/types";
 import type { QuoteResult } from "@/domain/trip/types";
 import type { MessageKey } from "@/domain/marketing/types";
-import { startVoiceCapture, normalizeSpokenAddress, parseSpokenRoute } from "@/lib/voice";
-import { cleanPhone, openWhatsApp } from "@/lib/whatsapp";
-import { money } from "@/lib/quotes";
+import { openWhatsApp } from "@/lib/whatsapp";
 import { openGoogleMapsRoute, openWazeRoute } from "@/lib/maps";
-import { addDaysISO } from "@/lib/format";
+import { createRepository } from "@/lib/repository-factory";
+import { leadFromSupabase, leadFormToSupabase, leadPatchToSupabase } from "@/lib/repository-mappers";
 import { useData } from "@/hooks/useData";
+import { useVoiceAssistant } from "@/hooks/useVoiceAssistant";
+import { useQuoteState } from "@/hooks/useQuoteState";
 import { uid } from "@/utils/helpers";
 import { today, leadTypes, messages, buildQuoteMessage } from "./constants";
-import { parseVoiceNumbers, calculateQuoteValue } from "@/modules/viagens/services/viagens.service";
+import { calculateQuoteValue, buildFinishTripEffects } from "@/modules/viagens/services/viagens.service";
 import { proposalValidityISO, buildPremiumProposalMessage, downloadPremiumProposalImage as downloadImage, downloadPremiumProposalPdf as downloadPdf } from "@/modules/propostas/services/propostas.service";
-import { parseImportText, completeActionData, sendLeadMessageData } from "@/modules/clientes/services/clientes.service";
+import { parseImportText, completeActionData, sendLeadMessageData, messageKeyForLead } from "@/modules/clientes/services/clientes.service";
 
 import DashboardView from "@/modules/dashboard/components/DashboardView";
 import ClientesView from "@/modules/clientes/components/ClientesView";
 import WhatsAppView from "@/modules/whatsapp/components/WhatsAppView";
 import PropostasView from "@/modules/propostas/components/PropostasView";
-import ViagensView from "@/modules/viagens/components/ViagensView";
+import OrcamentoView from "@/modules/orcamento/components/OrcamentoView";
+import AgendaView from "@/modules/agenda/components/AgendaView";
 import IndicacoesView from "@/modules/indicacoes/components/IndicacoesView";
 import MarketingView from "@/modules/marketing/components/MarketingView";
 import FinanceiroView from "@/modules/financeiro/components/FinanceiroView";
@@ -43,23 +45,20 @@ import MotoristasView from "@/modules/motoristas/components/MotoristasView";
 import VeiculosView from "@/modules/veiculos/components/VeiculosView";
 import AutoProspectView from "@/modules/autoprospect/components/AutoProspectView";
 
-const WHATSAPP_QR_DATA_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWcAAAFpCAYAAABAsun9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACPlSURBVHhe7d0LcFTl+fjxF8FAwAsKiFHABESpohLxAgQQScdLp7YdpzKdWOSisaLVqVoHVCygCE6r1kurFQzBS6AoaKmOAxoMGbl4R2stNlSCBJSL4AWMoAF+++48v/9/XJ/z7nv62928ge9n5hnPc2bfc86e3X2WifPs02pfggEABOUg+S8AICAUZwAIEMUZAAJEcQaAAFGcASBAFGcACBDFGQACRHEGgABRnAEgQBRnAAgQxRkAAkRxBoAAUZwBIEAUZwAIEMUZAAJEcQaAAFGcASBAFGcACBDFGQACRHEGgABRnAEgQBRnAAgQxRkAAkRxBoAAtdqXINtZt337dtmCy5FHHilbmbN161bZSq9Lly6y5RbnmG3atDFHHHGEZNG++uor09jYKFl6vtfqa9u2bWbv3r2SuX3++eemY8eOkrll+jqz5euvv04G0svG5/Q7bHHOhcSb3n4JEB7R1NQkdy1zysrK1HOlRl5enqxIb8aMGeoxNFi2bJmscqurq1PXazF16lRZlTnV1dXqubQoKSlR96dG69at5ejhq6mpUZ8D8d0YNGiQ3LHs4c8aABAgijMABIjiDAABojgDQIAozgAQIIozAASI4gwAAaI4A0CAKM4AEKCctW/b1u1OnTpJ5jZ69GhzzjnnSLZ/qK2tNbNnz5bMrampybRu3VqyzHjqqadky82ee+HChZK52VbnK6+8UjK3Y4891pSUlEgWbc2aNWbVqlWSuc2bNy/ZFu7jnnvuMd26dZMs2t13322eeeYZydw++ugjc9xxx0nmtmLFCtlymzVrllm8eLFkbtdcc40ZOnSoZJmxdOlSc+6550rmNnnyZO/n31I89thjyXuQzqBBg8zy5csly5Jkn2AOxGnfrqyslFX7j8QbWX2uWmSjfdvX7t271WvSory8XFY1j4kTJ6rXpUVDQ4Oscmvu9u2Kigr1GFokvvBlVebEad+ur6+XVfuPYcOGqc81NWjfBoADFMUZAAJEcQaAAFGcASBAFGcACBDFGQACRHEGgABRnAEgQC26OP/vMMrmjOakXY8rfHzzzTcmPz/fK3bv3q2eJyp8aOuiwnYzatelxa5du9RjpIZ9Ttp6LewgWG1/auTl5cmz86MdQ4uWQrvPuY4WSZpRsi4bHYKNjY3q+lxFnz595ErSy0aH4KJFi9T1WlRVVckqtzgdgkOGDFH3a9HcA167deumHiM1SktLZUV6I0eOVI+RGvvrgFffDsHmHho7atQouZL06BAEADhRnAEgQBRnAAgQxRkAAkRxBoAAUZwBIEAUZwAIEMUZAAJEcQaAAAU54LWysjI55DUd25bZvn17yXKvT58+ZvXq1ZK5TZkyJTkQ04fvgFc7CNR3GKttXz7zzDMli2bP7fuc/vWvf5mTTjpJMjf7OvXq1UuyaPbc7777rmRuHTt29H7+V199tWy5bdiwwVx44YWSuS1YsMCccMIJkkWzH7FTTz1VsvTGjRsnW7kXZ8BrfX29KSwslCxanGNmw6hRo7yHK9vrZMCrI2jfzvyA17KyMvVcqZGXlycrMst3GGriw67u1+KOO+6Qo2dOnAGvjz/+uKxys6+ntl6LsWPHyqrmQfs27dsAAAeKMwAEiOIMAAGiOKPFatWqlWwB+x+KMwAEiOIMAAGiOANAgCjOABAgijMABIj27f+DENq3fY/Z2NiYnBbt47333pMtt5kzZ5pZs2ZJ5jZmzBivFubXX389eVwfdqq172RrO1Xc57H2fep7zIsvvjj5uqZjz92/f3/J3Gw79HPPPSdZ7tG+Tfu2M2jfzvz0bdtuqu1PjTjt2zNmzFCPoUU2pm/7...";
+const WHATSAPP_QR_DATA_URL = "/branding/qr-whatsapp-alves.png";
 
 const menu = [
   { id: "dashboard", group: "Operação", label: "Dashboard", icon: BarChart3 },
   { id: "financeiro", group: "Operação", label: "Financeiro", icon: DollarSign },
-  { id: "comercial", group: "Operação", label: "Comercial", icon: ClipboardList },
-  { id: "trabalhar", group: "Operação", label: "Trabalhar Agora", icon: Sparkles },
-  { id: "clientes", group: "Operação", label: "Clientes", icon: Users },
-  { id: "motoristas", group: "Operação", label: "Motoristas", icon: ClipboardList },
-  { id: "veiculos", group: "Operação", label: "Veículos", icon: Car },
-  { id: "prospeccao", group: "Operação", label: "Prospecção", icon: Target },
-  { id: "whatsapp", group: "Operação", label: "WhatsApp", icon: MessageCircle },
-  { id: "viagens", group: "Operação", label: "Viagens e Agenda", icon: Plane },
-  { id: "indicacoes", group: "Comercial", label: "Indicações", icon: Gift },
-  { id: "empresas", group: "Comercial", label: "Empresas", icon: Briefcase },
-  { id: "auto-prospect", group: "Comercial", label: "Auto Prospect", icon: Radar },
-  { id: "marketing", group: "Gestão", label: "Marketing", icon: Megaphone },
+{ id: "comercial", group: "Operação", label: "Comercial", icon: ClipboardList },
+{ id: "clientes", group: "Operação", label: "Clientes", icon: Users },
+{ id: "whatsapp", group: "Operação", label: "WhatsApp", icon: MessageCircle },
+{ id: "agenda", group: "Operação", label: "Agenda", icon: CalendarDays },
+{ id: "orcamento", group: "Operação", label: "Orçamento", icon: Calculator },
+{ id: "indicacoes", group: "Comercial", label: "Indicações", icon: Gift },
+{ id: "empresas", group: "Comercial", label: "Empresas", icon: Briefcase },
+{ id: "auto-prospect", group: "Comercial", label: "Auto Prospect", icon: Radar },
+{ id: "marketing", group: "Gestão", label: "Marketing", icon: Megaphone },
   { id: "ia", group: "Gestão", label: "IA da Alves", icon: Bot },
   { id: "ame-vision", group: "Gestão", label: "AME Vision", icon: Monitor },
 ];
@@ -71,12 +70,15 @@ export default function AdminPage() {
     trips, setTrips, addTrip: addTripFn, updateTrip: updateTripFn, deleteTrip: deleteTripFn,
     referrals, setReferrals, addReferral: addReferralFn, updateReferral: updateReferralFn, deleteReferral: deleteReferralFn,
     finance, setFinance, addFinance: addFinanceFn, deleteFinance: deleteFinanceFn,
-    proposals, setProposals, addProposal: addProposalFn,
+    proposals, setProposals, addProposal: addProposalFn, deleteProposal: deleteProposalFn,
     motoristas, addMotorista, updateMotorista, deleteMotorista,
     veiculos, addVeiculo, updateVeiculo, deleteVeiculo,
     campaigns, addCampaign, updateCampaign, deleteCampaign,
     companies, discoveries, discoverCompany, deleteCompany, runCampaignDiscovery,
     analyses, intelligence, analyzeCompany, reanalyzeIntelligence,
+    opportunities, interactions, createOpportunity, updateOpportunityStatus, loadInteractions, addInteraction,
+    batchRuns, batchDetail, batchPolling, createBatch, processBatch,
+    pauseBatch, resumeBatch, cancelBatch, retryBatchFailures, loadBatchDetail,
     completedMarketing, completeMarketingTask, resetMarketingTasks,
     stats, today, migrationStatus, executarMigracao,
   } = useData();
@@ -87,124 +89,48 @@ export default function AdminPage() {
   const [query, setQuery] = useState("");
   const [importText, setImportText] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<MessageKey>("apresentacao");
-  const [quoteOrigin, setQuoteOrigin] = useState("Belo Horizonte - MG");
-  const [quoteDestination, setQuoteDestination] = useState("Aeroporto Internacional de Confins");
-  const [quoteKm, setQuoteKm] = useState(0);
-  const [quotePassengers, setQuotePassengers] = useState(1);
-  const [quoteBags, setQuoteBags] = useState(0);
-  const [quoteSpecialLuggage, setQuoteSpecialLuggage] = useState(false);
-  const [quoteResult, setQuoteResult] = useState<QuoteResult | null>(null);
-  const [quoteClient, setQuoteClient] = useState("");
-  const [quotePhone, setQuotePhone] = useState("");
-  const [quoteDate, setQuoteDate] = useState(today);
-  const [quoteTime, setQuoteTime] = useState("");
-  const [voiceStatus, setVoiceStatus] = useState("");
-  const [ameOpen, setAmeOpen] = useState(false);
-  const [ameStep, setAmeStep] = useState<"inicio" | "origem" | "destino" | "passageiros" | "malas" | "km" | "resultado">("inicio");
-  const [ameText, setAmeText] = useState("");
+  const quoteState = useQuoteState();
 
   const [leadForm, setLeadForm] = useState<Omit<Lead, "id" | "createdAt">>({
     name: "", phone: "", type: "Aeroporto", origin: "", status: "Novo contato", notes: "", nextAction: "Enviar apresentação da Alves", nextDate: today,
   });
   const [tripForm, setTripForm] = useState<Omit<Trip, "id">>({ client: "", phone: "", date: today, time: "", route: "BH → Confins", value: 150, status: "Agendada" });
-  const [refForm, setRefForm] = useState<Omit<Referral, "id">>({ referrer: "", referred: "", status: "Indicado", credits: 0 });
-  const [financeForm, setFinanceForm] = useState<Omit<FinanceEntry, "id">>({ description: "", value: 0, type: "Entrada", date: today });
+  const [refForm, setRefForm] = useState<Omit<Referral, "id">>({ referrer: "", referred: "", status: "Pendente", credits: 0 });
+  const [financeForm, setFinanceForm] = useState<Omit<FinanceEntry, "id">>({ description: "", value: 0, type: "Entrada", date: today, category: "outros" });
+
+  const {
+    voiceStatus,
+    ameOpen,
+    ameStep,
+    ameText,
+    setAmeText,
+    startAmeAssistant: startAmeAssistantFn,
+    closeAmeAssistant,
+    processAmeAnswer,
+    ameSpeak,
+    captureRouteByVoice: captureRouteByVoiceFn,
+    captureGlobalVoiceCommand: captureGlobalVoiceCommandFn,
+    setVoiceStatusTimed,
+  } = useVoiceAssistant({
+    onSetActive: setActive,
+    onQuoteChange: (quote) => {
+      if (quote.origin !== undefined) quoteState.setOrigin(quote.origin);
+      if (quote.destination !== undefined) quoteState.setDestination(quote.destination);
+      if (quote.km !== undefined) quoteState.setKm(quote.km);
+      if (quote.passengers !== undefined) quoteState.setPassengers(quote.passengers);
+      if (quote.bags !== undefined) quoteState.setBags(quote.bags);
+      if (quote.specialLuggage !== undefined) quoteState.setSpecialLuggage(quote.specialLuggage);
+    },
+    onCalculateQuote: () => calculateQuote(),
+  });
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [active]);
 
   const currentTask = stats.pending[0];
 
-  function setVoiceStatusTimed(msg: string, ms = 3000) {
-    setVoiceStatus(msg);
-    window.setTimeout(() => setVoiceStatus(""), ms);
-  }
-
-  function ameTalk(message: string) {
-    setVoiceStatus(message);
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(message);
-      utterance.lang = "pt-BR";
-      utterance.rate = 1;
-      utterance.pitch = 1;
-      window.speechSynthesis.speak(utterance);
-    }
-  }
-
-  function ameTalkAndListen(message: string, delay = 400) {
-    setVoiceStatus(message);
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(message);
-      utterance.lang = "pt-BR";
-      utterance.rate = 1;
-      utterance.pitch = 1;
-      utterance.onend = () => window.setTimeout(() => ameSpeak(), delay);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setTimeout(() => ameSpeak(), delay);
-    }
-  }
-
   function startAmeAssistant() {
-    setAmeOpen(true);
-    setAmeStep("inicio");
-    setAmeText("");
-    setActive("viagens");
-    ameTalkAndListen("Olá. O que vamos fazer? Você pode dizer novo orçamento, cliente, financeiro ou WhatsApp.");
-  }
-
-  function closeAmeAssistant() {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
-    setAmeOpen(false);
-    setAmeText("");
-  }
-
-  function processAmeAnswer(rawText: string) {
-    const value = rawText.trim();
-    if (!value) { ameTalkAndListen("Digite ou fale uma resposta para continuar."); return; }
-    const lower = value.toLowerCase();
-    if (ameStep === "inicio") {
-      if (lower.includes("orçamento") || lower.includes("orcamento") || lower.includes("transfer") || lower.includes("viagem")) {
-        setActive("viagens"); setAmeStep("origem"); setAmeText(""); ameTalkAndListen("Certo. Qual é o local de embarque?"); return;
-      }
-      if (lower.includes("financeiro")) { setActive("financeiro"); setAmeText(""); ameTalk("Abrindo financeiro."); closeAmeAssistant(); return; }
-      if (lower.includes("cliente")) { setActive("clientes"); setAmeText(""); ameTalk("Abrindo clientes."); closeAmeAssistant(); return; }
-      if (lower.includes("whatsapp")) { setActive("whatsapp"); setAmeText(""); ameTalk("Abrindo WhatsApp."); closeAmeAssistant(); return; }
-      ameTalkAndListen("Por enquanto eu entendo melhor o comando novo orçamento. Digite ou fale novo orçamento."); return;
-    }
-    if (ameStep === "origem") { setQuoteOrigin(value); setQuoteResult(null); setAmeStep("destino"); setAmeText(""); ameTalkAndListen("Perfeito. Agora informe o destino."); return; }
-    if (ameStep === "destino") {
-      const normalizedDestination = normalizeSpokenAddress(value);
-      setQuoteDestination(normalizedDestination); setQuoteResult(null); setAmeStep("passageiros"); setAmeText(""); ameTalkAndListen("Quantos passageiros?"); return;
-    }
-    if (ameStep === "passageiros") {
-      const parsed = parseVoiceNumbers(`${value} passageiros`);
-      const number = Number(value.replace(/\D/g, "")) || parsed.passengers || 1;
-      setQuotePassengers(number); setQuoteResult(null); setAmeStep("malas"); setAmeText(""); ameTalkAndListen("Quantas malas ou bagagens?"); return;
-    }
-    if (ameStep === "malas") {
-      const parsed = parseVoiceNumbers(`${value} malas`);
-      const number = Number(value.replace(/\D/g, "")) || parsed.bags || 0;
-      setQuoteBags(number); setQuoteResult(null); setAmeStep("km"); setAmeText(""); ameTalkAndListen("Agora informe a quilometragem da rota. Se precisar, toque em abrir rota no Maps para conferir."); return;
-    }
-    if (ameStep === "km") {
-      const km = Number(value.replace(",", ".").replace(/[^\d.]/g, ""));
-      if (!km || km <= 0) { ameTalkAndListen("Não entendi a quilometragem. Digite apenas o número, por exemplo, trinta e oito ou 38."); return; }
-      setQuoteKm(km);
-      const result = calculateQuote(quoteOrigin, quoteDestination, km);
-      setAmeStep("resultado"); setAmeText("");
-      ameTalkAndListen(`Orçamento calculado em ${result.value ? money(result.value) : "valor manual"}. Você pode copiar o orçamento, enviar pelo WhatsApp, ou iniciar um novo.`); return;
-    }
-    if (ameStep === "resultado") {
-      if (lower.includes("copiar")) { const msg = quoteResult ? buildQuoteMessage(quoteOrigin, quoteDestination, quoteResult, quotePassengers, quoteBags) : ""; if (msg) navigator.clipboard.writeText(msg); ameTalk("Orçamento copiado."); return; }
-      if (lower.includes("novo")) { setAmeStep("origem"); setAmeText(""); setQuoteResult(null); ameTalkAndListen("Vamos fazer um novo orçamento. Qual é o local de embarque?"); return; }
-      ameTalkAndListen("Orçamento já calculado. Você pode copiar, enviar pelo WhatsApp, usar na viagem ou iniciar um novo orçamento.");
-    }
-  }
-
-  function ameSpeak() {
-    startVoiceCapture((text) => { setAmeText(text); processAmeAnswer(text); }, setVoiceStatus);
+    startAmeAssistantFn();
+    setActive("orcamento");
   }
 
   async function login() {
@@ -228,7 +154,11 @@ export default function AdminPage() {
   function updateLead(id: string, patch: Partial<Lead>) { updateLeadFn(id, patch); }
   function deleteLead(id: string) { if (confirm("Remover esse contato?")) deleteLeadFn(id); }
   function completeAction(lead: Lead) { updateLead(lead.id, completeActionData(lead)); }
-  function sendLeadMessage(lead: Lead, key: MessageKey) { openWhatsApp(lead.phone, messages[key]); updateLead(lead.id, sendLeadMessageData(lead)); }
+  function sendLeadMessage(lead: Lead, key: MessageKey) {
+    const actualKey = key !== "apresentacao" ? key : messageKeyForLead(lead);
+    openWhatsApp(lead.phone, messages[actualKey]);
+    updateLead(lead.id, sendLeadMessageData(lead));
+  }
 
   function importLeads() {
     const parsed = parseImportText(importText);
@@ -247,42 +177,43 @@ export default function AdminPage() {
 
   function finishTrip(trip: Trip) {
     updateTripFn(trip.id, { status: "Concluída" });
-    addFinanceFn({ description: `Viagem ${trip.client} - ${trip.route}`, value: Number(trip.value || 0), type: "Entrada", date: trip.date });
-    const existing = leads.find((lead) => cleanPhone(lead.phone) === cleanPhone(trip.phone) || lead.name.toLowerCase() === trip.client.toLowerCase());
-    if (existing) updateLead(existing.id, { status: "Pós-atendimento", nextAction: "Agradecer e apresentar Programa de Indicação", nextDate: addDaysISO(2) });
+    const effects = buildFinishTripEffects(trip, { leads, finance, referrals });
+    if (effects.financeEntry) addFinanceFn(effects.financeEntry);
+    if (effects.leadId && effects.leadPatch) updateLead(effects.leadId, effects.leadPatch);
+    if (effects.referralId && effects.referralPatch) updateReferralFn(effects.referralId, effects.referralPatch);
   }
 
   function addReferral() {
     if (!refForm.referrer || !refForm.referred) return alert("Preencha quem indicou e quem foi indicado.");
     addReferralFn({ ...refForm, credits: Number(refForm.credits || 0) });
-    setRefForm({ referrer: "", referred: "", status: "Indicado", credits: 0 });
+    setRefForm({ referrer: "", referred: "", status: "Pendente", credits: 0 });
   }
 
-  function creditReferral(item: Referral) { updateReferralFn(item.id, { status: "Transfer creditado", credits: Number(item.credits || 0) + 1 }); }
+  function creditReferral(item: Referral) { updateReferralFn(item.id, { status: "Convertida", credits: Number(item.credits || 0) + 1 }); }
 
   function addFinance() {
     if (!financeForm.description || !financeForm.value) return alert("Preencha descrição e valor.");
     addFinanceFn({ ...financeForm, value: Number(financeForm.value) });
-    setFinanceForm({ description: "", value: 0, type: "Entrada", date: today });
+    setFinanceForm({ description: "", value: 0, type: "Entrada", date: today, category: "outros" });
   }
 
-  function calculateQuote(origin = quoteOrigin, destination = quoteDestination, km = quoteKm) {
-    const result = calculateQuoteValue(origin, destination, km, quotePassengers, quoteBags, quoteSpecialLuggage);
-    setQuoteResult(result);
+  function calculateQuote(origin = quoteState.origin, destination = quoteState.destination, km = quoteState.km) {
+    const result = calculateQuoteValue(origin, destination, km, quoteState.passengers, quoteState.bags, quoteState.specialLuggage);
+    quoteState.setResult(result);
     setTripForm((current) => ({ ...current, route: `${origin} → ${destination}`, value: result.value || current.value }));
     return result;
   }
 
   function getCurrentProposal(status: Proposal["status"] = "Rascunho") {
-    const result = quoteResult || calculateQuote();
+    const result = quoteState.result || calculateQuote();
     if (!result.value || result.manual) {
       setVoiceStatusTimed("Calcule um orçamento válido antes de gerar a proposta premium.", 3500);
       return null;
     }
     const proposal: Proposal = {
-      id: uid(), client: quoteClient || "Cliente", phone: quotePhone,
-      origin: quoteOrigin, destination: quoteDestination, date: quoteDate, time: quoteTime,
-      km: Number(result.km || quoteKm || 0), passengers: quotePassengers, bags: quoteBags,
+      id: uid(), client: quoteState.client || "Cliente", phone: quoteState.phone,
+      origin: quoteState.origin, destination: quoteState.destination, date: quoteState.date, time: quoteState.time,
+      km: Number(result.km || quoteState.km || 0), passengers: quoteState.passengers, bags: quoteState.bags,
       value: result.value, status, createdAt: new Date().toISOString(),
       validUntil: proposalValidityISO(10), message: "",
     };
@@ -298,12 +229,17 @@ export default function AdminPage() {
     return proposal;
   }
 
-  function convertProposalToTrip(proposal: Proposal) {
+  async function convertProposalToTrip(proposal: Proposal) {
     const newTrip: Trip = { id: uid(), client: proposal.client, phone: proposal.phone, date: proposal.date || today, time: proposal.time || "", route: `${proposal.origin} → ${proposal.destination}`, value: proposal.value, status: "Agendada" };
-    setTrips((current) => [newTrip, ...current]);
-    setProposals((current) => current.map((item) => item.id === proposal.id ? { ...item, status: "Convertida" } : item));
-    setActive("viagens");
-    setVoiceStatusTimed("Proposta convertida em viagem ✓", 3000);
+    try {
+      await addTripFn({ ...newTrip, value: Number(newTrip.value || 0) } as any);
+      setProposals((current) => current.map((item) => item.id === proposal.id ? { ...item, status: "Convertida" } : item));
+      setActive("agenda");
+      setVoiceStatusTimed("Proposta convertida em viagem ✓", 3000);
+    } catch (err) {
+      console.error("Erro ao converter proposta:", err);
+      alert("Erro ao converter proposta em viagem.");
+    }
   }
 
   function convertCurrentProposalToTrip() {
@@ -312,52 +248,24 @@ export default function AdminPage() {
   }
 
   function captureRouteByVoice() {
-    setVoiceStatus("Ouvindo rota... fale origem e destino.");
-    startVoiceCapture((text) => {
-      const parsed = parseSpokenRoute(text);
-      setQuoteOrigin(parsed.origin);
-      setQuoteDestination(parsed.destination);
-      setQuoteResult(null);
-      setVoiceStatusTimed(`Entendi: ${parsed.origin} → ${parsed.destination}. Agora informe o KM e clique em Calcular Orçamento.`, 5500);
-    }, setVoiceStatus);
+    captureRouteByVoiceFn();
   }
 
   function captureGlobalVoiceCommand() {
-    setVoiceStatus("Comando AME ouvindo...");
-    startVoiceCapture((text) => {
-      const lower = text.toLowerCase();
-      const numbers = parseVoiceNumbers(text);
-      if (lower.includes("orçamento") || lower.includes("orcamento") || lower.includes("rota") || lower.includes("viagem") || lower.includes("transfer")) {
-        const parsed = parseSpokenRoute(text);
-        setActive("viagens");
-        setQuoteOrigin(parsed.origin);
-        setQuoteDestination(parsed.destination);
-        if (numbers.passengers) setQuotePassengers(numbers.passengers);
-        if (numbers.bags !== null) setQuoteBags(numbers.bags);
-        if (numbers.km) setQuoteKm(numbers.km);
-        setQuoteResult(null);
-        setVoiceStatusTimed(`Rota preenchida: ${parsed.origin} → ${parsed.destination}. ${numbers.km ? `KM identificado: ${numbers.km}. Agora clique em Calcular Orçamento.` : "Abra o Maps, confira o KM e depois clique em Calcular Orçamento."}`, 6500);
-        return;
-      }
-      if (lower.includes("novo cliente") || lower.includes("cadastrar cliente")) {
-        const name = text.replace(/novo cliente|cadastrar cliente/gi, "").trim();
-        setActive("clientes");
-        setLeadForm((current) => ({ ...current, name }));
-        setVoiceStatusTimed(`Novo cliente iniciado: ${name || "informe o nome"}.`, 4500);
-        return;
-      }
-      if (lower.includes("whatsapp")) { setActive("whatsapp"); setVoiceStatus("Abrindo tela de WhatsApp."); }
-      else if (lower.includes("financeiro")) { setActive("financeiro"); setVoiceStatus("Abrindo financeiro."); }
-      else if (lower.includes("marketing")) { setActive("marketing"); setVoiceStatus("Abrindo marketing."); }
-      else if (lower.includes("prospec")) { setActive("prospeccao"); setVoiceStatus("Abrindo prospecção."); }
-      else if (lower.includes("cliente")) { setActive("clientes"); setVoiceStatus("Abrindo clientes."); }
-      else { setVoiceStatus(`Comando ouvido: ${text}`); }
-      window.setTimeout(() => setVoiceStatus(""), 4500);
-    }, setVoiceStatus);
+    captureGlobalVoiceCommandFn();
+  }
+
+  function refreshLeads() {
+    const repo = createRepository("contacts", "ame-leads-v2", (form: any, id: string, now: string) => ({ ...form, id, createdAt: now }), {
+      fromDb: leadFromSupabase,
+      toDb: leadFormToSupabase,
+      toDbPatch: leadPatchToSupabase,
+    });
+    repo.findAll().then(setLeads).catch(() => {});
   }
 
   function exportBackup() {
-    const data = { leads, trips, referrals, finance, exportedAt: new Date().toISOString() };
+    const data = { leads, trips, referrals, finance, proposals, motoristas, veiculos, campaigns, exportedAt: new Date().toISOString() };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -389,7 +297,7 @@ export default function AdminPage() {
 
   function renderContent() {
     switch (active) {
-      case "dashboard": case "trabalhar":
+      case "dashboard":
         return <DashboardView
           stats={stats} leads={leads} finance={finance} today={today} currentTask={currentTask}
           selectedMessage={selectedMessage}
@@ -414,13 +322,15 @@ export default function AdminPage() {
         return <WhatsAppView
           messages={messages} selectedMessage={selectedMessage} leads={leads}
           onSetSelectedMessage={setSelectedMessage} onSendLeadMessage={(lead, key) => sendLeadMessage(lead, key as MessageKey)}
+          onRefreshLeads={refreshLeads}
         />;
       case "comercial":
         return <PropostasView
-          quoteResult={quoteResult} quoteClient={quoteClient} quotePhone={quotePhone}
-          quoteDate={quoteDate} quoteTime={quoteTime} quoteOrigin={quoteOrigin}
-          quoteDestination={quoteDestination} quoteKm={quoteKm} quotePassengers={quotePassengers}
-          quoteBags={quoteBags} quoteSpecialLuggage={quoteSpecialLuggage}
+          leads={leads}
+          quoteResult={quoteState.result} quoteClient={quoteState.client} quotePhone={quoteState.phone}
+          quoteDate={quoteState.date} quoteTime={quoteState.time} quoteOrigin={quoteState.origin}
+          quoteDestination={quoteState.destination} quoteKm={quoteState.km} quotePassengers={quoteState.passengers}
+          quoteBags={quoteState.bags} quoteSpecialLuggage={quoteState.specialLuggage}
           proposals={proposals} voiceStatus={voiceStatus}
           getCurrentProposal={getCurrentProposal} saveCurrentProposal={saveCurrentProposal}
           calculateQuote={calculateQuote}
@@ -428,30 +338,33 @@ export default function AdminPage() {
           printProposal={(p) => downloadPdf(p, WHATSAPP_QR_DATA_URL)}
           convertCurrentProposalToTrip={convertCurrentProposalToTrip}
           convertProposalToTrip={convertProposalToTrip}
-          onCaptureRouteByVoice={captureRouteByVoice} onDeleteProposal={(id) => setProposals((c) => c.filter((i) => i.id !== id))}
-          onSetQuoteClient={setQuoteClient} onSetQuotePhone={setQuotePhone}
-          onSetQuoteDate={setQuoteDate} onSetQuoteTime={setQuoteTime}
-          onSetQuoteOrigin={setQuoteOrigin} onSetQuoteDestination={setQuoteDestination}
-          onSetQuoteKm={setQuoteKm} onSetQuotePassengers={setQuotePassengers}
-          onSetQuoteBags={setQuoteBags} onSetQuoteSpecialLuggage={setQuoteSpecialLuggage}
-          onSetQuoteResult={setQuoteResult}
+          onCaptureRouteByVoice={captureRouteByVoice} onDeleteProposal={(id) => deleteProposalFn(id)}
+          onSetQuoteClient={quoteState.setClient} onSetQuotePhone={quoteState.setPhone}
+          onSetQuoteDate={quoteState.setDate} onSetQuoteTime={quoteState.setTime}
+          onSetQuoteOrigin={quoteState.setOrigin} onSetQuoteDestination={quoteState.setDestination}
+          onSetQuoteKm={quoteState.setKm} onSetQuotePassengers={quoteState.setPassengers}
+          onSetQuoteBags={quoteState.setBags} onSetQuoteSpecialLuggage={quoteState.setSpecialLuggage}
+          onSetQuoteResult={quoteState.setResult}
           onOpenGoogleMapsRoute={openGoogleMapsRoute} onOpenWazeRoute={openWazeRoute}
         />;
-      case "viagens":
-        return <ViagensView
-          quoteResult={quoteResult} quoteOrigin={quoteOrigin} quoteDestination={quoteDestination}
-          quoteKm={quoteKm} quotePassengers={quotePassengers} quoteBags={quoteBags}
-          quoteSpecialLuggage={quoteSpecialLuggage}
-          tripForm={tripForm} trips={trips} voiceStatus={voiceStatus}
-          buildQuoteMessage={buildQuoteMessage} calculateQuote={calculateQuote}
+      case "agenda":
+        return <AgendaView
+          trips={trips} leads={leads}
+          onFinishTrip={finishTrip} onDeleteTrip={(id) => deleteTripFn(id)}
+          onAddTrip={async (trip) => {
+            try {
+              await addTripFn({ ...trip, value: Number(trip.value || 0) });
+            } catch (err) {
+              alert("Erro ao salvar viagem. Verifique os dados e tente novamente.");
+              console.error(err);
+            }
+          }}
+          onSendLeadMessage={(lead, key) => sendLeadMessage(lead, key as MessageKey)}
+          onOpenGoogleMapsRoute={openGoogleMapsRoute} onOpenWazeRoute={openWazeRoute}
+        />;
+      case "orcamento":
+        return <OrcamentoView
           onCaptureRouteByVoice={captureRouteByVoice}
-          onAddTrip={addTrip} onFinishTrip={finishTrip}
-          onDeleteTrip={(id) => deleteTripFn(id)}
-          onSetTripForm={setTripForm}
-          onSetQuoteOrigin={setQuoteOrigin} onSetQuoteDestination={setQuoteDestination}
-          onSetQuoteKm={setQuoteKm} onSetQuotePassengers={setQuotePassengers}
-          onSetQuoteBags={setQuoteBags} onSetQuoteSpecialLuggage={setQuoteSpecialLuggage}
-          onSetQuoteResult={setQuoteResult}
           onOpenGoogleMapsRoute={openGoogleMapsRoute} onOpenWazeRoute={openWazeRoute}
         />;
       case "motoristas":
@@ -470,9 +383,10 @@ export default function AdminPage() {
         />;
       case "indicacoes":
         return <IndicacoesView
+          leads={leads}
           refForm={refForm} referrals={referrals}
           onSetRefForm={setRefForm} onAddReferral={addReferral}
-          onCreditReferral={creditReferral} onDeleteReferral={(id) => setReferrals((c) => c.filter((r) => r.id !== id))}
+          onCreditReferral={creditReferral} onDeleteReferral={(id) => deleteReferralFn(id)}
         />;
       case "marketing":
         return <MarketingView
@@ -486,7 +400,7 @@ export default function AdminPage() {
           onSetFinanceForm={setFinanceForm} onAddFinance={addFinance} onDeleteFinance={deleteFinanceFn}
         />;
       case "ia":
-        return <AIView stats={stats} onExportBackup={exportBackup} />;
+        return <AIView stats={stats} leads={leads} today={today} onExportBackup={exportBackup} onSendLeadMessage={(lead, key) => sendLeadMessage(lead, key as MessageKey)} onCompleteAction={completeAction} />;
       case "ame-vision":
         return <AMEVisionPanel trips={trips} />;
       case "auto-prospect":
@@ -497,6 +411,13 @@ export default function AdminPage() {
           onDiscoverCompany={discoverCompany} onDeleteCompany={deleteCompany}
           onRunDiscovery={runCampaignDiscovery} onAnalyzeCompany={analyzeCompany}
           onReanalyzeIntelligence={reanalyzeIntelligence}
+          opportunities={opportunities} interactions={interactions}
+          onCreateOpportunity={createOpportunity} onUpdateOpportunityStatus={updateOpportunityStatus}
+          onLoadInteractions={loadInteractions} onAddInteraction={addInteraction}
+          batchRuns={batchRuns} batchDetail={batchDetail} batchPolling={batchPolling}
+          onCreateBatch={createBatch} onProcessBatch={processBatch}
+          onPauseBatch={pauseBatch} onResumeBatch={resumeBatch} onCancelBatch={cancelBatch}
+          onRetryBatchFailures={retryBatchFailures} onLoadBatchDetail={loadBatchDetail}
         />;
       default:
         return null;
@@ -510,21 +431,7 @@ export default function AdminPage() {
       <div className="flex min-h-screen">
         <Sidebar active={active} menu={menu} setActive={setActive} onLogout={logout} />
         <section className="flex min-w-0 flex-1 flex-col">
-          <div className="sticky top-0 z-40 border-b border-[var(--accent-8)] bg-[var(--bg-primary)]/85 backdrop-blur-2xl">
-            <div className="flex items-center justify-between gap-2 px-3 py-2 md:px-6 md:py-3">
-              <div className="flex items-center gap-2 min-w-0 md:gap-3">
-                <MobileNav active={active} menu={menu} setActive={setActive} />
-                <div className="min-w-0">
-                  <p className="truncate text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--accent)] md:text-[10px] md:tracking-[0.28em]">Sistema Operacional da Alves</p>
-                  <h2 className="truncate text-sm font-black tracking-tight md:text-xl">{activeLabel}</h2>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0 md:gap-2">
-                <button onClick={exportBackup} className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-white/8 px-2 py-1.5 text-[11px] font-bold text-zinc-400 transition hover:border-white/15 hover:text-zinc-200 md:px-3.5 md:py-2"><Download size={13} className="md:mr-1.5" /><span className="hidden md:inline">Backup</span></button>
-                <Link href="/" className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-white/8 px-2 py-1.5 text-[11px] font-bold text-zinc-400 transition hover:border-white/15 hover:text-zinc-200 md:px-3.5 md:py-2"><span className="hidden md:inline">Ver site </span><ChevronRight size={13} /></Link>
-              </div>
-            </div>
-          </div>
+          <Topbar active={active} title={activeLabel} menu={menu} setActive={setActive} onBackup={exportBackup} />
           <div className="flex-1 px-3 pb-28 pt-4 md:px-6 md:pb-8 md:pt-6">
             <div key={active} className="animate-enter-up">{renderContent()}</div>
           </div>
@@ -539,7 +446,7 @@ export default function AdminPage() {
 
       <VozView
         ameOpen={ameOpen} ameStep={ameStep} ameText={ameText}
-        voiceStatus={voiceStatus} quoteOrigin={quoteOrigin} quoteDestination={quoteDestination}
+        voiceStatus={voiceStatus} quoteOrigin={quoteState.origin} quoteDestination={quoteState.destination}
         onSetAmeText={setAmeText} onCloseAmeAssistant={closeAmeAssistant}
         onProcessAmeAnswer={processAmeAnswer} onAmeSpeak={ameSpeak}
         onOpenGoogleMapsRoute={openGoogleMapsRoute}

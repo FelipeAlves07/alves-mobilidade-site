@@ -29,6 +29,7 @@ export interface Lead {
   nextDate: string;
   createdAt: string;
   lastContact?: string;
+  address?: string;
 }
 
 export interface LeadForm extends Omit<Lead, "id" | "createdAt"> {}

@@ -35,7 +35,7 @@ export function useData() {
   const [migrationStatus, setMigrationStatus] = useState<{
     needsMigration: boolean; stats: Record<string, number>; running: boolean;
   }>({ needsMigration: false, stats: {}, running: false });
-  const [completedMarketing, setCompletedMarketing] = useState<string[]>([]);
+  const [completedMarketing, setCompletedMarketing] = useState<{ id: string; completedAt: string }[]>([]);
 
   const leads = useLeads();
   const trips = useTrips();
@@ -53,7 +53,11 @@ export function useData() {
       setLogged(auth?.logged ?? checkLocalAuth());
       setAuthLoading(false);
     });
-    setCompletedMarketing(loadLocal<string[]>("ame-marketing-done-v3", []));
+    const raw = loadLocal<unknown[]>("ame-marketing-done-v3", []);
+    const tasks = (raw || [])
+      .map((item) => typeof item === "string" ? { id: item, completedAt: today } : item as { id: string; completedAt: string })
+      .filter((t) => t && typeof t.id === "string");
+    setCompletedMarketing(tasks);
     checkMigrationStatus()
       .then((result) => setMigrationStatus({ ...result, running: false }))
       .catch(() => {});
@@ -101,7 +105,7 @@ export function useData() {
   }, []);
 
   const completeMarketingTask = useCallback((id: string) => {
-    setCompletedMarketing((prev) => prev.includes(id) ? prev : [...prev, id]);
+    setCompletedMarketing((prev) => prev.some((t) => t.id === id) ? prev : [...prev, { id, completedAt: todayISO() }]);
   }, []);
 
   const resetMarketingTasks = useCallback(() => {
