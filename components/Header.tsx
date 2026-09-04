@@ -44,8 +44,8 @@ export default function Header() {
         <div className="mx-auto max-w-7xl px-4 pt-3 lg:px-8 lg:pt-4">
           <div className={`flex min-h-16 items-center justify-between rounded-2xl border px-5 md:px-8 transition-all duration-500 ${
             scrolled
-              ? "border-[var(--accent-15)] bg-[var(--bg-elevated)]/90 shadow-lg backdrop-blur-2xl"
-              : "border-[var(--border-subtle)] bg-[var(--bg-elevated)]/70 backdrop-blur-xl"
+              ? "border-[var(--accent-15)] bg-[var(--bg-elevated)]/95 shadow-lg backdrop-blur-2xl"
+              : "border-[var(--border-subtle)] bg-[var(--bg-elevated)]/80 backdrop-blur-xl"
           }`}>
             <Link href="/" aria-label="Alves Mobilidade Executiva" className="flex items-center shrink-0">
               <Image src="/branding/logo_mestra_sem_fundo.png" alt="Alves Mobilidade Executiva" width={760} height={260} priority className="-my-10 h-40 w-auto object-contain md:-my-14 md:h-56" />

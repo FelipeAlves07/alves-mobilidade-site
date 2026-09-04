@@ -52,8 +52,8 @@ export default function ServicosPage() {
     <main className="bg-[var(--bg-primary)] text-[var(--foreground)]">
       <section className="relative flex min-h-[500px] items-center overflow-hidden pt-28 md:min-h-[600px]">
         <Image src="/images/servicos-premium.jpg" alt="Serviços Alves Mobilidade" fill priority className="object-cover object-center opacity-100 dark:opacity-50" />
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-transparent dark:from-[var(--bg-primary)]/85 dark:via-[var(--bg-primary)]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent dark:from-[var(--bg-primary)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)]/10 via-transparent to-transparent dark:from-[var(--bg-primary)]/85 dark:via-[var(--bg-primary)]/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/15 via-transparent to-transparent dark:from-[var(--bg-primary)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(var(--accent-rgb),0.12),transparent_50%)] dark:block hidden" />
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 lg:px-8">
           <div className="max-w-2xl">
