@@ -614,39 +614,91 @@ input, textarea, select {
 .light-mode .bg-\[\#25D366\] { background-color: #25D366 !important; }
 
 /* ═══════════════════════════════════════════════════════════════
-   TEXT COLORS ON IMAGES — LIGHT MODE ADAPTATION
+   TEXT COLORS ON IMAGES — LIGHT MODE ADAPTATION (REFINED)
    ═══════════════════════════════════════════════════════════════ */
 
-/* Hero section (first section) - dark text on light images */
-.light-mode main section:first-child .text-white { color: #1a1a1a !important; }
-.light-mode main section:first-child .text-zinc-400 { color: #444 !important; }
-.light-mode main section:first-child .text-zinc-300 { color: #333 !important; }
+/* Hero section (first section) - elegant dark text on light images */
+.light-mode main section:first-child .text-white { color: #1e293b !important; }  /* slate-800 */
+.light-mode main section:first-child .text-zinc-400 { color: #475569 !important; }  /* slate-600 */
+.light-mode main section:first-child .text-zinc-300 { color: #334155 !important; }  /* slate-700 */
 
-/* Hero badge */
-.light-mode main section:first-child .bg-white\/\[0\.04\] { background: rgba(0,0,0,0.06) !important; }
+/* Hero badge - subtle dark background */
+.light-mode main section:first-child .bg-white\/\[0\.04\] { background: rgba(30, 41, 59, 0.08) !important; }
 
-/* Buttons on hero - keep white text on accent buttons */
+/* Buttons on hero - keep white text on accent gradient buttons */
 .light-mode main section:first-child .bg-gradient-to-r.from-\[var\(--accent\)\].text-white { color: #ffffff !important; }
 
 /* WhatsApp button on hero - dark text in light mode */
-.light-mode main section:first-child .bg-white\/\[0\.03\].text-zinc-300 { color: #1a1a1a !important; }
-.light-mode main section:first-child .bg-white\/\[0\.03\].text-white { color: #1a1a1a !important; }
-.light-mode main section:first-child .bg-white\/\[0\.03\]:hover { background: rgba(0,0,0,0.1) !important; }
-.light-mode main section:first-child .bg-white\/\[0\.03\]:hover .text-white { color: #1a1a1a !important; }
-.light-mode main section:first-child .bg-white\/\[0\.03\]:hover .text-zinc-300 { color: #1a1a1a !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\].text-zinc-300 { color: #1e293b !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\].text-white { color: #1e293b !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\]:hover { background: rgba(30, 41, 59, 0.12) !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\]:hover .text-white { color: #1e293b !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\]:hover .text-zinc-300 { color: #1e293b !important; }
 
-/* Stats section - dark text */
-.light-mode main section:nth-child(2) .text-zinc-500 { color: #666 !important; }
+/* Stats section - accent for numbers, slate for labels */
+.light-mode main section:nth-child(2) .text-zinc-500 { color: #64748b !important; }  /* slate-500 */
 .light-mode main section:nth-child(2) .text-gradient-accent { color: var(--accent) !important; }
 
-/* Features/Services cards - dark text */
-.light-mode main section:not(:first-child) .text-zinc-400 { color: #555 !important; }
-.light-mode main section:not(:first-child) .text-zinc-500 { color: #666 !important; }
+/* Features/Services cards - refined slate palette */
+.light-mode main section:not(:first-child) .text-zinc-400 { color: #64748b !important; }  /* slate-500 */
+.light-mode main section:not(:first-child) .text-zinc-500 { color: #475569 !important; }  /* slate-600 */
 .light-mode main section:not(:first-child) h2,
-.light-mode main section:not(:first-child) h3 { color: #1a1a1a !important; }
+.light-mode main section:not(:first-child) h3 { color: #0f172a !important; }  /* slate-900 */
 
-/* Card overlays - ensure text readable */
-.light-mode .group .absolute.inset-0 ~ * { color: #1a1a1a !important; }
+/* Card overlays - ensure text readable with slate-900 */
+.light-mode .group .absolute.inset-0 ~ * { color: #0f172a !important; }
+
+/* General text replacements for light mode */
+.light-mode .text-zinc-400 { color: #64748b !important; }
+.light-mode .text-zinc-500 { color: #475569 !important; }
+.light-mode .text-zinc-300 { color: #334155 !important; }
+.light-mode .text-zinc-600 { color: #94a3b8 !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TRANSLUCENT RECTANGLES/BADGES — LIGHT MODE CLEANUP
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Hero badge - make it solid light with dark text */
+.light-mode main section:first-child .bg-white\/\[0\.04\] { 
+  background: #f1f5f9 !important;  /* slate-100 */
+  border-color: #e2e8f0 !important;  /* slate-200 */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+
+/* Feature card icon backgrounds - solid light */
+.light-mode .bg-\[var\(--accent-8\)\] { background: #eef2ff !important; }  /* indigo-50 */
+
+/* Card hover states - remove translucent overlays */
+.light-mode .group:hover .bg-white\/\[0\.04\] { background: #e2e8f0 !important; }
+.light-mode .group:hover .bg-white\/\[0\.08\] { background: #cbd5e1 !important; }
+
+/* Input fields - solid white with dark border */
+.light-mode .input-admin,
+.light-mode input[type="text"],
+.light-mode input[type="email"],
+.light-mode textarea {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+.light-mode .input-admin:focus,
+.light-mode input:focus,
+.light-mode textarea:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15) !important;
+}
+
+/* Footer badges/links - clean */
+.light-mode footer .bg-white\/\[0\.03\],
+.light-mode footer .bg-white\/\[0\.04\] {
+  background: transparent !important;
+}
+
+/* WhatsApp FAB - keep green, no translucent issues */
+.light-mode .fixed.bottom-5 .bg-\[\#25D366\] {
+  background: #25D366 !important;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4) !important;
+}
 
 /* Form inputs on public pages */
 .light-mode input,
