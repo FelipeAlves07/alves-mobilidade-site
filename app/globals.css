@@ -614,128 +614,263 @@ input, textarea, select {
 .light-mode .bg-\[\#25D366\] { background-color: #25D366 !important; }
 
 /* ═══════════════════════════════════════════════════════════════
-   TEXT COLORS ON IMAGES — LIGHT MODE ADAPTATION (REFINED)
+   LIGHT MODE — SOLID COLORS, NO TRANSLUCENCY, PROPER CONTRAST
    ═══════════════════════════════════════════════════════════════ */
 
-/* Hero section (first section) - elegant dark text on light images */
-.light-mode main section:first-child .text-white { color: #1e293b !important; }  /* slate-800 */
-.light-mode main section:first-child .text-zinc-400 { color: #475569 !important; }  /* slate-600 */
-.light-mode main section:first-child .text-zinc-300 { color: #334155 !important; }  /* slate-700 */
+/* ===== TEXT COLORS — SLATE PALETTE (clean, professional) ===== */
+.light-mode { color-scheme: light; }
+.light-mode .text-white { color: #0f172a !important; }        /* slate-900 */
+.light-mode .text-zinc-50 { color: #0f172a !important; }
+.light-mode .text-zinc-100 { color: #1e293b !important; }    /* slate-800 */
+.light-mode .text-zinc-200 { color: #334155 !important; }    /* slate-700 */
+.light-mode .text-zinc-300 { color: #475569 !important; }    /* slate-600 */
+.light-mode .text-zinc-400 { color: #64748b !important; }    /* slate-500 */
+.light-mode .text-zinc-500 { color: #475569 !important; }    /* slate-600 */
+.light-mode .text-zinc-600 { color: #334155 !important; }    /* slate-700 */
+.light-mode .text-zinc-700 { color: #1e293b !important; }    /* slate-800 */
+.light-mode .text-zinc-800 { color: #0f172a !important; }    /* slate-900 */
+.light-mode .text-zinc-900 { color: #020617 !important; }    /* slate-950 */
+.light-mode .text-gray-400 { color: #64748b !important; }
+.light-mode .text-gray-500 { color: #475569 !important; }
+.light-mode .text-gray-600 { color: #334155 !important; }
 
-/* Hero badge - subtle dark background */
-.light-mode main section:first-child .bg-white\/\[0\.04\] { background: rgba(30, 41, 59, 0.08) !important; }
-
-/* Buttons on hero - keep white text on accent gradient buttons */
-.light-mode main section:first-child .bg-gradient-to-r.from-\[var\(--accent\)\].text-white { color: #ffffff !important; }
-
-/* WhatsApp button on hero - dark text in light mode */
-.light-mode main section:first-child .bg-white\/\[0\.03\].text-zinc-300 { color: #1e293b !important; }
-.light-mode main section:first-child .bg-white\/\[0\.03\].text-white { color: #1e293b !important; }
-.light-mode main section:first-child .bg-white\/\[0\.03\]:hover { background: rgba(30, 41, 59, 0.12) !important; }
-.light-mode main section:first-child .bg-white\/\[0\.03\]:hover .text-white { color: #1e293b !important; }
-.light-mode main section:first-child .bg-white\/\[0\.03\]:hover .text-zinc-300 { color: #1e293b !important; }
-
-/* Stats section - accent for numbers, slate for labels */
-.light-mode main section:nth-child(2) .text-zinc-500 { color: #64748b !important; }  /* slate-500 */
-.light-mode main section:nth-child(2) .text-gradient-accent { color: var(--accent) !important; }
-
-/* Features/Services cards - refined slate palette */
-.light-mode main section:not(:first-child) .text-zinc-400 { color: #64748b !important; }  /* slate-500 */
-.light-mode main section:not(:first-child) .text-zinc-500 { color: #475569 !important; }  /* slate-600 */
-.light-mode main section:not(:first-child) h2,
-.light-mode main section:not(:first-child) h3 { color: #0f172a !important; }  /* slate-900 */
-
-/* Card overlays - ensure text readable with slate-900 */
-.light-mode .group .absolute.inset-0 ~ * { color: #0f172a !important; }
-
-/* General text replacements for light mode */
-.light-mode .text-zinc-400 { color: #64748b !important; }
-.light-mode .text-zinc-500 { color: #475569 !important; }
-.light-mode .text-zinc-300 { color: #334155 !important; }
-.light-mode .text-zinc-600 { color: #94a3b8 !important; }
-
-/* ═══════════════════════════════════════════════════════════════
-   TRANSLUCENT RECTANGLES/BADGES — LIGHT MODE CLEANUP
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Hero badge - make it solid light with dark text */
-.light-mode main section:first-child .bg-white\/\[0\.04\] { 
-  background: #f1f5f9 !important;  /* slate-100 */
-  border-color: #e2e8f0 !important;  /* slate-200 */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+/* ===== NAVBAR / HEADER — SOLID, NO BLUR ===== */
+.light-mode header { background: #ffffff !important; }
+.light-mode header > div > div {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.light-mode header .bg-\[var\(--bg-elevated\)\]\/70,
+.light-mode header .bg-\[var\(--bg-elevated\)\]\/80,
+.light-mode header .bg-\[var\(--bg-elevated\)\]\/90,
+.light-mode header .bg-\[var\(--bg-elevated\)\]\/95 {
+  background: #ffffff !important;
+}
+.light-mode header .backdrop-blur-xl,
+.light-mode header .backdrop-blur-2xl {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
-/* Feature card icon backgrounds - solid light */
-.light-mode .bg-\[var\(--accent-8\)\] { background: #eef2ff !important; }  /* indigo-50 */
+/* Nav links */
+.light-mode header nav a { color: #334155 !important; }
+.light-mode header nav a:hover { color: #0f172a !important; }
+.light-mode header nav a.text-\[var\(--accent\)\] { color: var(--accent) !important; }
 
-/* Card hover states - remove translucent overlays */
-.light-mode .group:hover .bg-white\/\[0\.04\] { background: #e2e8f0 !important; }
-.light-mode .group:hover .bg-white\/\[0\.08\] { background: #cbd5e1 !important; }
+/* Mobile menu button */
+.light-mode header button.bg-white\/\[0\.04\],
+.light-mode header button.bg-white\/\[0\.08\] {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+.light-mode header button:hover.bg-white\/\[0\.04\],
+.light-mode header button:hover.bg-white\/\[0\.08\] {
+  background: #e2e8f0 !important;
+}
 
-/* Input fields - solid white with dark border */
+/* ===== HERO SECTION ===== */
+.light-mode main section:first-child { background: #f8fafc !important; }
+.light-mode main section:first-child .text-white { color: #0f172a !important; }
+.light-mode main section:first-child .text-zinc-400 { color: #475569 !important; }
+.light-mode main section:first-child .text-zinc-300 { color: #334155 !important; }
+
+/* Hero badge - solid */
+.light-mode main section:first-child .bg-white\/\[0\.04\],
+.light-mode main section:first-child .bg-white\/\[0\.03\] {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+/* Hero buttons */
+.light-mode main section:first-child .bg-gradient-to-r.from-\[var\(--accent\)\].text-white { color: #ffffff !important; }
+.light-mode main section:first-child a.bg-white\/\[0\.03\],
+.light-mode main section:first-child a.bg-white\/\[0\.04\] {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+.light-mode main section:first-child a.bg-white\/\[0\.03\]:hover,
+.light-mode main section:first-child a.bg-white\/\[0\.04\]:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Hero image overlays - REMOVE in light mode */
+.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-r,
+.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-t,
+.light-mode main section:first-child .absolute.inset-0.bg-\[radial-gradient*\] {
+  display: none !important;
+}
+
+/* ===== ALL SECTIONS — SOLID BACKGROUNDS ===== */
+.light-mode main section { background: #ffffff !important; }
+.light-mode main section:nth-child(2) { background: #f8fafc !important; } /* stats */
+.light-mode main section:nth-child(3) { background: #ffffff !important; } /* features */
+.light-mode main section:nth-child(4) { background: #f8fafc !important; } /* services */
+.light-mode main section:nth-child(5) { background: #ffffff !important; } /* fleet */
+
+/* Section headings */
+.light-mode main section h2,
+.light-mode main section h3 { color: #0f172a !important; }
+.light-mode main section .text-zinc-400 { color: #475569 !important; }
+.light-mode main section .text-zinc-500 { color: #64748b !important; }
+
+/* ===== CARDS — SOLID ===== */
+.light-mode .bg-\[var\(--bg-card\)\],
+.light-mode .bg-\[var\(--bg-elevated\)\],
+.light-mode .bg-\[var\(--bg-surface\)\] {
+  background: #ffffff !important;
+}
+.light-mode .border-\[var\(--border-light\)\],
+.light-mode .border-\[var\(--border-subtle\)\],
+.light-mode .border-\[var\(--border-medium\)\] {
+  border-color: #e2e8f0 !important;
+}
+
+/* Feature/Service cards */
+.light-mode .group.overflow-hidden {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+}
+.light-mode .group.overflow-hidden:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Card icon backgrounds */
+.light-mode .bg-\[var\(--accent-8\)\],
+.light-mode .bg-\[var\(--accent-10\)\],
+.light-mode .bg-\[var\(--accent-12\)\] {
+  background: #eef2ff !important; /* indigo-50 */
+}
+.light-mode .group:hover .bg-\[var\(--accent-8\)\],
+.light-mode .group:hover .bg-\[var\(--accent-10\)\] {
+  background: var(--accent) !important;
+}
+.light-mode .group:hover .bg-\[var\(--accent-8\)\] *,
+.light-mode .group:hover .bg-\[var\(--accent-10\)\] * {
+  color: #ffffff !important;
+}
+
+/* Remove ALL card image overlays in light mode */
+.light-mode .group .absolute.inset-0.bg-gradient-to-t,
+.light-mode .group .absolute.inset-0.bg-gradient-to-r,
+.light-mode .group .absolute.inset-0.bg-\[radial-gradient*\] {
+  display: none !important;
+}
+
+/* ===== FLEET CARDS ===== */
+.light-mode .fleet-card,
+.light-mode .fleet-card .bg-\[var\(--bg-primary\)\]\/90 {
+  background: #ffffff !important;
+}
+.light-mode .fleet-card .absolute.inset-0 { display: none !important; }
+
+/* ===== STATS SECTION ===== */
+.light-mode main section .overflow-hidden.rounded-2xl {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+.light-mode main section .text-gradient-accent { color: var(--accent) !important; }
+
+/* ===== FOOTER ===== */
+.light-mode footer { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+.light-mode footer .text-zinc-500,
+.light-mode footer .text-zinc-600,
+.light-mode footer p { color: #475569 !important; }
+.light-mode footer a { color: #334155 !important; }
+.light-mode footer a:hover { color: #0f172a !important; }
+.light-mode footer .bg-gradient-to-r.from-\[var\(--accent\)\] { color: #ffffff !important; }
+.light-mode footer .bg-white\/\[0\.03\],
+.light-mode footer .bg-white\/\[0\.04\] { background: transparent !important; }
+
+/* ===== WHATSAPP FAB ===== */
+.light-mode .fixed.bottom-5 .bg-\[\#25D366\] {
+  background: #25D366 !important;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3) !important;
+}
+
+/* ===== MOBILE MENU ===== */
+.light-mode .fixed.inset-0.bg-\[var\(--bg-primary\)\] { background: #ffffff !important; }
+.light-mode .fixed.inset-0 .bg-white\/\[0\.04\],
+.light-mode .fixed.inset-0 .bg-white\/\[0\.08\] {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+.light-mode .fixed.inset-0 nav a { color: #334155 !important; }
+.light-mode .fixed.inset-0 nav a:hover,
+.light-mode .fixed.inset-0 nav a.bg-\[var\(--accent-12\)\] {
+  background: #eef2ff !important;
+  color: var(--accent) !important;
+}
+
+/* ===== INPUTS & FORMS ===== */
 .light-mode .input-admin,
-.light-mode input[type="text"],
-.light-mode input[type="email"],
-.light-mode textarea {
+.light-mode input,
+.light-mode textarea,
+.light-mode select {
   background: #ffffff !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
 .light-mode .input-admin:focus,
 .light-mode input:focus,
-.light-mode textarea:focus {
+.light-mode textarea:focus,
+.light-mode select:focus {
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15) !important;
 }
+.light-mode input::placeholder,
+.light-mode textarea::placeholder { color: #94a3b8 !important; }
 
-/* Footer badges/links - clean */
-.light-mode footer .bg-white\/\[0\.03\],
-.light-mode footer .bg-white\/\[0\.04\] {
+/* ===== REMOVE ALL BACKDROP BLUR & TRANSLUCENCY ===== */
+.light-mode .backdrop-blur,
+.light-mode .backdrop-blur-sm,
+.light-mode .backdrop-blur-md,
+.light-mode .backdrop-blur-lg,
+.light-mode .backdrop-blur-xl,
+.light-mode .backdrop-blur-2xl {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   background: transparent !important;
 }
 
-/* WhatsApp FAB - keep green, no translucent issues */
-.light-mode .fixed.bottom-5 .bg-\[\#25D366\] {
-  background: #25D366 !important;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4) !important;
+/* ===== BG-WHITE/XX UTILITIES → SOLID ===== */
+.light-mode .bg-white\/5,
+.light-mode .bg-white\/10,
+.light-mode .bg-white\/20,
+.light-mode .bg-white\/30,
+.light-mode .bg-white\/40,
+.light-mode .bg-white\/50,
+.light-mode .bg-white\/60,
+.light-mode .bg-white\/70,
+.light-mode .bg-white\/80,
+.light-mode .bg-white\/90,
+.light-mode .bg-white\/\[0\.0[2-9]\] {
+  background: transparent !important;
 }
 
-/* Form inputs on public pages */
-.light-mode input,
-.light-mode textarea,
-.light-mode select {
-  background: #ffffff !important;
-  color: #1a1a1a !important;
-  border-color: rgba(0,0,0,0.12) !important;
+/* ===== BORDER VARIABLES → SOLID ===== */
+.light-mode .border-\[var\(--border-light\)\],
+.light-mode .border-\[var\(--border-subtle\)\] {
+  border-color: #e2e8f0 !important;
 }
-.light-mode input::placeholder,
-.light-mode textarea::placeholder {
-  color: #999 !important;
+.light-mode .border-\[var\(--border-medium\)\],
+.light-mode .border-\[var\(--border-strong\)\] {
+  border-color: #cbd5e1 !important;
 }
 
-/* Mobile menu overlay */
-.light-mode .bg-\[var\(--bg-primary\)\] {
-  background: #f5f5f5 !important;
-}
-
-/* Backdrop blur elements — keep transparent */
-.light-mode .backdrop-blur-xl { background: transparent !important; }
-.light-mode .backdrop-blur-2xl { background: transparent !important; }
-
-/* Gradient accent text — keep visible on light */
+/* ===== GRADIENT ACCENT TEXT ===== */
 .light-mode .text-gradient-accent {
   background: linear-gradient(135deg, var(--accent), var(--secondary)) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-}
-
-/* Fleet cards */
-.light-mode .fleet-card {
-  background: #ffffff !important;
-  border-color: rgba(0,0,0,0.08) !important;
-}
-
-/* CTA section */
-.light-mode .cta-section {
-  background: #ffffff !important;
 }
