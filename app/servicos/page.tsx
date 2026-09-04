@@ -73,7 +73,7 @@ export default function ServicosPage() {
                 <article key={service.title} className="group overflow-hidden rounded-2xl border border-[var(--border-light)] bg-[var(--bg-card)] transition-all duration-500 hover:-translate-y-1 hover:border-[var(--accent-25)] hover:shadow-xl">
                   <div className="relative h-48 overflow-hidden">
                     <Image src={service.image} alt={service.title} fill className="object-cover transition duration-700 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent dark:from-[var(--bg-primary)]" />
                   </div>
                   <div className="p-6">
                     <div className="mb-4 inline-flex rounded-xl bg-[var(--accent-8)] p-3 text-[var(--accent)] transition-all duration-300 group-hover:bg-[var(--accent)] group-hover:text-white">

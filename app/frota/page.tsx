@@ -37,7 +37,7 @@ export default function FrotaPage() {
               <article key={car.name} className="group overflow-hidden rounded-2xl border border-[var(--border-light)] bg-[var(--bg-card)] transition-all duration-500 hover:-translate-y-1 hover:border-[var(--accent-25)] hover:shadow-xl">
                 <div className="relative h-56 overflow-hidden">
                   <Image src={car.image} alt={car.name} fill className="object-cover transition duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/90 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent dark:from-[var(--bg-primary)]/90" />
                 </div>
                 <div className="p-6">
                   <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-gradient-accent">{car.category}</span>
