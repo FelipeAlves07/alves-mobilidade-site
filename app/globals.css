@@ -613,6 +613,41 @@ input, textarea, select {
 /* WhatsApp floating button — keep green */
 .light-mode .bg-\[\#25D366\] { background-color: #25D366 !important; }
 
+/* ═══════════════════════════════════════════════════════════════
+   TEXT COLORS ON IMAGES — LIGHT MODE ADAPTATION
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Hero section (first section) - dark text on light images */
+.light-mode main section:first-child .text-white { color: #1a1a1a !important; }
+.light-mode main section:first-child .text-zinc-400 { color: #444 !important; }
+.light-mode main section:first-child .text-zinc-300 { color: #333 !important; }
+
+/* Hero badge */
+.light-mode main section:first-child .bg-white\/\[0\.04\] { background: rgba(0,0,0,0.06) !important; }
+
+/* Buttons on hero - keep white text on accent buttons */
+.light-mode main section:first-child .bg-gradient-to-r.from-\[var\(--accent\)\].text-white { color: #ffffff !important; }
+
+/* WhatsApp button on hero - dark text in light mode */
+.light-mode main section:first-child .bg-white\/\[0\.03\].text-zinc-300 { color: #1a1a1a !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\].text-white { color: #1a1a1a !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\]:hover { background: rgba(0,0,0,0.1) !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\]:hover .text-white { color: #1a1a1a !important; }
+.light-mode main section:first-child .bg-white\/\[0\.03\]:hover .text-zinc-300 { color: #1a1a1a !important; }
+
+/* Stats section - dark text */
+.light-mode main section:nth-child(2) .text-zinc-500 { color: #666 !important; }
+.light-mode main section:nth-child(2) .text-gradient-accent { color: var(--accent) !important; }
+
+/* Features/Services cards - dark text */
+.light-mode main section:not(:first-child) .text-zinc-400 { color: #555 !important; }
+.light-mode main section:not(:first-child) .text-zinc-500 { color: #666 !important; }
+.light-mode main section:not(:first-child) h2,
+.light-mode main section:not(:first-child) h3 { color: #1a1a1a !important; }
+
+/* Card overlays - ensure text readable */
+.light-mode .group .absolute.inset-0 ~ * { color: #1a1a1a !important; }
+
 /* Form inputs on public pages */
 .light-mode input,
 .light-mode textarea,
