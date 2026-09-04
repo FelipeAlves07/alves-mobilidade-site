@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+
 :root {
   --primary: #0c2340;
   --secondary: #1a3a6b;
