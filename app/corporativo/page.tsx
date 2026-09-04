@@ -34,13 +34,15 @@ export default function CorporativoPage() {
     <main className="bg-[var(--bg-primary)] text-[var(--foreground)]">
       <section className="relative flex min-h-[500px] items-center overflow-hidden pt-28 md:min-h-[600px]">
         <Image src="/images/corporativo.jpg" alt="Corporativo Alves" fill priority className="object-cover object-center opacity-100 dark:opacity-50" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)]/10 via-transparent to-transparent dark:from-[var(--bg-primary)]/85 dark:via-[var(--bg-primary)]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/15 via-transparent to-transparent dark:from-[var(--bg-primary)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(var(--accent-rgb),0.12),transparent_50%)] dark:block hidden" />
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 lg:px-8">
           <div className="max-w-2xl">
             <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--accent)]">Corporativo</span>
-            <h1 className="mt-4 text-4xl font-black leading-tight md:text-5xl lg:text-6xl">Mobilidade corporativa com padrão executivo.</h1>
+            <h1 className="mt-4 text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
+              <span className="text-white">Mobilidade corporativa com padrão executivo.</span>
+            </h1>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-400 md:text-base md:leading-8">Soluções para empresas que precisam transmitir profissionalismo em cada deslocamento.</p>
             <Link href="/solicitar-atendimento" className="group mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:scale-95">
               Solicitar atendimento <ArrowRight size={14} className="transition group-hover:translate-x-1" />

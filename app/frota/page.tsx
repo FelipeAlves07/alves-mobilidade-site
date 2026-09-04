@@ -18,13 +18,15 @@ export default function FrotaPage() {
     <main className="bg-[var(--bg-primary)] text-[var(--foreground)]">
       <section className="relative flex min-h-[500px] items-center overflow-hidden pt-28 md:min-h-[600px]">
         <Image src="/images/fleet-hero.jpg" alt="Frota Alves" fill priority className="object-cover object-center opacity-100 dark:opacity-50" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)]/10 via-transparent to-transparent dark:from-[var(--bg-primary)]/85 dark:via-[var(--bg-primary)]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/15 via-transparent to-transparent dark:from-[var(--bg-primary)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(var(--accent-rgb),0.12),transparent_50%)] dark:block hidden" />
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 lg:px-8">
           <div className="max-w-2xl">
             <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--accent)]">Frota executiva</span>
-            <h1 className="mt-4 text-4xl font-black leading-tight md:text-5xl lg:text-6xl">Veículos selecionados para conforto, elegância e segurança.</h1>
+            <h1 className="mt-4 text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
+              <span className="text-white">Veículos selecionados para conforto, elegância e segurança.</span>
+            </h1>
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-400 md:text-base md:leading-8">Modelos preparados para diferentes perfis de atendimento executivo.</p>
           </div>
         </div>

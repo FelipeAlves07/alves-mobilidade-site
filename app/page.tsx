@@ -75,7 +75,7 @@ export default function HomePage() {
       </section>
 
       {/* ── STATS ── */}
-      <section className="relative z-20 -mt-16 px-5 pb-14 lg:px-8">
+      <section className="relative z-20 px-5 py-14 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="overflow-hidden rounded-2xl border border-[var(--border-light)] bg-[var(--bg-elevated)]/80 backdrop-blur-xl">
             <div className="grid grid-cols-2 md:grid-cols-4">

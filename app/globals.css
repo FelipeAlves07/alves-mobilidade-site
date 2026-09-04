@@ -685,7 +685,9 @@ input, textarea, select {
 
 /* ─── HERO SECTIONS — DARK PHOTOS WITH LIGHT TEXT + GRADIENT OVERLAY ─── */
 /* Hero overlay gradient: dark on left (text area) → transparent on right (photo visible) */
-.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-r {
+.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-r,
+.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-r[style*="--bg-primary"],
+.light-mode main > section:first-of-type .absolute.inset-0.bg-gradient-to-r {
   background: linear-gradient(
     90deg,
     var(--hero-overlay-start) 0%,
@@ -695,7 +697,8 @@ input, textarea, select {
   ) !important;
   display: block !important;
 }
-.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-t {
+.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-t,
+.light-mode main > section:first-of-type .absolute.inset-0.bg-gradient-to-t {
   background: linear-gradient(
     180deg,
     var(--hero-overlay-fade) 0%,
@@ -703,20 +706,52 @@ input, textarea, select {
   ) !important;
   display: block !important;
 }
-.light-mode main section:first-child .absolute.inset-0.bg-\[radial-gradient*\] {
+.light-mode main section:first-child .absolute.inset-0.bg-\[radial-gradient*\],
+.light-mode main > section:first-of-type .absolute.inset-0.bg-\[radial-gradient*\] {
   display: none !important;
 }
 
+/* Also target the inline style overlays on service pages */
+.light-mode main > section:first-of-type > div.absolute.inset-0[style*="bg-gradient-to-r"],
+.light-mode main > section:first-of-type > div.absolute.inset-0[style*="bg-gradient-to-t"] {
+  background: linear-gradient(
+    90deg,
+    var(--hero-overlay-start) 0%,
+    var(--hero-overlay-mid) 38%,
+    var(--hero-overlay-end) 68%,
+    var(--hero-overlay-fade) 100%
+  ) !important;
+}
+
 /* Hero content — WHITE/LIGHT text on dark photo */
-.light-mode main section:first-child .text-white { color: var(--hero-title) !important; }
+.light-mode main section:first-child .text-white,
+.light-mode main > section:first-of-type .text-white { color: var(--hero-title) !important; }
 .light-mode main section:first-child .text-zinc-50,
 .light-mode main section:first-child .text-zinc-100,
-.light-mode main section:first-child .text-zinc-200 { color: var(--hero-title) !important; }
+.light-mode main section:first-child .text-zinc-200,
+.light-mode main > section:first-of-type .text-zinc-50,
+.light-mode main > section:first-of-type .text-zinc-100,
+.light-mode main > section:first-of-type .text-zinc-200 { color: var(--hero-title) !important; }
 .light-mode main section:first-child .text-zinc-300,
-.light-mode main section:first-child .text-zinc-400 { color: var(--hero-text) !important; }
+.light-mode main section:first-child .text-zinc-400,
+.light-mode main > section:first-of-type .text-zinc-300,
+.light-mode main > section:first-of-type .text-zinc-400 { color: var(--hero-text) !important; }
 .light-mode main section:first-child .text-zinc-500,
-.light-mode main section:first-child .text-zinc-600 { color: var(--hero-muted) !important; }
-.light-mode main section:first-child .text-gradient-accent { color: var(--hero-accent) !important; }
+.light-mode main section:first-child .text-zinc-600,
+.light-mode main > section:first-of-type .text-zinc-500,
+.light-mode main > section:first-of-type .text-zinc-600 { color: var(--hero-muted) !important; }
+.light-mode main section:first-child .text-gradient-accent,
+.light-mode main > section:first-of-type .text-gradient-accent { color: var(--hero-accent) !important; }
+
+/* ─── GAP FIXES ─── */
+/* Ensure hero has proper space from fixed navbar */
+.light-mode main > section:first-of-type { padding-top: 7rem !important; } /* ~112px for navbar */
+
+/* Remove negative margin on second section that overlaps hero buttons */
+.light-mode main > section:nth-of-type(2) { margin-top: 0 !important; padding-top: 2rem !important; }
+
+/* Add gap between hero CTA buttons and next section */
+.light-mode main > section:first-of-type > div.relative.z-10 > div.max-w-3xl > div.flex.flex-col { margin-bottom: 3rem !important; }
 
 /* Hero badge — solid light with dark text */
 .light-mode main section:first-child .bg-white\/\[0\.04\],
