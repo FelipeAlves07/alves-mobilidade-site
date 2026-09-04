@@ -1,0 +1,354 @@
+/* ── Light Mode Overrides ────────────────────────────────────────────────── */
+
+.light-mode .input-admin {
+  background: var(--light-surface);
+  border-color: var(--light-border);
+  color: var(--light-heading);
+}
+
+.light-mode .input-admin:focus {
+  background: var(--light-surface);
+  border-color: var(--light-primary);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+}
+
+.light-mode .input-admin::placeholder {
+  color: var(--light-placeholder);
+}
+
+.light-mode .btn-primary {
+  box-shadow: 0 4px 16px rgba(var(--secondary-rgb), 0.2);
+}
+
+.light-mode .bottom-tab-bar-inner {
+  background: rgba(255, 255, 255, 0.92);
+  border-top-color: rgba(0,0,0,0.08);
+}
+
+.light-mode .premium-card {
+  background: var(--light-surface);
+  border-color: var(--light-border);
+  box-shadow: var(--light-shadow);
+}
+
+.light-mode .premium-card:hover {
+  background: var(--light-surface-hover);
+  border-color: var(--light-accent);
+}
+
+.light-mode .glass-card {
+  background: var(--light-surface);
+  border-color: var(--light-border);
+}
+
+.light-mode .glass-card:hover {
+  background: var(--light-surface-hover);
+}
+
+.light-mode body {
+  color: var(--light-text);
+  background: var(--light-bg);
+}
+
+.light-mode h1, .light-mode h2, .light-mode h3, .light-mode h4, .light-mode h5, .light-mode h6 {
+  color: var(--light-heading);
+}
+
+/* Light mode for Topbar */
+.light-mode .sticky {
+  background: var(--light-surface) !important;
+  border-bottom-color: var(--light-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ─── Admin / Dashboard Components ─── */
+.light-mode .bg-\[var\(--bg-card\)\],
+.light-mode .bg-\[var\(--bg-elevated\)\],
+.light-mode .bg-\[var\(--bg-surface\)\] {
+  background: var(--light-surface) !important;
+}
+
+.light-mode .border-\[var\(--border-light\)\],
+.light-mode .border-\[var\(--border-subtle\)\] {
+  border-color: var(--light-border) !important;
+}
+
+.light-mode .border-\[var\(--border-medium\)\],
+.light-mode .border-\[var\(--border-strong\)\] {
+  border-color: var(--light-border-strong) !important;
+}
+
+/* ─── Text Colors — Surface Palette ─── */
+.light-mode .text-zinc-50 { color: var(--light-heading) !important; }
+.light-mode .text-zinc-100 { color: var(--light-heading) !important; }
+.light-mode .text-zinc-200 { color: var(--light-heading) !important; }
+.light-mode .text-zinc-300 { color: var(--light-text-secondary) !important; }
+.light-mode .text-zinc-400 { color: var(--light-muted) !important; }
+.light-mode .text-zinc-500 { color: var(--light-text-secondary) !important; }
+.light-mode .text-zinc-600 { color: var(--light-text) !important; }
+.light-mode .text-zinc-700 { color: var(--light-heading) !important; }
+.light-mode .text-zinc-800 { color: var(--light-heading) !important; }
+.light-mode .text-zinc-900 { color: var(--light-heading) !important; }
+.light-mode .text-gray-400 { color: var(--light-muted) !important; }
+.light-mode .text-gray-500 { color: var(--light-text-secondary) !important; }
+.light-mode .text-gray-600 { color: var(--light-text) !important; }
+
+/* ─── Admin Sidebar / Sticky Header ─── */
+.light-mode .sticky {
+  background: var(--light-surface) !important;
+  border-color: var(--light-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PUBLIC SITE — LIGHT MODE (SEMANTIC TOKENS)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Global Surface Defaults ─── */
+.light-mode { color-scheme: light; }
+.light-mode main { background: var(--light-bg); }
+
+/* ─── HEADER / NAVBAR ─── */
+.light-mode header { background: var(--light-surface) !important; }
+.light-mode header > div > div {
+  background: var(--light-surface) !important;
+  border-color: var(--light-border) !important;
+  box-shadow: var(--light-shadow) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.light-mode header .bg-\[var\(--bg-elevated\)\]\/70,
+.light-mode header .bg-\[var\(--bg-elevated\)\]\/80,
+.light-mode header .bg-\[var\(--bg-elevated\)\]\/90,
+.light-mode header .bg-\[var\(--bg-elevated\)\]\/95 {
+  background: var(--light-surface) !important;
+}
+.light-mode header .backdrop-blur-xl,
+.light-mode header .backdrop-blur-2xl {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.light-mode header nav a { color: var(--light-text-secondary) !important; }
+.light-mode header nav a:hover { color: var(--light-heading) !important; }
+.light-mode header nav a.text-\[var\(--accent\)\] { color: var(--light-primary) !important; }
+.light-mode header button.bg-white\/\[0\.04\],
+.light-mode header button.bg-white\/\[0\.08\] {
+  background: var(--light-surface-hover) !important;
+  border-color: var(--light-border) !important;
+  color: var(--light-text-secondary) !important;
+}
+.light-mode header button:hover.bg-white\/\[0\.04\],
+.light-mode header button:hover.bg-white\/\[0\.08\] {
+  background: var(--light-border) !important;
+}
+
+/* ─── HERO SECTIONS — DARK PHOTOS WITH LIGHT TEXT + GRADIENT OVERLAY ─── */
+/* Hero overlay gradient: dark on left (text area) → transparent on right (photo visible) */
+.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-r {
+  background: linear-gradient(
+    90deg,
+    var(--hero-overlay-start) 0%,
+    var(--hero-overlay-mid) 38%,
+    var(--hero-overlay-end) 68%,
+    var(--hero-overlay-fade) 100%
+  ) !important;
+  display: block !important;
+}
+.light-mode main section:first-child .absolute.inset-0.bg-gradient-to-t {
+  background: linear-gradient(
+    180deg,
+    var(--hero-overlay-fade) 0%,
+    var(--hero-overlay-start) 100%
+  ) !important;
+  display: block !important;
+}
+.light-mode main section:first-child .absolute.inset-0.bg-\[radial-gradient*\] {
+  display: none !important;
+}
+
+/* Hero content — WHITE/LIGHT text on dark photo */
+.light-mode main section:first-child .text-white { color: var(--hero-title) !important; }
+.light-mode main section:first-child .text-zinc-50,
+.light-mode main section:first-child .text-zinc-100,
+.light-mode main section:first-child .text-zinc-200 { color: var(--hero-title) !important; }
+.light-mode main section:first-child .text-zinc-300,
+.light-mode main section:first-child .text-zinc-400 { color: var(--hero-text) !important; }
+.light-mode main section:first-child .text-zinc-500,
+.light-mode main section:first-child .text-zinc-600 { color: var(--hero-muted) !important; }
+.light-mode main section:first-child .text-gradient-accent { color: var(--hero-accent) !important; }
+
+/* Hero badge — solid light with dark text */
+.light-mode main section:first-child .bg-white\/\[0\.04\],
+.light-mode main section:first-child .bg-white\/\[0\.03\] {
+  background: var(--light-surface) !important;
+  border-color: var(--light-border) !important;
+  color: var(--light-text-secondary) !important;
+  box-shadow: var(--light-shadow-sm) !important;
+}
+
+/* Hero CTA buttons */
+.light-mode main section:first-child .bg-gradient-to-r.from-\[var\(--accent\)\].text-white { color: #ffffff !important; }
+.light-mode main section:first-child a.bg-white\/\[0\.03\],
+.light-mode main section:first-child a.bg-white\/\[0\.04\] {
+  background: var(--light-surface) !important;
+  border-color: var(--light-border) !important;
+  color: var(--light-text-secondary) !important;
+}
+.light-mode main section:first-child a.bg-white\/\[0\.03\]:hover,
+.light-mode main section:first-child a.bg-white\/\[0\.04\]:hover {
+  background: var(--light-surface-hover) !important;
+  border-color: var(--light-border-strong) !important;
+  color: var(--light-heading) !important;
+}
+
+/* ─── SECTIONS AFTER HERO — LIGHT SURFACES WITH DARK TEXT ─── */
+.light-mode main section:not(:first-child) { background: var(--light-surface) !important; }
+.light-mode main section:nth-child(2n) { background: var(--light-bg) !important; }
+.light-mode main section:not(:first-child) h2,
+.light-mode main section:not(:first-child) h3 { color: var(--light-heading) !important; }
+.light-mode main section:not(:first-child) .text-zinc-400,
+.light-mode main section:not(:first-child) .text-zinc-500 { color: var(--light-text-secondary) !important; }
+.light-mode main section:not(:first-child) .text-zinc-600 { color: var(--light-text) !important; }
+
+/* ─── CARDS — Feature/Service/Fleet ─── */
+.light-mode .group.overflow-hidden {
+  background: var(--light-surface) !important;
+  border-color: var(--light-border) !important;
+  box-shadow: var(--light-shadow-sm) !important;
+}
+.light-mode .group.overflow-hidden:hover {
+  box-shadow: var(--light-shadow) !important;
+  border-color: var(--light-border-strong) !important;
+}
+.light-mode .bg-\[var\(--accent-8\)\],
+.light-mode .bg-\[var\(--accent-10\)\],
+.light-mode .bg-\[var\(--accent-12\)\] {
+  background: #eef2ff !important;
+}
+.light-mode .group:hover .bg-\[var\(--accent-8\)\],
+.light-mode .group:hover .bg-\[var\(--accent-10\)\] {
+  background: var(--light-primary) !important;
+}
+.light-mode .group:hover .bg-\[var\(--accent-8\)\] *,
+.light-mode .group:hover .bg-\[var\(--accent-10\)\] * {
+  color: #ffffff !important;
+}
+
+/* Remove card image overlays in light mode — images stay clean */
+.light-mode .group .absolute.inset-0.bg-gradient-to-t,
+.light-mode .group .absolute.inset-0.bg-gradient-to-r,
+.light-mode .group .absolute.inset-0.bg-\[radial-gradient*\] {
+  display: none !important;
+}
+
+/* ─── FLEET CARDS ─── */
+.light-mode .fleet-card,
+.light-mode .fleet-card .bg-\[var\(--bg-primary\)\]\/90 {
+  background: var(--light-surface) !important;
+}
+.light-mode .fleet-card .absolute.inset-0 { display: none !important; }
+
+/* ─── STATS SECTION ─── */
+.light-mode main section .overflow-hidden.rounded-2xl {
+  background: var(--light-surface) !important;
+  border-color: var(--light-border) !important;
+}
+.light-mode main section .text-gradient-accent { color: var(--light-primary) !important; }
+
+/* ─── FOOTER ─── */
+.light-mode footer { background: var(--light-bg) !important; border-color: var(--light-border) !important; }
+.light-mode footer .text-zinc-500,
+.light-mode footer .text-zinc-600,
+.light-mode footer p { color: var(--light-text-secondary) !important; }
+.light-mode footer a { color: var(--light-text) !important; }
+.light-mode footer a:hover { color: var(--light-heading) !important; }
+.light-mode footer .bg-gradient-to-r.from-\[var\(--accent\)\] { color: #ffffff !important; }
+.light-mode footer .bg-white\/\[0\.03\],
+.light-mode footer .bg-white\/\[0\.04\] { background: transparent !important; }
+
+/* ─── WHATSAPP FAB ─── */
+.light-mode .fixed.bottom-5 .bg-\[\#25D366\] {
+  background: #25D366 !important;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3) !important;
+}
+
+/* ─── MOBILE MENU ─── */
+.light-mode .fixed.inset-0.bg-\[var\(--bg-primary\)\] { background: var(--light-surface) !important; }
+.light-mode .fixed.inset-0 .bg-white\/\[0\.04\],
+.light-mode .fixed.inset-0 .bg-white\/\[0\.08\] {
+  background: var(--light-surface-hover) !important;
+  border-color: var(--light-border) !important;
+  color: var(--light-text-secondary) !important;
+}
+.light-mode .fixed.inset-0 nav a { color: var(--light-text-secondary) !important; }
+.light-mode .fixed.inset-0 nav a:hover,
+.light-mode .fixed.inset-0 nav a.bg-\[var\(--accent-12\)\] {
+  background: #eef2ff !important;
+  color: var(--light-primary) !important;
+}
+
+/* ─── INPUTS & FORMS ─── */
+.light-mode .input-admin,
+.light-mode input,
+.light-mode textarea,
+.light-mode select {
+  background: var(--light-surface) !important;
+  border-color: var(--light-border) !important;
+  color: var(--light-heading) !important;
+}
+.light-mode .input-admin:focus,
+.light-mode input:focus,
+.light-mode textarea:focus,
+.light-mode select:focus {
+  border-color: var(--light-primary) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15) !important;
+}
+.light-mode input::placeholder,
+.light-mode textarea::placeholder { color: var(--light-placeholder) !important; }
+
+/* ─── REMOVE ALL BACKDROP BLUR & TRANSLUCENCY ─── */
+.light-mode .backdrop-blur,
+.light-mode .backdrop-blur-sm,
+.light-mode .backdrop-blur-md,
+.light-mode .backdrop-blur-lg,
+.light-mode .backdrop-blur-xl,
+.light-mode .backdrop-blur-2xl {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: transparent !important;
+}
+
+/* ─── BG-WHITE/XX UTILITIES → TRANSPARENT ─── */
+.light-mode .bg-white\/5,
+.light-mode .bg-white\/10,
+.light-mode .bg-white\/20,
+.light-mode .bg-white\/30,
+.light-mode .bg-white\/40,
+.light-mode .bg-white\/50,
+.light-mode .bg-white\/60,
+.light-mode .bg-white\/70,
+.light-mode .bg-white\/80,
+.light-mode .bg-white\/90,
+.light-mode .bg-white\/\[0\.0[2-9]\] {
+  background: transparent !important;
+}
+
+/* ─── WHATSAPP BUTTON IN HERO ─── */
+.light-mode main section:first-child a[href*="wa.me"],
+.light-mode main section:first-child a[href*="whatsapp"] {
+  background: var(--light-surface) !important;
+  border-color: var(--light-border) !important;
+  color: var(--light-text-secondary) !important;
+}
+
+/* ─── GRADIENT ACCENT TEXT ─── */
+.light-mode .text-gradient-accent {
+  background: linear-gradient(135deg, var(--light-primary), var(--secondary)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* ─── WHATSAPP FLOATING BUTTON ─── */
+.light-mode .bg-\[\#25D366\] { background-color: #25D366 !important; }
