@@ -744,8 +744,14 @@ input, textarea, select {
 .light-mode main > section:first-of-type .text-gradient-accent { color: var(--hero-accent) !important; }
 
 /* ─── GAP FIXES ─── */
-/* Ensure hero has proper space from fixed navbar */
-.light-mode main > section:first-of-type { padding-top: 10rem !important; } /* ~160px for navbar + gap */
+/* Ensure hero has proper space from fixed navbar + transparent bg so image shows in gap */
+.light-mode main > section:first-of-type { 
+  padding-top: 10rem !important; /* ~160px for navbar + gap */
+  background: transparent !important; 
+}
+.light-mode main > section:first-of-type > div[class*="relative"] { 
+  background: transparent !important; 
+}
 
 /* Remove negative margin on second section that overlaps hero buttons */
 .light-mode main > section:nth-of-type(2) { margin-top: 0 !important; padding-top: 2rem !important; }
