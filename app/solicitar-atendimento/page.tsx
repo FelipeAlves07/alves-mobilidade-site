@@ -21,7 +21,7 @@ export default function SolicitarAtendimentoPage() {
 
   return (
     <main className="bg-[var(--bg-primary)] text-[var(--foreground)]">
-      <section className="relative flex min-h-[420px] items-center overflow-hidden pt-28 md:min-h-[500px]">
+      <section className="relative flex min-h-[420px] items-center overflow-hidden pt-40 md:min-h-[500px]">
         <Image src="/images/servicos-premium.jpg" alt="Solicitar Atendimento" fill priority className="object-cover object-center opacity-100 dark:opacity-40" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent" />

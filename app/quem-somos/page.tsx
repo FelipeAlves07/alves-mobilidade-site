@@ -12,7 +12,7 @@ const values = [
 export default function QuemSomosPage() {
   return (
     <main className="bg-[var(--bg-primary)] text-[var(--foreground)]">
-      <section className="relative flex min-h-[500px] items-center overflow-hidden pt-28 md:min-h-[600px]">
+      <section className="relative flex min-h-[500px] items-center overflow-hidden pt-40 md:min-h-[600px]">
         <Image src="/images/frota-premium.jpg" alt="Quem Somos" fill priority className="object-cover object-center opacity-100 dark:opacity-50" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent" />
