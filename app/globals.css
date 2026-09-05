@@ -650,7 +650,9 @@ input, textarea, select {
 .light-mode main { background: var(--light-bg); }
 
 /* ─── HEADER / NAVBAR ─── */
-.light-mode header { background: var(--light-surface) !important; }
+/* Header wrapper: TRANSPARENT (hero shows through) */
+.light-mode header { background: transparent !important; }
+/* Only the inner navbar card: white, rounded, shadow */
 .light-mode header > div > div {
   background: var(--light-surface) !important;
   border-color: var(--light-border) !important;
