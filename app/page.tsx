@@ -45,13 +45,13 @@ export default function HomePage() {
     <main className="overflow-hidden bg-[var(--bg-primary)] text-[var(--foreground)]">
 
       {/* ── HERO ── */}
-      <section className="relative flex min-h-screen items-center overflow-hidden">
+      <section className="relative flex min-h-screen items-center overflow-hidden pt-40">
         <Image src="/images/hero-byd.jpg" alt="Alves Mobilidade Executiva" fill priority className="object-cover object-center opacity-100 dark:opacity-55" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)]/10 via-transparent to-transparent dark:from-[var(--bg-primary)]/85 dark:via-[var(--bg-primary)]/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/15 via-transparent to-transparent dark:from-[var(--bg-primary)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(var(--accent-rgb),0.15),transparent_50%)] dark:block hidden" />
 
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-28 lg:px-8">
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 lg:px-8">
           <div className="max-w-3xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--accent-20)] bg-white/[0.04] px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--accent)] backdrop-blur-md">
               <Sparkles size={11} /> Mobilidade Executiva Premium
