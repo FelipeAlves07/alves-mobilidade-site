@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   BarChart3, Bot, Briefcase, CalendarDays, Calculator, ChevronRight, ClipboardList, DollarSign, Download, Gift,
-  LogOut, Megaphone, MessageCircle, Mic, Monitor, Radar, Sparkles, Users,
+  LogOut, Megaphone, MessageCircle, Mic, Monitor, Radar, Receipt, Sparkles, Users,
 } from "lucide-react";
 import Sidebar from "@/components/admin/Sidebar";
 import Topbar from "@/components/admin/Topbar";
@@ -14,7 +14,6 @@ import type { Lead } from "@/domain/lead/types";
 import type { Trip } from "@/domain/trip/types";
 import type { Referral } from "@/domain/referral/types";
 import type { FinanceEntry } from "@/domain/finance/types";
-import type { Proposal } from "@/domain/proposal/types";
 import type { QuoteResult } from "@/domain/trip/types";
 import type { MessageKey } from "@/domain/marketing/types";
 import { openWhatsApp } from "@/lib/whatsapp";
@@ -27,13 +26,11 @@ import { useQuoteState } from "@/hooks/useQuoteState";
 import { uid } from "@/utils/helpers";
 import { today, leadTypes, messages, buildQuoteMessage } from "./constants";
 import { calculateQuoteValue, buildFinishTripEffects } from "@/modules/viagens/services/viagens.service";
-import { proposalValidityISO, buildPremiumProposalMessage, downloadPremiumProposalImage as downloadImage, downloadPremiumProposalPdf as downloadPdf } from "@/modules/propostas/services/propostas.service";
 import { parseImportText, completeActionData, sendLeadMessageData, messageKeyForLead } from "@/modules/clientes/services/clientes.service";
 
 import DashboardView from "@/modules/dashboard/components/DashboardView";
 import ClientesView from "@/modules/clientes/components/ClientesView";
 import WhatsAppView from "@/modules/whatsapp/components/WhatsAppView";
-import PropostasView from "@/modules/propostas/components/PropostasView";
 import OrcamentoView from "@/modules/orcamento/components/OrcamentoView";
 import AgendaView from "@/modules/agenda/components/AgendaView";
 import IndicacoesView from "@/modules/indicacoes/components/IndicacoesView";
@@ -45,23 +42,27 @@ import AMEVisionPanel from "@/components/admin/AMEVisionPanel";
 import MotoristasView from "@/modules/motoristas/components/MotoristasView";
 import VeiculosView from "@/modules/veiculos/components/VeiculosView";
 import AutoProspectView from "@/modules/autoprospect/components/AutoProspectView";
+import RecibosView from "@/modules/recibos/components/RecibosView";
 
 const WHATSAPP_QR_DATA_URL = "/branding/qr-whatsapp-alves.png";
 
 const menu = [
-  { id: "dashboard", group: "Operação", label: "Dashboard", icon: BarChart3 },
-  { id: "financeiro", group: "Operação", label: "Financeiro", icon: DollarSign },
-{ id: "comercial", group: "Operação", label: "Comercial", icon: ClipboardList },
-{ id: "clientes", group: "Operação", label: "Clientes", icon: Users },
-{ id: "whatsapp", group: "Operação", label: "WhatsApp", icon: MessageCircle },
-{ id: "agenda", group: "Operação", label: "Agenda", icon: CalendarDays },
-{ id: "orcamento", group: "Operação", label: "Orçamento", icon: Calculator },
-{ id: "indicacoes", group: "Comercial", label: "Indicações", icon: Gift },
-{ id: "empresas", group: "Comercial", label: "Empresas", icon: Briefcase },
-{ id: "auto-prospect", group: "Comercial", label: "Auto Prospect", icon: Radar },
-{ id: "marketing", group: "Gestão", label: "Marketing", icon: Megaphone },
-  { id: "ia", group: "Gestão", label: "IA da Alves", icon: Bot },
-  { id: "ame-vision", group: "Gestão", label: "AME Vision", icon: Monitor },
+  { id: "dashboard", group: "VISÃO GERAL", label: "Dashboard", icon: BarChart3 },
+  { id: "financeiro", group: "VISÃO GERAL", label: "Financeiro", icon: DollarSign },
+
+  { id: "clientes", group: "OPERAÇÃO", label: "Clientes", icon: Users },
+  { id: "agenda", group: "OPERAÇÃO", label: "Agenda", icon: CalendarDays },
+  { id: "orcamento", group: "OPERAÇÃO", label: "Orçamentos", icon: Calculator },
+  { id: "recibos", group: "OPERAÇÃO", label: "Recibos", icon: Receipt },
+
+  { id: "indicacoes", group: "CRESCIMENTO", label: "Indicações", icon: Gift },
+  { id: "empresas", group: "CRESCIMENTO", label: "Empresas", icon: Briefcase },
+  { id: "auto-prospect", group: "CRESCIMENTO", label: "Auto Prospect", icon: Radar },
+
+  { id: "whatsapp", group: "FERRAMENTAS", label: "WhatsApp", icon: MessageCircle },
+  { id: "marketing", group: "FERRAMENTAS", label: "Marketing", icon: Megaphone },
+  { id: "ia", group: "FERRAMENTAS", label: "IA da Alves", icon: Bot },
+  { id: "ame-vision", group: "FERRAMENTAS", label: "AME Vision", icon: Monitor },
 ];
 
 export default function AdminPage() {
@@ -70,8 +71,8 @@ export default function AdminPage() {
     leads, setLeads, addLead: addLeadFn, updateLead: updateLeadFn, deleteLead: deleteLeadFn,
     trips, setTrips, addTrip: addTripFn, updateTrip: updateTripFn, deleteTrip: deleteTripFn,
     referrals, setReferrals, addReferral: addReferralFn, updateReferral: updateReferralFn, deleteReferral: deleteReferralFn,
-    finance, setFinance, addFinance: addFinanceFn, deleteFinance: deleteFinanceFn,
-    proposals, setProposals, addProposal: addProposalFn, deleteProposal: deleteProposalFn,
+    finance, setFinance, addFinance: addFinanceFn, deleteFinance: deleteFinanceFn, updateFinance: updateFinanceFn,
+    proposals, addProposal: addProposalFn, updateProposal: updateProposalFn, deleteProposal: deleteProposalFn,
     motoristas, addMotorista, updateMotorista, deleteMotorista,
     veiculos, addVeiculo, updateVeiculo, deleteVeiculo,
     campaigns, addCampaign, updateCampaign, deleteCampaign,
@@ -81,6 +82,8 @@ export default function AdminPage() {
     batchRuns, batchDetail, batchPolling, createBatch, processBatch,
     pauseBatch, resumeBatch, cancelBatch, retryBatchFailures, loadBatchDetail,
     completedMarketing, completeMarketingTask, resetMarketingTasks,
+    receipts, loading: receiptsLoading, error: receiptsError,
+    createReceipt, updateReceipt, deleteReceipt, getNextNumber,
     stats, today, migrationStatus, executarMigracao,
   } = useData();
 
@@ -91,6 +94,10 @@ export default function AdminPage() {
   const [query, setQuery] = useState("");
   const [importText, setImportText] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<MessageKey>("apresentacao");
+  const [receiptInitialForm, setReceiptInitialForm] = useState<Partial<{
+    clientName: string; clientPhone: string; serviceDate: string;
+    value: number; observations: string; tripId: string;
+  }> | null>(null);
   const quoteState = useQuoteState();
 
   const [leadForm, setLeadForm] = useState<Omit<Lead, "id" | "createdAt">>({
@@ -206,47 +213,24 @@ export default function AdminPage() {
     return result;
   }
 
-  function getCurrentProposal(status: Proposal["status"] = "Rascunho") {
-    const result = quoteState.result || calculateQuote();
-    if (!result.value || result.manual) {
-      setVoiceStatusTimed("Calcule um orçamento válido antes de gerar a proposta premium.", 3500);
-      return null;
-    }
-    const proposal: Proposal = {
-      id: uid(), client: quoteState.client || "Cliente", phone: quoteState.phone,
-      origin: quoteState.origin, destination: quoteState.destination, date: quoteState.date, time: quoteState.time,
-      km: Number(result.km || quoteState.km || 0), passengers: quoteState.passengers, bags: quoteState.bags,
-      value: result.value, status, createdAt: new Date().toISOString(),
-      validUntil: proposalValidityISO(10), message: "",
-    };
-    proposal.message = buildPremiumProposalMessage(proposal);
-    return proposal;
-  }
-
-  function saveCurrentProposal(status: Proposal["status"] = "Rascunho") {
-    const proposal = getCurrentProposal(status);
-    if (!proposal) return null;
-    setProposals((current) => [proposal, ...current]);
-    setVoiceStatusTimed("Proposta premium salva no histórico ✓", 2500);
-    return proposal;
-  }
-
-  async function convertProposalToTrip(proposal: Proposal) {
-    const newTrip: Trip = { id: uid(), client: proposal.client, phone: proposal.phone, date: proposal.date || today, time: proposal.time || "", route: `${proposal.origin} → ${proposal.destination}`, value: proposal.value, status: "Agendada" };
+  async function convertProposalToTrip(proposal: import("@/domain/proposal/types").Proposal) {
+    const newTrip = { client: proposal.client, phone: proposal.phone, date: proposal.date || today, time: proposal.time, route: `${proposal.origin} → ${proposal.destination}`, value: proposal.value, status: "Agendada" as const };
     try {
-      await addTripFn({ ...newTrip, value: Number(newTrip.value || 0) } as any);
-      setProposals((current) => current.map((item) => item.id === proposal.id ? { ...item, status: "Convertida" } : item));
-      setActive("agenda");
-      setVoiceStatusTimed("Proposta convertida em viagem ✓", 3000);
+      await addTripFn({ ...newTrip, value: Number(newTrip.value || 0) });
     } catch (err) {
       console.error("Erro ao converter proposta:", err);
       alert("Erro ao converter proposta em viagem.");
+      return;
     }
-  }
 
-  function convertCurrentProposalToTrip() {
-    const proposal = saveCurrentProposal("Convertida");
-    if (proposal) convertProposalToTrip(proposal);
+    try {
+      await updateProposalFn(proposal.id, { status: "Convertida" });
+    } catch (err) {
+      // The scheduled trip is already persisted; do not create a second one on retry.
+      console.error("Viagem criada, mas não foi possível atualizar a proposta:", err);
+    }
+    setActive("agenda");
+    setVoiceStatusTimed("Proposta convertida em viagem ✓", 3000);
   }
 
   function captureRouteByVoice() {
@@ -264,6 +248,20 @@ export default function AdminPage() {
       toDbPatch: leadPatchToSupabase,
     });
     repo.findAll().then(setLeads).catch(() => {});
+  }
+
+  function handleGenerateReceipt(trip: Trip) {
+    const [origin = "", destination = ""] = trip.route.includes(" → ") ? trip.route.split(" → ") : [trip.route, trip.route];
+    const dateBR = trip.date ? (() => { const [y, m, d] = trip.date.split("-"); return `${d}/${m}/${y}`; })() : "";
+    setReceiptInitialForm({
+      clientName: trip.client,
+      clientPhone: trip.phone || "",
+      serviceDate: trip.date,
+      value: trip.value,
+      tripId: trip.id,
+      observations: `Viagem de ${trip.client}, partindo de ${origin}, com destino a ${destination}, realizada na data de ${dateBR}.`,
+    });
+    setActive("recibos");
   }
 
   function exportBackup() {
@@ -301,7 +299,7 @@ export default function AdminPage() {
     switch (active) {
       case "dashboard":
         return <DashboardView
-          stats={stats} leads={leads} finance={finance} today={today} currentTask={currentTask}
+          stats={stats} leads={leads} finance={finance} trips={trips} today={today} currentTask={currentTask}
           selectedMessage={selectedMessage}
           onCompleteAction={completeAction} onSendLeadMessage={sendLeadMessage}
           onFinishTrip={finishTrip} onUpdateLead={updateLead}
@@ -326,32 +324,9 @@ export default function AdminPage() {
           onSetSelectedMessage={setSelectedMessage} onSendLeadMessage={(lead, key) => sendLeadMessage(lead, key as MessageKey)}
           onRefreshLeads={refreshLeads}
         />;
-      case "comercial":
-        return <PropostasView
-          leads={leads}
-          quoteResult={quoteState.result} quoteClient={quoteState.client} quotePhone={quoteState.phone}
-          quoteDate={quoteState.date} quoteTime={quoteState.time} quoteOrigin={quoteState.origin}
-          quoteDestination={quoteState.destination} quoteKm={quoteState.km} quotePassengers={quoteState.passengers}
-          quoteBags={quoteState.bags} quoteSpecialLuggage={quoteState.specialLuggage}
-          proposals={proposals} voiceStatus={voiceStatus}
-          getCurrentProposal={getCurrentProposal} saveCurrentProposal={saveCurrentProposal}
-          calculateQuote={calculateQuote}
-          downloadPremiumProposalImage={(p) => downloadImage(p, WHATSAPP_QR_DATA_URL)}
-          printProposal={(p) => downloadPdf(p, WHATSAPP_QR_DATA_URL)}
-          convertCurrentProposalToTrip={convertCurrentProposalToTrip}
-          convertProposalToTrip={convertProposalToTrip}
-          onCaptureRouteByVoice={captureRouteByVoice} onDeleteProposal={(id) => deleteProposalFn(id)}
-          onSetQuoteClient={quoteState.setClient} onSetQuotePhone={quoteState.setPhone}
-          onSetQuoteDate={quoteState.setDate} onSetQuoteTime={quoteState.setTime}
-          onSetQuoteOrigin={quoteState.setOrigin} onSetQuoteDestination={quoteState.setDestination}
-          onSetQuoteKm={quoteState.setKm} onSetQuotePassengers={quoteState.setPassengers}
-          onSetQuoteBags={quoteState.setBags} onSetQuoteSpecialLuggage={quoteState.setSpecialLuggage}
-          onSetQuoteResult={quoteState.setResult}
-          onOpenGoogleMapsRoute={openGoogleMapsRoute} onOpenWazeRoute={openWazeRoute}
-        />;
       case "agenda":
         return <AgendaView
-          trips={trips} leads={leads}
+          trips={trips}
           onFinishTrip={finishTrip} onDeleteTrip={(id) => deleteTripFn(id)}
           onAddTrip={async (trip) => {
             try {
@@ -361,13 +336,23 @@ export default function AdminPage() {
               console.error(err);
             }
           }}
-          onSendLeadMessage={(lead, key) => sendLeadMessage(lead, key as MessageKey)}
           onOpenGoogleMapsRoute={openGoogleMapsRoute} onOpenWazeRoute={openWazeRoute}
+          onGenerateReceipt={handleGenerateReceipt}
         />;
       case "orcamento":
         return <OrcamentoView
           onCaptureRouteByVoice={captureRouteByVoice}
           onOpenGoogleMapsRoute={openGoogleMapsRoute} onOpenWazeRoute={openWazeRoute}
+          leads={leads} proposals={proposals}
+          onAddProposal={addProposalFn} onUpdateProposal={updateProposalFn} onDeleteProposal={deleteProposalFn}
+          onConvertProposal={convertProposalToTrip} proposalQrDataUrl={WHATSAPP_QR_DATA_URL}
+        />;
+      case "recibos":
+        return <RecibosView
+          receipts={receipts} loading={receiptsLoading} error={receiptsError}
+          createReceipt={createReceipt} updateReceipt={updateReceipt}
+          deleteReceipt={deleteReceipt} getNextNumber={getNextNumber}
+          initialForm={receiptInitialForm} onClearInitialForm={() => setReceiptInitialForm(null)}
         />;
       case "motoristas":
         return <MotoristasView
@@ -395,11 +380,11 @@ export default function AdminPage() {
           completedMarketing={completedMarketing}
           onCompleteTask={completeMarketingTask} onResetTasks={resetMarketingTasks}
         />;
-      case "financeiro":
+case "financeiro":
         return <FinanceiroView
-          stats={stats} trips={trips} financeForm={financeForm} finance={finance}
+          trips={trips} financeForm={financeForm} finance={finance}
           today={today}
-          onSetFinanceForm={setFinanceForm} onAddFinance={addFinance} onDeleteFinance={deleteFinanceFn}
+          onSetFinanceForm={setFinanceForm} onAddFinance={addFinanceFn} onDeleteFinance={deleteFinanceFn} onUpdateFinance={updateFinanceFn}
         />;
       case "ia":
         return <AIView stats={stats} leads={leads} today={today} onExportBackup={exportBackup} onSendLeadMessage={(lead, key) => sendLeadMessage(lead, key as MessageKey)} onCompleteAction={completeAction} />;
@@ -428,7 +413,7 @@ export default function AdminPage() {
 
   const activeLabel = menu.find((item) => item.id === active)?.label ?? "Dashboard";
 
-  const moreMenuItems = menu.filter((item) => !["dashboard", "agenda", "orcamento", "whatsapp"].includes(item.id));
+  const moreMenuItems = menu.filter((item) => !["dashboard", "financeiro", "agenda", "orcamento", "whatsapp"].includes(item.id));
 
   return (
     <div className="flex h-dvh flex-col bg-[var(--bg-primary)]">

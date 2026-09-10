@@ -1,25 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CalendarDays, CheckCircle2, Download, MessageCircle, Navigation, Phone, Plus, Trash2, X } from "lucide-react";
+import { CalendarDays, CheckCircle2, Download, Navigation, Phone, Plus, Receipt, Trash2, X } from "lucide-react";
 import Panel from "@/components/admin/Panel";
 import TripList from "@/components/admin/TripList";
 import { money } from "@/lib/quotes";
 import { downloadCSV } from "@/lib/csv";
 import { openWhatsApp } from "@/lib/whatsapp";
 import type { Trip } from "@/domain/trip/types";
-import type { Lead } from "@/domain/lead/types";
-import type { MessageKey } from "@/domain/marketing/types";
 
 interface AgendaViewProps {
   trips: Trip[];
-  leads: Lead[];
   onFinishTrip: (trip: Trip) => void;
   onDeleteTrip: (id: string) => void;
   onAddTrip: (trip: Omit<Trip, "id">) => Promise<void>;
-  onSendLeadMessage: (lead: Lead, key: MessageKey) => void;
   onOpenGoogleMapsRoute: (origin: string, destination: string) => void;
   onOpenWazeRoute: (destination: string) => void;
+  onGenerateReceipt?: (trip: Trip) => void;
 }
 
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -38,12 +35,13 @@ function getNowTime() {
   return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 }
 
-function TripCard({ trip, onFinish, onDelete, onRoute, onWaze }: {
+function TripCard({ trip, onFinish, onDelete, onRoute, onWaze, onGenerateReceipt }: {
   trip: Trip;
   onFinish: (trip: Trip) => void;
   onDelete: (id: string) => void;
   onRoute: (origin: string, destination: string) => void;
   onWaze: (destination: string) => void;
+  onGenerateReceipt?: (trip: Trip) => void;
 }) {
   const [origin, destination] = trip.route.includes(" → ")
     ? trip.route.split(" → ")
@@ -82,6 +80,11 @@ function TripCard({ trip, onFinish, onDelete, onRoute, onWaze }: {
         {trip.phone && (
           <button onClick={() => openWhatsApp(trip.phone, "")} className="cursor-pointer rounded-lg border border-[var(--accent-20)] px-3 py-2 text-[11px] font-bold text-[var(--accent)] transition hover:border-[var(--accent-35)]">
             <Phone size={13} className="inline" /> WhatsApp
+          </button>
+        )}
+        {onGenerateReceipt && (
+          <button onClick={() => onGenerateReceipt(trip)} className="cursor-pointer rounded-lg border border-[var(--accent-20)] px-3 py-2 text-[11px] font-bold text-[var(--accent)] transition hover:border-[var(--accent-35)]">
+            <Receipt size={13} className="inline" /> Gerar recibo
           </button>
         )}
         <button onClick={() => onDelete(trip.id)} className="cursor-pointer rounded-lg border border-red-500/25 px-3 py-2 text-[11px] font-bold text-red-300 transition hover:border-red-500/50">
@@ -163,8 +166,8 @@ function NewTripForm({ onAdd, onClose }: { onAdd: (trip: Omit<Trip, "id">) => Pr
 }
 
 export default function AgendaView({
-  trips, leads, onFinishTrip, onDeleteTrip, onAddTrip, onSendLeadMessage,
-  onOpenGoogleMapsRoute, onOpenWazeRoute,
+  trips, onFinishTrip, onDeleteTrip, onAddTrip,
+  onOpenGoogleMapsRoute, onOpenWazeRoute, onGenerateReceipt,
 }: AgendaViewProps) {
   const todayISO = getTodayISO();
   const [showForm, setShowForm] = useState(false);
@@ -187,11 +190,6 @@ export default function AgendaView({
     }
     return [...map.entries()];
   }, [upcoming]);
-
-  const followups = useMemo(() =>
-    leads.filter((l) => l.status !== "Arquivado" && l.nextDate && l.nextDate.trim() !== "" && l.nextDate <= todayISO)
-      .sort((a, b) => (a.nextDate || "").localeCompare(b.nextDate || "")),
-  [leads, todayISO]);
 
   return (
     <div className="space-y-6">
@@ -228,14 +226,14 @@ export default function AgendaView({
                 onDelete={onDeleteTrip}
                 onRoute={onOpenGoogleMapsRoute}
                 onWaze={onOpenWazeRoute}
+                onGenerateReceipt={onGenerateReceipt}
               />
             ))}
           </div>
         )}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        <div className="rounded-xl border border-[var(--accent-10)] bg-[var(--bg-card)] p-6" style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.18)" }}>
+      <div className="rounded-xl border border-[var(--accent-10)] bg-[var(--bg-card)] p-6" style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.18)" }}>
           <h3 className="text-lg font-black tracking-tight"><CalendarDays className="inline" size={18} /> Próximos dias</h3>
           {upcomingByDay.length === 0 ? (
             <p className="mt-4 rounded-xl border border-[var(--accent-8)] bg-[var(--bg-surface)] px-4 py-4 text-sm text-zinc-400">Nenhuma viagem futura agendada.</p>
@@ -255,6 +253,7 @@ export default function AgendaView({
                         onDelete={onDeleteTrip}
                         onRoute={onOpenGoogleMapsRoute}
                         onWaze={onOpenWazeRoute}
+                        onGenerateReceipt={onGenerateReceipt}
                       />
                     ))}
                   </div>
@@ -262,26 +261,6 @@ export default function AgendaView({
               ))}
             </div>
           )}
-        </div>
-
-        <div className="rounded-xl border border-[var(--accent-10)] bg-[var(--bg-card)] p-6" style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.18)" }}>
-          <h3 className="text-lg font-black tracking-tight"><MessageCircle className="inline" size={18} /> Follow-ups de hoje</h3>
-          {followups.length === 0 ? (
-            <p className="mt-4 rounded-xl border border-[var(--accent-8)] bg-[var(--bg-surface)] px-4 py-4 text-sm text-zinc-400">Nenhum follow-up pendente. Ótimo trabalho!</p>
-          ) : (
-            <div className="mt-4 space-y-3">
-              {followups.map((lead) => (
-                <div key={lead.id} className="flex items-center justify-between gap-3 rounded-xl border border-[var(--accent-10)] bg-[var(--bg-surface)] px-4 py-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-bold">{lead.name}</p>
-                    <p className="truncate text-xs text-zinc-400">{lead.nextAction || "Sem próximo passo definido"}</p>
-                  </div>
-                  <button onClick={() => onSendLeadMessage(lead, "apresentacao")} className="shrink-0 cursor-pointer rounded-lg bg-[var(--secondary)] px-3 py-2 text-[11px] font-bold text-white transition hover:bg-[var(--accent)]"><MessageCircle size={13} className="inline" /> Chamar</button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
 
       <Panel

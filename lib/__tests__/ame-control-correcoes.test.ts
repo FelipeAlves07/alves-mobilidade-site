@@ -46,18 +46,19 @@ describe("Financeiro — Ganho AME sem duplicação", () => {
   it("viagem agendada não gera ganho antes da conclusão", () => {
     const agendada: Trip = { ...trip, status: "Agendada" };
     const effects = buildFinishTripEffects(agendada, baseCtx());
-    expect(effects.financeEntry).toBeDefined();
-    expect(effects.financeEntry?.tripId).toBe("trip-1");
-    expect(effects.financeEntry?.category).toBe("ganhos_ame");
-    expect(effects.financeEntry?.type).toBe("Entrada");
-    expect(effects.financeEntry?.value).toBe(150);
-    expect(effects.financeEntry?.description).toContain("Ganho AME");
+    expect(effects.financeEntry).toBeUndefined();
   });
 
   it("concluir a viagem gera o Ganho AME", () => {
     const effects = buildFinishTripEffects(trip, baseCtx());
     expect(effects.financeEntry).toBeDefined();
     expect(effects.financeEntry?.description).toBe("Ganho AME — Rafaela (BH → Confins)");
+    expect(effects.financeEntry).toMatchObject({
+      tripId: "trip-1",
+      category: "ganhos_ame",
+      type: "Entrada",
+      value: 150,
+    });
   });
 
   it("recarregar (estado persistido) e concluir de novo não duplica o ganho", () => {

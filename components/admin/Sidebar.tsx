@@ -17,8 +17,15 @@ type Props = {
   onLogout: () => void;
 };
 
+const GROUP_ORDER = [
+  "VISÃO GERAL",
+  "OPERAÇÃO",
+  "CRESCIMENTO",
+  "FERRAMENTAS",
+];
+
 export default function Sidebar({ active, menu, setActive, onLogout }: Props) {
-  const groups = [...new Set(menu.map((item) => item.group))];
+  const groups = GROUP_ORDER.filter((g) => menu.some((item) => item.group === g));
 
   return (
     <aside className="sticky top-0 hidden h-screen w-60 shrink-0 overflow-y-auto border-r border-[var(--accent-10)] bg-gradient-to-b from-[var(--bg-primary)] to-[var(--bg-elevated)] p-3 lg:flex lg:flex-col">
@@ -43,10 +50,10 @@ export default function Sidebar({ active, menu, setActive, onLogout }: Props) {
         <span className="inline-block transition-transform duration-300 group-hover:scale-110">🚀</span> Trabalhar Agora
       </button>
 
-      <nav className="flex-1 space-y-3 overflow-y-auto">
+      <nav className="flex-1 space-y-4 overflow-y-auto">
         {groups.map((group) => (
           <div key={group}>
-            <p className="mb-1 px-2 text-[8px] font-bold uppercase tracking-[0.3em] text-zinc-600">{group}</p>
+            <p className="mb-1.5 px-2 text-[8px] font-bold uppercase tracking-[0.3em] text-zinc-600">{group}</p>
             <div className="space-y-0.5">
               {menu
                 .filter((item) => item.group === group)

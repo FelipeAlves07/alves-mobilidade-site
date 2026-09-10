@@ -708,8 +708,8 @@ input, textarea, select {
   ) !important;
   display: block !important;
 }
-.light-mode main section:first-child .absolute.inset-0.bg-\[radial-gradient*\],
-.light-mode main > section:first-of-type .absolute.inset-0.bg-\[radial-gradient*\] {
+.light-mode main section:first-child .absolute.inset-0.bg-\[radial-gradient\*\],
+.light-mode main > section:first-of-type .absolute.inset-0.bg-\[radial-gradient\*\] {
   display: none !important;
 }
 
@@ -821,7 +821,7 @@ input, textarea, select {
 /* Remove card image overlays in light mode — images stay clean */
 .light-mode .group .absolute.inset-0.bg-gradient-to-t,
 .light-mode .group .absolute.inset-0.bg-gradient-to-r,
-.light-mode .group .absolute.inset-0.bg-\[radial-gradient*\] {
+.light-mode .group .absolute.inset-0.bg-\[radial-gradient\*\] {
   display: none !important;
 }
 
@@ -913,7 +913,14 @@ input, textarea, select {
 .light-mode .bg-white\/70,
 .light-mode .bg-white\/80,
 .light-mode .bg-white\/90,
-.light-mode .bg-white\/\[0\.0[2-9]\] {
+.light-mode .bg-white\/\[0\.02\],
+.light-mode .bg-white\/\[0\.03\],
+.light-mode .bg-white\/\[0\.04\],
+.light-mode .bg-white\/\[0\.05\],
+.light-mode .bg-white\/\[0\.06\],
+.light-mode .bg-white\/\[0\.07\],
+.light-mode .bg-white\/\[0\.08\],
+.light-mode .bg-white\/\[0\.09\] {
   background: transparent !important;
 }
 

@@ -21,6 +21,7 @@ export async function checkMigrationStatus(): Promise<{ needsMigration: boolean;
     referrals: loadLocal<any[]>("ame-referrals-v2", []).length,
     finance: loadLocal<any[]>("ame-finance-v2", []).length,
     proposals: loadLocal<any[]>("ame-proposals-v1", []).length,
+    receipts: loadLocal<any[]>("ame-receipts-v1", []).length,
   };
   return { needsMigration: !migrated && Object.values(stats).some((v) => v > 0), stats };
 }
@@ -32,6 +33,7 @@ export async function runMigration(): Promise<{ success: boolean; error?: string
     const referrals = loadLocal<any[]>("ame-referrals-v2", []);
     const finance = loadLocal<any[]>("ame-finance-v2", []);
     const proposals = loadLocal<any[]>("ame-proposals-v1", []);
+    const receipts = loadLocal<any[]>("ame-receipts-v1", []);
 
     if (leads.length > 0) {
       const { error } = await supabase.from("leads").insert(
@@ -108,6 +110,37 @@ export async function runMigration(): Promise<{ success: boolean; error?: string
       if (error) throw error;
     }
 
+    if (receipts.length > 0) {
+      const { error } = await supabase.from("receipts").insert(
+        receipts.map((r) => ({
+          number: r.number,
+          trip_id: r.tripId,
+
+          client_name: r.clientName,
+          client_phone: r.clientPhone,
+
+          service_date: r.serviceDate,
+          service_description: r.serviceDescription,
+          payment_method: r.paymentMethod,
+
+          value: Number(r.value),
+          observations: r.observations,
+
+          created_at: r.createdAt,
+          updated_at: r.updatedAt,
+        }))
+      );
+      if (error) {
+        // Se erro for de UNIQUE number, reportar conflito sem falhar toda a migração
+        if (error.code === "23505") {
+          console.warn("Conflito de número de recibo UNIQUE na migração:", error);
+          // Poderia registrar conflitos em localStorage para revisão manual
+        } else {
+          throw error;
+        }
+      }
+    }
+
     saveLocal(MIGRATION_KEY, true);
     return { success: true };
   } catch (err) {
@@ -116,6 +149,14 @@ export async function runMigration(): Promise<{ success: boolean; error?: string
 }
 
 export function clearLocalStorageData() {
-  const keys = ["ame-leads-v2", "ame-trips-v2", "ame-referrals-v2", "ame-finance-v2", "ame-proposals-v1", "ame-marketing-done-v3"];
+  const keys = [
+    "ame-leads-v2",
+    "ame-trips-v2",
+    "ame-referrals-v2",
+    "ame-finance-v2",
+    "ame-proposals-v1",
+    "ame-receipts-v1",
+    "ame-marketing-done-v3",
+  ];
   keys.forEach((key) => localStorage.removeItem(key));
 }

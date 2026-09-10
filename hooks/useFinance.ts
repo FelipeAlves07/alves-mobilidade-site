@@ -46,5 +46,13 @@ export function useFinance() {
     [repo],
   );
 
-  return { finance, setFinance, addFinance, deleteFinance };
+  const updateFinance = useCallback(
+    async (id: string, patch: Partial<FinanceEntryForm>) => {
+      await repo.update(id, patch);
+      setFinance((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+    },
+    [repo],
+  );
+
+  return { finance, setFinance, addFinance, deleteFinance, updateFinance };
 }

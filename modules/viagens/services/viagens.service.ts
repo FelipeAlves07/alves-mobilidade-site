@@ -75,7 +75,7 @@ export interface FinishTripEffects {
 export function buildFinishTripEffects(trip: Trip, ctx: FinishTripContext): FinishTripEffects {
   const effects: FinishTripEffects = {};
 
-  if (trip.value > 0 && !ctx.finance.some((f) => f.tripId === trip.id)) {
+  if (trip.status === "Concluída" && trip.value > 0 && !ctx.finance.some((f) => f.tripId === trip.id)) {
     effects.financeEntry = {
       description: `Ganho AME — ${trip.client} (${trip.route})`,
       value: Number(trip.value || 0),

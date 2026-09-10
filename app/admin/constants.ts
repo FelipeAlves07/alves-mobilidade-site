@@ -5,9 +5,10 @@ import type { FinanceEntry } from "@/domain/finance/types";
 import type { Proposal } from "@/domain/proposal/types";
 import type { QuoteResult } from "@/domain/trip/types";
 import { roundUpTo, money, quoteValidityDate } from "@/lib/quotes";
+import { brazilISODate } from "@/lib/date";
 
 export const adminPassword = "alves2026";
-export const today = new Date().toISOString().slice(0, 10);
+export const today = brazilISODate();
 
 export const statuses: Status[] = ["Novo contato", "Apresentação enviada", "Respondeu", "Orçamento enviado", "Negociação", "Fechou", "Pós-atendimento", "Arquivado"];
 export const leadTypes: LeadType[] = ["Aeroporto", "Empresa", "Hotel", "Evento", "Indicação", "Cliente antigo", "Outro"];

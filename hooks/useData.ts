@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { checkMigrationStatus, runMigration, clearLocalStorageData } from "@/services/migration";
 import { signIn, signOut, restoreSession, checkLocalAuth } from "@/services/auth";
 import { trySyncLocalToSupabase } from "@/lib/repository-factory";
+import { brazilISODate } from "@/lib/date";
 import { useLeads } from "./useLeads";
 import { useTrips } from "./useTrips";
 import { useFinance } from "./useFinance";
@@ -12,6 +13,7 @@ import { useProposals } from "./useProposals";
 import { useMotoristas } from "./useMotoristas";
 import { useVeiculos } from "./useVeiculos";
 import { useAutoProspect } from "./useAutoProspect";
+import { useReceipts } from "./useReceipts";
 import type { DashboardStats } from "@/domain/shared/types";
 
 function loadLocal<T>(key: string, fallback: T): T {
@@ -26,7 +28,7 @@ function saveLocal(key: string, value: unknown) {
 }
 
 function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  return brazilISODate();
 }
 
 export function useData() {
@@ -45,6 +47,7 @@ export function useData() {
   const motoristas = useMotoristas();
   const veiculos = useVeiculos();
   const autoProspect = useAutoProspect();
+  const receipts = useReceipts();
 
   const today = todayISO();
 
@@ -57,12 +60,12 @@ export function useData() {
     const tasks = (raw || [])
       .map((item) => typeof item === "string" ? { id: item, completedAt: today } : item as { id: string; completedAt: string })
       .filter((t) => t && typeof t.id === "string");
-    setCompletedMarketing(tasks);
+    Promise.resolve().then(() => setCompletedMarketing(tasks));
     checkMigrationStatus()
       .then((result) => setMigrationStatus({ ...result, running: false }))
       .catch(() => {});
     trySyncLocalToSupabase();
-  }, []);
+  }, [today]);
 
   useEffect(() => { saveLocal("ame-marketing-done-v3", completedMarketing); }, [completedMarketing]);
 
@@ -122,6 +125,7 @@ export function useData() {
     ...motoristas,
     ...veiculos,
     ...autoProspect,
+    ...receipts,
     completedMarketing,
     completeMarketingTask,
     resetMarketingTasks,

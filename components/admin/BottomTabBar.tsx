@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, CalendarDays, Calculator, MessageCircle, Users, MoreHorizontal } from "lucide-react";
+import { BarChart3, CalendarDays, Calculator, DollarSign, MessageCircle, Users, MoreHorizontal } from "lucide-react";
 
 interface BottomTabBarProps {
   active: string;
@@ -10,8 +10,9 @@ interface BottomTabBarProps {
 
 const TABS = [
   { id: "dashboard", label: "Início", icon: BarChart3 },
+  { id: "financeiro", label: "Financeiro", icon: DollarSign },
   { id: "agenda", label: "Agenda", icon: CalendarDays },
-  { id: "orcamento", label: "Orçamento", icon: Calculator },
+  { id: "orcamento", label: "Orçamentos", icon: Calculator },
   { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
   { id: "__more", label: "Mais", icon: MoreHorizontal },
 ];

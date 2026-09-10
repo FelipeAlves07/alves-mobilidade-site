@@ -3,6 +3,7 @@ import type { Trip, TripForm } from "@/domain/trip/types";
 import type { FinanceEntry, FinanceEntryForm } from "@/domain/finance/types";
 import type { Referral, ReferralForm } from "@/domain/referral/types";
 import type { Proposal } from "@/domain/proposal/types";
+import type { Receipt, ReceiptForm } from "@/domain/receipt/types";
 import type {
   AutoProspectCampaign,
   AutoProspectCampaignForm,
@@ -32,6 +33,10 @@ import {
 import {
   proposalFromDatabase,
 } from "@/domain/proposal/mapper";
+import {
+  receiptFromDatabase,
+  receiptFormToDatabase,
+} from "@/domain/receipt/mapper";
 import { splitRoute } from "@/lib/maps";
 import { mapKeysToSnake } from "./utils/string";
 
@@ -874,4 +879,59 @@ export function apBatchCompanyRunPatchToSupabase(
   if (patch.nextRetryAt !== undefined) out.next_retry_at = patch.nextRetryAt;
   if (patch.claimedAt !== undefined) out.claimed_at = patch.claimedAt;
   return out;
+}
+
+// ─── Receipt ↔ receipts ──────────────────────────────────────────
+// DB: client_name, client_phone, trip_id | domain: clientName, clientPhone, tripId
+
+export function receiptFromSupabase(row: Record<string, unknown>): Receipt {
+  return receiptFromDatabase({
+    id: row.id as string,
+    number: row.number as string,
+    trip_id: (row.trip_id as string) || undefined,
+
+    client_name: (row.client_name as string) || "",
+    client_phone: (row.client_phone as string) || undefined,
+
+    service_date: row.service_date as string,
+    service_description: row.service_description as string,
+    payment_method: row.payment_method as string,
+
+    value: row.value as string, // numeric(12,2) comes as string from Postgres
+    observations: (row.observations as string) || undefined,
+
+    created_at: row.created_at as string,
+    updated_at: (row.updated_at as string) || undefined,
+  });
+}
+
+export function receiptFormToSupabase(form: ReceiptForm): Record<string, unknown> {
+  return {
+    number: form.number,
+    trip_id: form.tripId,
+
+    client_name: form.clientName,
+    client_phone: form.clientPhone,
+
+    service_date: form.serviceDate,
+    service_description: form.serviceDescription,
+    payment_method: form.paymentMethod,
+
+    value: form.value.toFixed(2), // numeric(12,2) as string
+    observations: form.observations,
+  };
+}
+
+export function receiptPatchToSupabase(patch: Partial<ReceiptForm>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  if (patch.number !== undefined) result.number = patch.number;
+  if (patch.tripId !== undefined) result.trip_id = patch.tripId;
+  if (patch.clientName !== undefined) result.client_name = patch.clientName;
+  if (patch.clientPhone !== undefined) result.client_phone = patch.clientPhone;
+  if (patch.serviceDate !== undefined) result.service_date = patch.serviceDate;
+  if (patch.serviceDescription !== undefined) result.service_description = patch.serviceDescription;
+  if (patch.paymentMethod !== undefined) result.payment_method = patch.paymentMethod;
+  if (patch.value !== undefined) result.value = patch.value.toFixed(2);
+  if (patch.observations !== undefined) result.observations = patch.observations;
+  return result;
 }

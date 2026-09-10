@@ -30,7 +30,7 @@ export default function Topbar({ active, title, menu, setActive, onBackup }: Pro
         <div className="flex min-w-0 items-center gap-2 md:gap-3">
           <MobileNav active={active} menu={menu} setActive={setActive} />
           <div className="min-w-0">
-            <p className="truncate text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--accent)] md:text-[10px] md:tracking-[0.28em]">
+            <p className="truncate hidden sm:block text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--accent)] md:text-[10px] md:tracking-[0.28em]">
               Sistema Operacional da Alves
             </p>
             <h2 className="truncate text-sm font-black tracking-tight md:text-xl">{title}</h2>

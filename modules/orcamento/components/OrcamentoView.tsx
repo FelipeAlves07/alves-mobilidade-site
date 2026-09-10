@@ -10,11 +10,21 @@ import { fetchTolls } from "@/lib/toll-service";
 import { calculateNormalQuote, calculateDisposalQuote, calculateLongTripQuote } from "@/lib/quote-engine";
 import type { QuoteTabType, QuoteConfig, QuoteResult2, NormalQuoteForm, DisposalQuoteForm, LongTripQuoteForm } from "@/domain/quote/types";
 import { DEFAULT_QUOTE_CONFIG } from "@/domain/quote/types";
+import ProposalFlow from "./ProposalFlow";
+import type { Lead } from "@/domain/lead/types";
+import type { Proposal } from "@/domain/proposal/types";
 
 interface OrcamentoViewProps {
   onCaptureRouteByVoice: () => void;
   onOpenGoogleMapsRoute: (origin: string, destination: string) => void;
   onOpenWazeRoute: (destination: string) => void;
+  leads: Lead[];
+  proposals: Proposal[];
+  onAddProposal: (proposal: Omit<Proposal, "id" | "createdAt">) => Promise<Proposal>;
+  onUpdateProposal: (id: string, patch: Partial<Proposal>) => Promise<void>;
+  onDeleteProposal: (id: string) => Promise<void>;
+  onConvertProposal: (proposal: Proposal) => Promise<void>;
+  proposalQrDataUrl: string;
 }
 
 const TABS: { id: QuoteTabType; label: string; icon: typeof Car; desc: string }[] = [
@@ -27,12 +37,14 @@ export default function OrcamentoView({
   onCaptureRouteByVoice,
   onOpenGoogleMapsRoute,
   onOpenWazeRoute,
+  leads, proposals, onAddProposal, onUpdateProposal, onDeleteProposal, onConvertProposal, proposalQrDataUrl,
 }: OrcamentoViewProps) {
   const [activeTab, setActiveTab] = useState<QuoteTabType>("normal");
   const [config, setConfig] = useState<QuoteConfig>(DEFAULT_QUOTE_CONFIG);
   const [showConfig, setShowConfig] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<QuoteResult2 | null>(null);
+  const [showProposalFlow, setShowProposalFlow] = useState(false);
 
   const [normalForm, setNormalForm] = useState<NormalQuoteForm>({
     origin: "", destination: "", distanceKm: 0, durationSec: 0, durationText: "", passengers: 1,
@@ -96,10 +108,12 @@ export default function OrcamentoView({
       r = calculateLongTripQuote(longForm, config);
     }
     setResult(r);
+    setShowProposalFlow(false);
   }
 
   function handleClear() {
     setResult(null);
+    setShowProposalFlow(false);
     if (activeTab === "normal") setNormalForm({ origin: "", destination: "", distanceKm: 0, durationSec: 0, durationText: "", passengers: 1 });
     else if (activeTab === "disposal") setDisposalForm({ origin: "", destination: "", distanceKm: 0, durationSec: 0, durationText: "", startHour: "17:00", endHour: "00:00", passengers: 1 });
     else setLongForm({ origin: "", destination: "", distanceKm: 0, durationSec: 0, durationText: "", tollCost: 0, tollPlazas: [], passengers: 1, roundTrip: false });
@@ -346,7 +360,13 @@ export default function OrcamentoView({
           <div className="rounded-xl border border-[var(--accent-20)] bg-black p-5" style={{ boxShadow: "0 25px 90px rgba(0,0,0,.35)" }}>
             <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">Mensagem do Orçamento</p>
             <pre className="mt-3 max-h-96 overflow-auto whitespace-pre-wrap text-xs leading-6 text-zinc-300">{buildMessage()}</pre>
-            <div className="mt-4 flex flex-wrap gap-2">
+           <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                onClick={() => setShowProposalFlow(true)}
+                className="cursor-pointer rounded-xl bg-[var(--accent)] px-5 py-2.5 text-xs font-bold text-black transition hover:opacity-90"
+              >
+                Gerar proposta
+              </button>
               <button
                 onClick={async () => { await navigator.clipboard.writeText(buildMessage()); }}
                 className="cursor-pointer rounded-xl border border-[var(--accent-25)] px-5 py-2.5 text-xs font-bold text-[var(--accent)] transition hover:bg-[var(--accent-10)]"
@@ -365,6 +385,11 @@ export default function OrcamentoView({
           </div>
         </div>
       )}
+      {showProposalFlow && <ProposalFlow
+        result={result} leads={leads} proposals={proposals}
+        onAdd={onAddProposal} onUpdate={onUpdateProposal} onDelete={onDeleteProposal}
+        onConvert={onConvertProposal} qrDataUrl={proposalQrDataUrl}
+      />}
     </div>
   );
 }
