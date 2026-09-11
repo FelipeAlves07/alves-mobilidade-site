@@ -323,6 +323,10 @@ export default function RecibosView({
         value: form.value,
         observations: form.observations || "",
       };
+      if (!data.number || data.number === "...") {
+        setSubmitError("Número do recibo não disponível. Verifique a conexão.");
+        return;
+      }
       const url = await previewReceiptPdf(data);
       setPreviewUrl(url);
     } catch (err) {
@@ -333,27 +337,37 @@ export default function RecibosView({
   }
 
   function closePreview() {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
     setPreviewUrl(null);
   }
 
   async function handleViewExisting(receipt: ReceiptType) {
+    if (!receipt.number || !receipt.number.trim() || receipt.number === "...") {
+      setSubmitError("Recibo ainda não possui número válido. Aguarde a emissão.");
+      return;
+    }
     setPreviewLoading(true);
     try {
       const url = await previewReceiptPdf(receiptToPdfData(receipt));
       setPreviewUrl(url);
-    } catch {
-      setSubmitError("Erro ao gerar preview do recibo");
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Erro ao gerar preview do recibo");
     } finally {
       setPreviewLoading(false);
     }
   }
 
   async function handleDownloadExisting(receipt: ReceiptType) {
+    if (!receipt.number || !receipt.number.trim() || receipt.number === "...") {
+      setSubmitError("Recibo ainda não possui número válido. Aguarde a emissão.");
+      return;
+    }
     try {
       await downloadReceiptPdf(receiptToPdfData(receipt), receipt.clientName);
-    } catch {
-      setSubmitError("Erro ao baixar recibo");
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Erro ao baixar recibo");
     }
   }
 
@@ -361,8 +375,8 @@ export default function RecibosView({
     if (!successReceipt) return;
     try {
       await downloadReceiptPdf(receiptToPdfData(successReceipt), successReceipt.clientName);
-    } catch {
-      setSubmitError("Erro ao baixar PDF");
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Erro ao baixar PDF");
     }
   }
 
@@ -372,8 +386,8 @@ export default function RecibosView({
     try {
       const url = await previewReceiptPdf(receiptToPdfData(successReceipt));
       setPreviewUrl(url);
-    } catch {
-      setSubmitError("Erro ao gerar preview");
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Erro ao gerar preview");
     } finally {
       setPreviewLoading(false);
     }

@@ -181,3 +181,146 @@ describe("Payment methods", () => {
     expect(PAYMENT_METHODS).toContain("Dinheiro");
   });
 });
+
+describe("Receipt PDF Generation (browser service)", () => {
+  it("generateReceiptPdf throws when number is empty", async () => {
+    const { generateReceiptPdf } = await import("@/modules/recibos/services/recibo-pdf-browser.service");
+    const data = { number: "", clientName: "Test", date: "01/01/2026", service: "Translado", paymentMethod: "Pix", value: 100, observations: "" };
+    await expect(generateReceiptPdf(data)).rejects.toThrow("Número do recibo não definido");
+  });
+
+  it("generateReceiptPdf throws when number is undefined", async () => {
+    const { generateReceiptPdf } = await import("@/modules/recibos/services/recibo-pdf-browser.service");
+    const data = { number: undefined as unknown as string, clientName: "Test", date: "01/01/2026", service: "Translado", paymentMethod: "Pix", value: 100, observations: "" };
+    await expect(generateReceiptPdf(data)).rejects.toThrow("Número do recibo não definido");
+  });
+
+  it("generateReceiptPdf produces Uint8Array with PDF output", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const templateBytes = new Uint8Array(fs.readFileSync(path.resolve("public/branding/recibo-template.pdf")));
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      arrayBuffer: () => Promise.resolve(templateBytes.buffer),
+    }));
+
+    const { generateReceiptPdf } = await import("@/modules/recibos/services/recibo-pdf-browser.service");
+    const data = { number: "0001/2026", clientName: "Test Client", date: "01/01/2026", service: "Translado", paymentMethod: "Pix", value: 150, observations: "" };
+    const result = await generateReceiptPdf(data);
+    expect(result).toBeInstanceOf(Uint8Array);
+    expect(result.length).toBeGreaterThan(0);
+
+    vi.unstubAllGlobals();
+  });
+
+  it("generateReceiptBlob produces Blob with application/pdf type", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const templateBytes = new Uint8Array(fs.readFileSync(path.resolve("public/branding/recibo-template.pdf")));
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      arrayBuffer: () => Promise.resolve(templateBytes.buffer),
+    }));
+
+    const { generateReceiptBlob } = await import("@/modules/recibos/services/recibo-pdf-browser.service");
+    const data = { number: "0002/2026", clientName: "Blob Test", date: "01/01/2026", service: "Corrida", paymentMethod: "Dinheiro", value: 200, observations: "" };
+    const blob = await generateReceiptBlob(data);
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.type).toBe("application/pdf");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("receiptToPdfData maps receipt correctly", async () => {
+    const { receiptToPdfData } = await import("@/domain/receipt/mapper");
+    const receipt = {
+      id: "r1", number: "0047/2026", tripId: undefined,
+      clientName: "Maria Silva", clientPhone: "31999990000",
+      serviceDate: "2026-08-28", serviceDescription: "Translado aeroportuário",
+      paymentMethod: "Pix" as const, value: 150,
+      observations: "Teste", createdAt: "2026-08-28", updatedAt: undefined,
+    };
+    const data = receiptToPdfData(receipt);
+    expect(data.number).toBe("0047/2026");
+    expect(data.clientName).toBe("Maria Silva");
+    expect(data.date).toBe("28/08/2026");
+    expect(data.service).toBe("Translado aeroportuário");
+    expect(data.value).toBe(150);
+  });
+
+  it("receiptToPdfData uses empty string for missing observations", async () => {
+    const { receiptToPdfData } = await import("@/domain/receipt/mapper");
+    const receipt = {
+      id: "r2", number: "0048/2026",
+      clientName: "Test", serviceDate: "2026-01-01",
+      serviceDescription: "Corrida", paymentMethod: "Pix" as const,
+      value: 50, createdAt: "2026-01-01",
+    };
+    const data = receiptToPdfData(receipt);
+    expect(data.observations).toBe("");
+  });
+});
+
+describe("Receipt module source code guards", () => {
+  it("browser service has number validation guard", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const content = fs.readFileSync(path.resolve("modules/recibos/services/recibo-pdf-browser.service.ts"), "utf-8");
+    expect(content).toContain("Número do recibo não definido");
+  });
+
+  it("browser service Blob uses Uint8Array directly", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const content = fs.readFileSync(path.resolve("modules/recibos/services/recibo-pdf-browser.service.ts"), "utf-8");
+    expect(content).toContain("new Blob([");
+    expect(content).toContain("pdfBytes");
+    expect(content).not.toContain("pdfBytes.buffer.slice");
+  });
+
+  it("browser service download uses setTimeout for revoke", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const content = fs.readFileSync(path.resolve("modules/recibos/services/recibo-pdf-browser.service.ts"), "utf-8");
+    expect(content).toContain("setTimeout(() => URL.revokeObjectURL(url), 1000)");
+  });
+
+  it("server service Blob uses Uint8Array directly", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const content = fs.readFileSync(path.resolve("modules/recibos/services/recibo-pdf.service.ts"), "utf-8");
+    expect(content).toContain("new Blob([");
+    expect(content).toContain("pdfBytes");
+    expect(content).not.toContain("pdfBytes.buffer.slice");
+  });
+
+  it("server service has number validation guard", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const content = fs.readFileSync(path.resolve("modules/recibos/services/recibo-pdf.service.ts"), "utf-8");
+    expect(content).toContain("Número do recibo não definido");
+  });
+
+  it("RecibosView guards against empty number", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const content = fs.readFileSync(path.resolve("modules/recibos/components/RecibosView.tsx"), "utf-8");
+    expect(content).toContain("Recibo ainda não possui número válido");
+  });
+
+  it("RecibosView propagates real error messages", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const content = fs.readFileSync(path.resolve("modules/recibos/components/RecibosView.tsx"), "utf-8");
+    expect(content).toContain("err instanceof Error ? err.message :");
+  });
+
+  it("RecibosView handlePreview checks nextNumber", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const content = fs.readFileSync(path.resolve("modules/recibos/components/RecibosView.tsx"), "utf-8");
+    expect(content).toContain('data.number === "..."');
+  });
+});

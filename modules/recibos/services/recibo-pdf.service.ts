@@ -122,6 +122,10 @@ function drawField(
 }
 
 export async function generateReceiptPdf(data: ReceiptPdfData): Promise<Uint8Array> {
+  if (!data.number || !data.number.trim()) {
+    throw new Error("Número do recibo não definido. Emita o recibo antes de gerar o PDF.");
+  }
+
   const templateBytes = await loadTemplate();
   const pdfDoc = await PDFDocument.load(templateBytes);
   const page = pdfDoc.getPages()[0];
@@ -135,15 +139,14 @@ export async function generateReceiptPdf(data: ReceiptPdfData): Promise<Uint8Arr
   drawField(page, fonts, data.service, fields.service);
   drawField(page, fonts, data.paymentMethod, fields.paymentMethod);
   drawField(page, fonts, formatCurrency(data.value), fields.value);
-  drawField(page, fonts, data.observations, fields.observations);
+  drawField(page, fonts, data.observations || "", fields.observations);
 
   return pdfDoc.save();
 }
 
 export async function generateReceiptBlob(data: ReceiptPdfData): Promise<Blob> {
   const pdfBytes = await generateReceiptPdf(data);
-  const buffer = pdfBytes.buffer instanceof ArrayBuffer ? pdfBytes.buffer : new ArrayBuffer(pdfBytes.byteLength);
-  return new Blob([buffer.slice(pdfBytes.byteOffset, pdfBytes.byteOffset + pdfBytes.byteLength)], { type: 'application/pdf' });
+  return new Blob([pdfBytes.slice().buffer], { type: "application/pdf" });
 }
 
 export async function downloadReceipt(data: ReceiptPdfData, filename?: string): Promise<void> {
@@ -155,7 +158,7 @@ export async function downloadReceipt(data: ReceiptPdfData, filename?: string): 
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export async function previewReceipt(data: ReceiptPdfData): Promise<string> {

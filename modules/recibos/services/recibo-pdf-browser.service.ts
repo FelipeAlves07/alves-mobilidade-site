@@ -9,7 +9,9 @@ let fontBoldCache: PDFFont | null = null;
 async function loadTemplate(): Promise<Uint8Array> {
   if (!templateCache) {
     const res = await fetch("/branding/recibo-template.pdf");
-    if (!res.ok) throw new Error("Falha ao carregar template de recibo");
+    if (!res.ok) {
+      throw new Error(`Falha ao carregar template de recibo (HTTP ${res.status})`);
+    }
     const buf = await res.arrayBuffer();
     templateCache = new Uint8Array(buf);
   }
@@ -105,6 +107,10 @@ function drawField(
 }
 
 export async function generateReceiptPdf(data: ReceiptPdfData): Promise<Uint8Array> {
+  if (!data.number || !data.number.trim()) {
+    throw new Error("Número do recibo não definido. Emita o recibo antes de gerar o PDF.");
+  }
+
   const templateBytes = await loadTemplate();
   const pdfDoc = await PDFDocument.load(templateBytes);
   const page = pdfDoc.getPages()[0];
@@ -117,16 +123,14 @@ export async function generateReceiptPdf(data: ReceiptPdfData): Promise<Uint8Arr
   drawField(page, fonts, data.service, fields.service);
   drawField(page, fonts, data.paymentMethod, fields.paymentMethod);
   drawField(page, fonts, formatCurrency(data.value), fields.value);
-  drawField(page, fonts, data.observations, fields.observations);
+  drawField(page, fonts, data.observations || "", fields.observations);
 
   return pdfDoc.save();
 }
 
 export async function generateReceiptBlob(data: ReceiptPdfData): Promise<Blob> {
   const pdfBytes = await generateReceiptPdf(data);
-  const buf = pdfBytes.buffer;
-  const ab = buf instanceof ArrayBuffer ? buf : new ArrayBuffer(buf.byteLength);
-  return new Blob([ab], { type: "application/pdf" });
+  return new Blob([pdfBytes.slice().buffer], { type: "application/pdf" });
 }
 
 export function sanitizeFilename(name: string): string {
@@ -150,7 +154,7 @@ export async function downloadReceiptPdf(data: ReceiptPdfData, clientName?: stri
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export async function previewReceiptPdf(data: ReceiptPdfData): Promise<string> {
