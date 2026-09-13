@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -244,7 +245,16 @@ const fallback: NewsItem[] = [
   { category: "Cultura", source: "AME Vision", title: "Agenda cultural e boas histórias ajudam a tornar a viagem mais agradável.", summary: "Conteúdo de entretenimento e informação." },
 ];
 
-export async function GET() {
+export async function GET(request: Request) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = rateLimit(`rl-amv-news:${ip}`, { windowMs: 60 * 1000, max: 30 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, {
+      status: 429,
+      headers: rateLimitHeaders({ windowMs: 60 * 1000, max: 30 }, 0, rl.retryAfterMs),
+    });
+  }
+
   const settled = await Promise.allSettled(feeds.map(loadFeed));
   const items = settled.flatMap(result => result.status === "fulfilled" ? result.value : []);
   const deduped = [...new Map(items.map(item => [item.title.toLowerCase().replace(/[^a-záéíóúãõç0-9]/gi, ""), item])).values()].slice(0, 50);

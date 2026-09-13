@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/api-auth";
 import { supabase } from "@/lib/supabase";
 import {
   apIntelligenceFromSupabase,
@@ -33,7 +34,10 @@ const COMPANY_FIELDS =
  *        persistida (NUNCA executa IA e NUNCA cria empresa duplicada).
  *        Apenas com snapshot da inteligência; 1 oportunidade ativa por empresa.
  */
-export async function GET(): Promise<NextResponse<OpportunitiesResponse>> {
+export async function GET(request: NextRequest): Promise<NextResponse<OpportunitiesResponse>> {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
   try {
     const { data, error } = await supabase
       .from("ap_opportunities")
@@ -54,6 +58,9 @@ export async function GET(): Promise<NextResponse<OpportunitiesResponse>> {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse<OpportunitiesResponse>> {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
   const body = await request.json().catch(() => null);
   const companyId = typeof body?.companyId === "string" ? body.companyId : "";
 

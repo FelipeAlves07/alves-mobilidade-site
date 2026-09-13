@@ -1,6 +1,12 @@
 import { supabase } from "@/lib/supabase";
 import type { AuthState } from "@/domain/auth/types";
 
+async function checkIsAdmin(): Promise<boolean> {
+  const { data, error } = await supabase.rpc("is_admin");
+  if (error) return false;
+  return data === true;
+}
+
 export async function signIn(email: string, password: string): Promise<AuthState> {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
@@ -16,7 +22,13 @@ export async function signIn(email: string, password: string): Promise<AuthState
     }
     throw error;
   }
-  localStorage.setItem("ame-admin-auth", "true");
+
+  const isAdmin = await checkIsAdmin();
+  if (!isAdmin) {
+    await supabase.auth.signOut();
+    throw new Error("Acesso não autorizado. Apenas administradores podem acessar o painel.");
+  }
+
   return {
     logged: true,
     user: {
@@ -28,14 +40,19 @@ export async function signIn(email: string, password: string): Promise<AuthState
 }
 
 export async function signOut() {
-  localStorage.removeItem("ame-admin-auth");
   await supabase.auth.signOut();
 }
 
 export async function restoreSession(): Promise<AuthState | null> {
   const { data } = await supabase.auth.getSession();
   if (!data.session) return null;
-  localStorage.setItem("ame-admin-auth", "true");
+
+  const isAdmin = await checkIsAdmin();
+  if (!isAdmin) {
+    await supabase.auth.signOut();
+    return null;
+  }
+
   return {
     logged: true,
     user: {
@@ -44,9 +61,4 @@ export async function restoreSession(): Promise<AuthState | null> {
       name: data.session.user.user_metadata?.name ?? "Admin",
     },
   };
-}
-
-export function checkLocalAuth(): boolean {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem("ame-admin-auth") === "true";
 }

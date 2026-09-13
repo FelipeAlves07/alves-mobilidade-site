@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/api-auth";
 import { supabase } from "@/lib/supabase";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 import {
   apCampaignFromSupabase,
   apCompanyFromSupabase,
@@ -20,6 +22,18 @@ export const runtime = "nodejs";
 const runningLocks = new Map<string, boolean>();
 
 export async function POST(request: NextRequest): Promise<NextResponse<AutomaticDiscoveryResponse>> {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = rateLimit(`rl-discover:${ip}`, { windowMs: 5 * 60 * 1000, max: 3 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" } as never, {
+      status: 429,
+      headers: rateLimitHeaders({ windowMs: 5 * 60 * 1000, max: 3 }, 0, rl.retryAfterMs)
+    });
+  }
+
   const body = await request.json().catch(() => null);
   const campaignId = typeof body?.campaignId === "string" ? body.campaignId : "";
 

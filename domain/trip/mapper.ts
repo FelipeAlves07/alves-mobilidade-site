@@ -9,6 +9,7 @@ export interface TripDatabase {
   route: string;
   value: number;
   status: string;
+  proposal_id?: string | null;
   created_at?: string;
 }
 
@@ -22,6 +23,7 @@ export function tripToDatabase(trip: Trip): TripDatabase {
     route: trip.route,
     value: trip.value,
     status: trip.status,
+    proposal_id: trip.proposalId ?? null,
   };
 }
 
@@ -35,6 +37,7 @@ export function tripFromDatabase(db: TripDatabase): Trip {
     route: db.route,
     value: db.value,
     status: db.status as Trip["status"],
+    proposalId: db.proposal_id ?? undefined,
   };
 }
 
@@ -47,6 +50,7 @@ export function tripFormToDatabase(form: TripForm): Omit<TripDatabase, "id" | "c
     route: form.route,
     value: form.value,
     status: form.status,
+    proposal_id: form.proposalId ?? null,
   };
 }
 

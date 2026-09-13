@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/api-auth";
 import { supabase } from "@/lib/supabase";
 import {
   apInteractionFromSupabase,
@@ -30,6 +31,9 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<OpportunityDetailResponse>> {
+  const auth = await requireAdminAuth(_request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
   const { id } = await params;
   try {
     const { data: row, error } = await supabase
@@ -73,6 +77,9 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<OpportunityDetailResponse>> {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
   const { id } = await params;
   const body = await request.json().catch(() => null);
   const status = typeof body?.status === "string" ? body.status : "";

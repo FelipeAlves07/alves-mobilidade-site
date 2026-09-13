@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { checkMigrationStatus, runMigration, clearLocalStorageData } from "@/services/migration";
-import { signIn, signOut, restoreSession, checkLocalAuth } from "@/services/auth";
+import { signIn, signOut, restoreSession } from "@/services/auth";
 import { trySyncLocalToSupabase } from "@/lib/repository-factory";
 import { brazilISODate } from "@/lib/date";
 import { useLeads } from "./useLeads";
@@ -53,7 +53,7 @@ export function useData() {
 
   useEffect(() => {
     restoreSession().then((auth) => {
-      setLogged(auth?.logged ?? checkLocalAuth());
+      setLogged(auth?.logged ?? false);
       setAuthLoading(false);
     });
     const raw = loadLocal<unknown[]>("ame-marketing-done-v3", []);

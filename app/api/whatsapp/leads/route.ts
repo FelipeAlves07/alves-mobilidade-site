@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/api-auth";
 import { supabase } from "@/lib/supabase";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = rateLimit(`rl-whatsapp:${ip}`, { windowMs: 60 * 1000, max: 10 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, {
+      status: 429,
+      headers: rateLimitHeaders({ windowMs: 60 * 1000, max: 10 }, 0, rl.retryAfterMs)
+    });
+  }
+
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return NextResponse.json({ error: "Supabase não configurado" }, { status: 400 });
   }
@@ -20,6 +34,18 @@ export async function DELETE() {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = rateLimit(`rl-whatsapp:${ip}`, { windowMs: 60 * 1000, max: 10 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, {
+      status: 429,
+      headers: rateLimitHeaders({ windowMs: 60 * 1000, max: 10 }, 0, rl.retryAfterMs)
+    });
+  }
+
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return NextResponse.json({ error: "Supabase não configurado" }, { status: 400 });
   }

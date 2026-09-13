@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/api-auth";
 import { supabase } from "@/lib/supabase";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 import {
   apCompanyFromSupabase,
   apEnrichmentFromSupabase,
@@ -44,6 +46,18 @@ function friendlyEnrichmentReason(reason: string): string {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse<AnalyzeResponse>> {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = rateLimit(`rl-analyze:${ip}`, { windowMs: 5 * 60 * 1000, max: 5 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" } as never, {
+      status: 429,
+      headers: rateLimitHeaders({ windowMs: 5 * 60 * 1000, max: 5 }, 0, rl.retryAfterMs)
+    });
+  }
+
   const body = await request.json().catch(() => null);
   const companyId = typeof body?.companyId === "string" ? body.companyId : "";
 

@@ -16,6 +16,7 @@ export interface ProposalDatabase {
   created_at: string;
   valid_until: string;
   message: string;
+  trip_id: string | null;
 }
 
 export function proposalToDatabase(proposal: Proposal): ProposalDatabase {
@@ -35,6 +36,7 @@ export function proposalToDatabase(proposal: Proposal): ProposalDatabase {
     created_at: proposal.createdAt,
     valid_until: proposal.validUntil,
     message: proposal.message,
+    trip_id: proposal.tripId ?? null,
   };
 }
 
@@ -55,5 +57,6 @@ export function proposalFromDatabase(db: ProposalDatabase): Proposal {
     createdAt: db.created_at,
     validUntil: db.valid_until,
     message: db.message,
+    tripId: db.trip_id ?? undefined,
   };
 }

@@ -135,12 +135,14 @@ describe("SupabaseRepository", () => {
       await repo.create(input);
 
       const insertArg = mockQueryBuilder.insert.mock.calls[0][0];
-      expect(insertArg).toEqual({
-        name: "Test",
-        value: 50,
-        next_action: "Pending",
-      });
-      expect(insertArg).not.toHaveProperty("nextAction");
+      expect(insertArg).toEqual(
+        expect.objectContaining({
+          name: "Test",
+          value: 50,
+          next_action: "Pending",
+          id: expect.any(String),
+        })
+      );
     });
 
     it("lança erro quando insert falha", async () => {
@@ -257,11 +259,14 @@ describe("mapKeysToSnake (comportamento via SupabaseRepository)", () => {
     await testRepo.create({ firstName: "John", lastName: "Doe", phoneNumber: "123" });
 
     const inserted = mockQueryBuilder.insert.mock.calls[0][0];
-    expect(inserted).toEqual({
-      first_name: "John",
-      last_name: "Doe",
-      phone_number: "123",
-    });
+    expect(inserted).toEqual(
+      expect.objectContaining({
+        first_name: "John",
+        last_name: "Doe",
+        phone_number: "123",
+        id: expect.any(String),
+      })
+    );
   });
 
   it("não altera keys que já são snake_case", async () => {

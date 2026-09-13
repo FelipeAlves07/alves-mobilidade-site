@@ -11,6 +11,7 @@ export interface Trip {
   route: string;
   value: number;
   status: TripStatus;
+  proposalId?: string;
 }
 
 export interface TripForm extends Omit<Trip, "id"> {}

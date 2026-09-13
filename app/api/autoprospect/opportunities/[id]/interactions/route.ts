@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/api-auth";
 import { supabase } from "@/lib/supabase";
 import {
   apInteractionFromSupabase,
@@ -25,6 +26,9 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<InteractionsResponse>> {
+  const auth = await requireAdminAuth(_request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
   const { id } = await params;
   try {
     const { data: rows, error } = await supabase
@@ -52,6 +56,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<InteractionsResponse>> {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
   const { id } = await params;
   const body = await request.json().catch(() => null);
 

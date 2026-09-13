@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -23,6 +24,15 @@ async function geocode(query: string): Promise<Point> {
 }
 
 export async function GET(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = rateLimit(`rl-amv-route:${ip}`, { windowMs: 60 * 1000, max: 20 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, {
+      status: 429,
+      headers: rateLimitHeaders({ windowMs: 60 * 1000, max: 20 }, 0, rl.retryAfterMs),
+    });
+  }
+
   try {
     const params = request.nextUrl.searchParams;
     const originText = String(params.get("origin") || "").trim();

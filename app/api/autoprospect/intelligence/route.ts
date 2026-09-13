@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/api-auth";
 import { supabase } from "@/lib/supabase";
 import {
   apCompanyFromSupabase,
@@ -41,6 +42,9 @@ function signalCategoryFromLabel(label: string): SignalCategory {
  * Preserva histórico (nova linha a cada execução).
  */
 export async function POST(request: NextRequest): Promise<NextResponse<IntelligenceResponse>> {
+  const auth = await requireAdminAuth(request);
+  if (auth instanceof NextResponse) return auth as NextResponse<never>;
+
   const body = await request.json().catch(() => null);
   const companyId = typeof body?.companyId === "string" ? body.companyId : "";
 

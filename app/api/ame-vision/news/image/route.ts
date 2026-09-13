@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isIP } from "node:net";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,15 @@ function allowedRemoteUrl(raw: string) {
 }
 
 export async function GET(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = rateLimit(`rl-amv-image:${ip}`, { windowMs: 60 * 1000, max: 60 });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, {
+      status: 429,
+      headers: rateLimitHeaders({ windowMs: 60 * 1000, max: 60 }, 0, rl.retryAfterMs),
+    });
+  }
+
   const raw = request.nextUrl.searchParams.get("url") || "";
   const url = allowedRemoteUrl(raw);
   if (!url) return new NextResponse("Imagem inválida", { status: 400 });

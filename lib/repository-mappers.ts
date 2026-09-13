@@ -208,6 +208,7 @@ export function proposalFromSupabase(row: Record<string, unknown>): Proposal {
     created_at: row.created_at as string,
     valid_until: row.valid_until as string,
     message: row.message as string,
+    trip_id: (row.trip_id as string) || null,
   });
 }
 
@@ -228,6 +229,7 @@ export function proposalFormToSupabase(
     status: form.status,
     valid_until: form.validUntil,
     message: form.message || "",
+    trip_id: form.tripId ?? null,
   };
 }
 

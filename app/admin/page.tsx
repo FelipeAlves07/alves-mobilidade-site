@@ -67,7 +67,7 @@ const menu = [
 
 export default function AdminPage() {
   const {
-    logged, login: loginFn, logout: logoutFn,
+    logged, authLoading, login: loginFn, logout: logoutFn,
     leads, setLeads, addLead: addLeadFn, updateLead: updateLeadFn, deleteLead: deleteLeadFn,
     trips, setTrips, addTrip: addTripFn, updateTrip: updateTripFn, deleteTrip: deleteTripFn,
     referrals, setReferrals, addReferral: addReferralFn, updateReferral: updateReferralFn, deleteReferral: deleteReferralFn,
@@ -271,6 +271,17 @@ export default function AdminPage() {
     const a = document.createElement("a");
     a.href = url; a.download = `backup-ame-control-${today}.json`; a.click();
     URL.revokeObjectURL(url);
+  }
+
+  if (authLoading) {
+    return (
+      <main className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+          <p className="text-sm text-zinc-400">Verificando acesso...</p>
+        </div>
+      </main>
+    );
   }
 
   if (!logged) {

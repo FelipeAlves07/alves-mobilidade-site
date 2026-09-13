@@ -16,6 +16,7 @@ export interface Proposal {
   createdAt: string;
   validUntil: string;
   message: string;
+  tripId?: string;
 }
 
 export interface ProposalForm extends Omit<Proposal, "id" | "createdAt"> {}
